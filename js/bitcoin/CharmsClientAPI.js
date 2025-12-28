@@ -20,12 +20,12 @@ class CharmsClientAPI {
    */
   constructor(appId, config = {}) {
     this.appId = appId;
-    this.config = {
-      network: config.network || "testnet",
-      charmsRpcUrl: config.charmsRpcUrl || "http://localhost:9000",
-      timeout: config.timeout || 30000,
-      ...config
-    };
+    
+    // Use shared CharmsRPC layer
+    this.rpc = getCharmsRPC();
+    if (config.charmsRpcUrl || config.mockMode) {
+      this.rpc.updateConfig(config);
+    }
 
     this.cache = new Map();
     this.cacheExpiry = 5 * 60 * 1000; // 5 minute cache
@@ -325,35 +325,43 @@ class CharmsClientAPI {
    */
   async callGovernanceContract(method, params) {
     try {
-      const response = await fetch(this.config.charmsRpcUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: Date.now(),
-          method: "governance_" + method,
-          params: [
-            {
-              app_id: this.appId,
-              ...params
-            }
-          ]
-        }),
-        timeout: this.config.timeout
-      });
-
-      if (!response.ok) {
-        throw new Error(`Charms RPC error: ${response.statusText}`);
+      // Map method to RPC call via CharmsRPC
+      switch (method) {
+        case "get_user_reputation":
+          return await this.rpc.getUserReputation(this.appId, params.address);
+        case "get_user_reputations":
+          return await this.rpc.call("governance_get_user_reputations", [
+            { app_id: this.appId, ...params }
+          ]);
+        case "get_community_stats":
+          return await this.rpc.getCommunityStats(this.appId);
+        case "get_vote_status":
+          return await this.rpc.getVoteStatus(this.appId, params.proposal_id, params.address);
+        case "get_proposal":
+          return await this.rpc.getProposal(this.appId, params.proposal_id);
+        case "get_active_proposals":
+          return await this.rpc.getActiveProposals(this.appId);
+        case "get_proposal_execution":
+          return await this.rpc.call("governance_get_proposal_execution", [
+            { app_id: this.appId, ...params }
+          ]);
+        case "verify_reputation":
+          return await this.rpc.call("governance_verify_reputation", [
+            { app_id: this.appId, ...params }
+          ]);
+        case "register_dependent_app":
+          return await this.rpc.call("governance_register_dependent_app", [
+            { app_id: this.appId, ...params }
+          ]);
+        case "get_dependent_apps":
+          return await this.rpc.call("governance_get_dependent_apps", [
+            { app_id: this.appId }
+          ]);
+        default:
+          return await this.rpc.call("governance_" + method, [
+            { app_id: this.appId, ...params }
+          ]);
       }
-
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(`Governance error: ${data.error.message}`);
-      }
-
-      return data.result;
     } catch (error) {
       console.error("[CharmsClientAPI] Contract call failed:", error);
       throw error;

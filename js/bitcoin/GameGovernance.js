@@ -4,20 +4,34 @@
  * Manages player-driven governance of game rules through voting.
  * Proposals modify payoff matrices based on community consensus.
  * 
+ * Integrates with Charms protocol to anchor votes on-chain.
+ * 
  * Flow:
  * 1. Player completes game round(s), earns reputation
  * 2. Governance proposals are available for voting
  * 3. Player casts vote weighted by reputation tier
- * 4. Proposal tallying happens automatically
- * 5. Winning proposal applies to next game round
+ * 4. Vote is recorded locally AND submitted to Charms contract
+ * 5. Proposal tallying happens automatically
+ * 6. Winning proposal applies to next game round
  */
 
-function GameGovernance() {
+function GameGovernance(appId = "trust_game_v1", charmsEnabled = true) {
     this.proposals = [];
     this.votes = {}; // { proposalId: { playerId: { vote: 'yes'/'no'/'abstain', power: 120 } } }
     this.currentPayoffMatrix = null;
     this.executedProposals = [];
     this.votingRound = 0;
+    
+    // Charms integration
+    this.appId = appId;
+    this.charmsEnabled = charmsEnabled;
+    this.charmsRPC = null;
+    this.pendingVoteSubmissions = []; // Track votes submitted to chain
+    
+    if (charmsEnabled) {
+        this.charmsRPC = getCharmsRPC ? getCharmsRPC() : null;
+        console.log("[GameGovernance] Charms integration enabled");
+    }
 }
 
 /**
@@ -112,8 +126,9 @@ GameGovernance.prototype.createDefaultProposals = function() {
  * @param {string} playerId - Player voting (Bitcoin address or username)
  * @param {string} vote - 'yes', 'no', or 'abstain'
  * @param {number} votingPower - Weighted voting power from reputation
+ * @param {boolean} submitToChains - Whether to submit vote to contract
  */
-GameGovernance.prototype.castVote = function(proposalId, playerId, vote, votingPower) {
+GameGovernance.prototype.castVote = function(proposalId, playerId, vote, votingPower, submitToChains = true) {
     // Validate
     if (!['yes', 'no', 'abstain'].includes(vote)) {
         throw new Error("Invalid vote: must be 'yes', 'no', or 'abstain'");
@@ -138,7 +153,7 @@ GameGovernance.prototype.castVote = function(proposalId, playerId, vote, votingP
         throw new Error(`Player ${playerId} already voted on proposal ${proposalId}`);
     }
     
-    // Record vote
+    // Record vote locally
     this.votes[proposalId][playerId] = {
         vote: vote,
         power: votingPower,
@@ -150,6 +165,11 @@ GameGovernance.prototype.castVote = function(proposalId, playerId, vote, votingP
     
     console.log(`[GameGovernance] Vote recorded: Proposal #${proposalId}, Player ${playerId}, Vote: ${vote}, Power: ${votingPower}`);
     
+    // Submit to Charms contract if enabled
+    if (submitToChains && this.charmsEnabled && this.charmsRPC) {
+        this.submitVoteToChains(proposalId, playerId, vote, votingPower);
+    }
+    
     // Publish event
     if (window.publish) {
         publish('governance/vote_cast', [{
@@ -158,6 +178,46 @@ GameGovernance.prototype.castVote = function(proposalId, playerId, vote, votingP
             vote: vote,
             votingPower: votingPower
         }]);
+    }
+};
+
+/**
+ * Submit a vote to the Charms contract (async)
+ * @private
+ */
+GameGovernance.prototype.submitVoteToChains = async function(proposalId, playerId, vote, votingPower) {
+    try {
+        console.log(`[GameGovernance] Submitting vote #${proposalId} to Charms...`);
+        
+        const txid = await this.charmsRPC.submitVote(this.appId, {
+            proposalId: proposalId,
+            voter: playerId,
+            vote: vote,
+            votingPower: votingPower
+        });
+        
+        // Track submission
+        this.pendingVoteSubmissions.push({
+            proposalId: proposalId,
+            playerId: playerId,
+            txid: txid,
+            timestamp: Date.now()
+        });
+        
+        console.log(`[GameGovernance] Vote submitted to Charms: ${txid}`);
+        
+        // Publish event
+        if (window.publish) {
+            publish('governance/vote_submitted', [{
+                proposalId: proposalId,
+                playerId: playerId,
+                txid: txid
+            }]);
+        }
+    } catch (error) {
+        console.error(`[GameGovernance] Error submitting vote to Charms:`, error);
+        // Vote is still recorded locally even if submission fails
+        // User can retry later
     }
 };
 

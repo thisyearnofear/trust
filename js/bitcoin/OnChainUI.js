@@ -613,11 +613,11 @@ var OnChainUI = {
         const vote = this.getAttribute("data-vote");
 
         try {
-          gov.castVote(proposalId, reputation.address || "anonymous", vote, rep.votingPower);
+          gov.castVote(proposalId, reputation.address || "anonymous", vote, rep.votingPower, true);
           overlay.remove();
-          OnChainUI.showSuccess(`Vote cast on proposal #${proposalId}!`);
+          OnChainUI.showSuccess(`Vote cast on proposal #${proposalId}! Submitting to Charms...`);
           // Refresh proposals
-          OnChainUI.showGovernancePanel();
+          setTimeout(() => OnChainUI.showGovernancePanel(), 500);
         } catch (error) {
           OnChainUI.showError("Error: " + error.message);
         }

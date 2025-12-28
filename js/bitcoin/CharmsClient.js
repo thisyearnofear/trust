@@ -21,20 +21,19 @@ class CharmsGameClient {
   constructor(appId, bitcoinAddress, config = {}) {
     this.appId = appId;
     this.bitcoinAddress = bitcoinAddress;
-    this.config = {
-      network: config.network || "testnet",
-      rpcUrl: config.rpcUrl || "http://localhost:18332", // Bitcoin testnet
-      charmsRpcUrl: config.charmsRpcUrl || "http://localhost:9000", // Charms daemon
-      timeout: config.timeout || 30000,
-      ...config
-    };
+    
+    // Use shared CharmsRPC layer
+    this.rpc = getCharmsRPC();
+    if (config.charmsRpcUrl || config.mockMode) {
+      this.rpc.updateConfig(config);
+    }
 
     this.gameState = null;
     this.transactionHistory = [];
     this.proofCache = new Map();
 
     console.log("[CharmsClient] Initialized for address:", bitcoinAddress);
-    console.log("[CharmsClient] Network:", this.config.network);
+    console.log("[CharmsClient] Using CharmsRPC:", this.rpc.config.charmsRpcUrl);
   }
 
   /**
@@ -231,32 +230,9 @@ class CharmsGameClient {
    */
   async callCharmsZkVM(input) {
     try {
-      const response = await fetch(this.config.charmsRpcUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: Date.now(),
-          method: "charm_prove",
-          params: [input]
-        }),
-        timeout: this.config.timeout
-      });
-
-      if (!response.ok) {
-        throw new Error(`Charms RPC error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(`Charms error: ${data.error.message}`);
-      }
-
-      return data.result;
+      return await this.rpc.generateProof(this.appId, input);
     } catch (error) {
-      console.error("[CharmsClient] Charms RPC error:", error);
+      console.error("[CharmsClient] Proof generation error:", error);
       throw error;
     }
   }
