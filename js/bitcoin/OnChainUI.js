@@ -28,7 +28,7 @@ var OnChainUI = {
 
     console.log("[OnChainUI] Initializing on-chain UI components (hidden by default)");
 
-    // Create container for on-chain UI
+    // Create container for on-chain UI (not added to DOM yet)
     this.container = document.createElement("div");
     this.container.id = "onchain-ui";
     this.container.className = "onchain-ui-container";
@@ -48,7 +48,6 @@ var OnChainUI = {
       max-height: 400px;
       overflow-y: auto;
       box-shadow: 0 0 20px rgba(22, 199, 132, 0.3);
-      display: none;
     `;
 
     // Add styles
@@ -59,8 +58,7 @@ var OnChainUI = {
     this.createTransactionSection();
     this.createSettingsSection();
 
-    // Add container to page
-    document.body.appendChild(this.container);
+    // DON'T add to page yet - only add when show() is called
 
     // Listen for game completion – show wallet when game ends
     if (window.subscribe) {
@@ -651,21 +649,25 @@ var OnChainUI = {
   },
 
   /**
-   * Show the wallet UI
+   * Show the wallet UI (append to DOM if not already)
    */
   show: function() {
     if (this.container) {
+      // Only append if not already in DOM
+      if (!this.container.parentNode) {
+        document.body.appendChild(this.container);
+      }
       this.container.style.display = "block";
       console.log("[OnChainUI] Wallet UI shown");
     }
   },
 
   /**
-   * Hide the wallet UI
+   * Hide the wallet UI (remove from DOM)
    */
   hide: function() {
-    if (this.container) {
-      this.container.style.display = "none";
+    if (this.container && this.container.parentNode) {
+      this.container.parentNode.removeChild(this.container);
       console.log("[OnChainUI] Wallet UI hidden");
     }
   }
