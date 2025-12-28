@@ -1,12 +1,12 @@
-# Bitcoin Evolution of Trust - Long-Term Implementation Plan
+# Covenant: Bitcoin Governance Through Game Theory
 
 ## Vision: Bitcoin-Native Reputation & Governance Layer
 
 **Problem Solved:**
-Bitcoin has no native way to encode trust relationships or community reputation on-chain. Existing solutions require off-chain databases or centralized oracles.
+Bitcoin has no native way to encode cooperation/reputation on-chain with cryptographic proof. Existing solutions require off-chain databases or centralized oracles.
 
 **Solution:**
-Transform "The Evolution of Trust" into a **trustless reputation system** where:
+Build **Covenant**: a **trustless reputation system** where:
 1. Game outcomes prove player behavior (cooperative vs. defective strategies)
 2. Verified game history becomes on-chain reputation scores
 3. Community uses reputation to vote on governance decisions
@@ -18,11 +18,11 @@ Transform "The Evolution of Trust" into a **trustless reputation system** where:
 - Scalable: Recursive proofs compress game history to single on-chain proof
 - Extensible: Same pattern can apply to other decision-making systems
 
-**Hackathon Alignment:**
-✅ Real problem solved (trustless reputation)  
-✅ Programmable Bitcoin (governance via smart contracts)  
-✅ Charms protocol core (zero-knowledge proof anchoring)  
-✅ Production potential (replicable for other DAOs/communities)
+**Hackathon Alignment (Enchanting UTXO):**
+✅ Real problem solved (on-chain reputation via ZK proofs)  
+✅ Programmable Bitcoin (governance affects game rules)  
+✅ Charms protocol core (2-tx pattern, witness embedding)  
+✅ Production potential (pattern replicable for DAO governance)
 
 ---
 
