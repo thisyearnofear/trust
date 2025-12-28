@@ -221,36 +221,76 @@ Transform "The Evolution of Trust" into a **trustless reputation system** where:
 
 ---
 
-## Phase 5: Testnet Deployment & Testing (3 hours)
-**Goal:** Deploy to Bitcoin testnet (signet) with working examples.
+## Phase 4b: Code Refactoring & Integration (3 hours) ⏳ IN PROGRESS
+**Goal:** Consolidate duplication, integrate Charms SDK, build minimal working UI.
+
+**Core Issues to Fix (Core Principles Audit):**
+1. **DUPLICATION** - CharmsClient & CharmsClientAPI share RPC/config logic
+2. **BLOAT** - Multiple overlapping UI modules (OnChainUI, GovernanceUI) with unclear dependencies
+3. **NO INTEGRATION** - Contract exists but no clear SDK integration
+4. **MISSING DEMO** - No working UI that demonstrates core feature end-to-end
+5. **INEFFICIENT MOCKS** - Fallback logic instead of clear test/demo setup
 
 **Deliverables:**
 
-- Update `bitcoin/Dockerfile`
-  - Build contract + governance module
-  - Generate verification keys
-  - Testnet configuration
+### Task 1: Consolidate RPC Layer (DRY principle)
+- Create `js/bitcoin/CharmsRPC.js` (single source of truth)
+  - Shared configuration (network, RPC URLs, timeouts)
+  - Unified `callCharmsZkVM()` method
+  - Unified `callGovernanceContract()` method
+  - Error handling & logging centralized
+  - Mock mode flag for testing
+  
+- Refactor `CharmsClient.js`
+  - Remove duplicate RPC logic, import from CharmsRPC
+  - Keep move-specific methods (`generateMoveProof`, `submitMove`)
+  - 50% reduction in code (~225 lines → ~112 lines)
+  
+- Refactor `CharmsClientAPI.js`
+  - Remove duplicate RPC logic, import from CharmsRPC
+  - Keep governance-specific methods (`getUserReputation`, `getVoteStatus`)
+  - 50% reduction in code (~471 lines → ~235 lines)
 
-- Create `bitcoin/deploy.sh` (executable)
-  ```bash
-  #!/bin/bash
-  cargo build --release --manifest-path charm-apps/trust-game/Cargo.toml
-  charms deploy --network signet --binary target/release/libtrust_game.so
-  echo "App ID: $APP_ID" > .env.testnet
-  ```
+### Task 2: Consolidate UI Modules (ENHANCEMENT FIRST principle)
+- Audit `OnChainUI.js` & `GovernanceUI.js` for overlap
+- Merge into single `js/bitcoin/GameUI.js` with clear separation:
+  - `GameUI.renderOnChainStatus()` - Transaction history display
+  - `GameUI.renderGovernance()` - Voting interface
+  - Single initialization, shared game state reference
+- Delete redundant file, update `index.html` script includes
+- Result: One well-organized UI module instead of two overlapping ones
 
-- Create `bitcoin/CONFIG_TESTNET.json`
-  - RPC endpoints (Signet)
-  - Contract verification keys
-  - Initial payoff matrix
-  - Governance parameters (voting period = 3 days, etc.)
+### Task 3: Build Minimal Working Demo (PREVENT BLOAT principle)
+- Create `demo.html` (standalone, no dependencies on full game engine)
+  - Initialize CharmsRPC in mock mode
+  - Display sample game + reputation score
+  - Show governance proposal voting
+  - Submit move to Charms (mock txid generation)
+  - Demonstrate cross-app API (query reputation)
+  - ~150 lines HTML/CSS/JS, fully self-contained
+  
+- Purpose: Judges can open ONE file and see the system work without building/deploying
 
-- Document: `DEPLOYMENT.md`
-  - "How to Deploy on Signet"
-  - "How to Vote on Proposals"
-  - "How to Verify Moves on Bitcoin"
+### Task 4: Verify Rust Contract & Tests (MODULAR principle)
+- Run `cargo test` in `charm-apps/trust-game/`
+- All 16 tests pass
+- Document: What each test validates
+- Add test for Charms SDK integration (if available)
 
-**Why:** Demonstrates production readiness. Judges can actually deploy and test.
+### Task 5: Document the Integration (ORGANIZED principle)
+- Create `docs/INTEGRATION.md`
+  - "How CharmsRPC coordinates client and governance"
+  - "How game data flows to contract validation"
+  - "How on-chain votes affect next game"
+  - "How to add new features without breaking existing code"
+
+**Why:** 
+- Cleaner codebase following all core principles
+- Working demo that judges can interact with immediately
+- Ready for testnet without "works in theory" concerns
+- Clear foundation for Phase 5 deployment
+
+**Status:** ⏳ Ready to start (proceeding with next steps)
 
 ---
 
@@ -262,20 +302,29 @@ Transform "The Evolution of Trust" into a **trustless reputation system** where:
 | 2 | Smart contract (validation + governance) | 6 | 6 | None | ✅ COMPLETE |
 | 3 | Governance UI & voting | 4 | 4 | Phase 2 | ✅ COMPLETE |
 | 4 | Cross-app API & on-chain anchoring | 3 | 3 | Phase 2, 3 | ✅ COMPLETE |
-| 5 | Testnet deployment & docs | 3 | — | Phase 2, 4 | ⏳ PENDING |
-| — | **Total (MVP)** | **19** | **19** | — | **100% COMPLETE** |
+| 4b | Code refactoring & integration | 3 | 0 | Phase 1-4 | ⏳ IN PROGRESS |
+| 5 | Testnet deployment & docs | 3 | — | Phase 4b | ⏳ PENDING |
+| — | **Total (MVP + Demo)** | **22** | **19** | — | **86% COMPLETE** |
 
-**MVP Complete:**
-- Phases 1-4 fully implemented with all functionality
-- All code integrated and tested
+**Phases 1-4 Complete:**
+- All functionality implemented and tested
 - All governance tests passing (16/16)
 - No existing code broken
-- Ready for testnet deployment
+- Foundation ready for cleanup
+
+**Phase 4b (Refactoring - Hackathon Critical):**
+- Consolidate RPC layer (DRY principle)
+- Merge overlapping UI modules
+- Build working demo for judges
+- Verify contract tests
+- Document integration flow
+- 3 hours remaining
 
 **Remaining:**
 - Phase 5: Testnet deployment & documentation (3 hrs)
 
-**Next Step:** Begin Phase 5 deployment to Bitcoin Signet  
+**Next Step:** Begin Phase 4b refactoring immediately  
+**Hackathon Submission:** Phase 4b + demo.html required  
 **Production Timeline:** 6-8 weeks for mainnet readiness
 
 ---
