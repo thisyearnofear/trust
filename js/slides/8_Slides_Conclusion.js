@@ -64,6 +64,71 @@ SLIDES.push({
 	}
 });
 
+// Your impact on Bitcoin - tier-specific celebration
+SLIDES.push({
+	onstart: function(self){
+		
+		var o = self.objects;
+		const reputation = getGameReputation();
+		const tier = reputation.getReputationTier();
+		
+		// Splash character with blush if trusted
+		self.add({ 
+			id:"splash", 
+			type:"Splash", 
+			blush: (tier.label === 'Trusted')
+		});
+		
+		// Tier-specific celebration text
+		var celebrationText = "";
+		var tierColor = "#333";
+		
+		if (tier.label === 'Trusted') {
+			celebrationText = `
+				<b>YOU ARE TRUSTED.</b><br><br>
+				Your consistent cooperation has made you a trusted member of the Bitcoin network.<br><br>
+				With your ${reputation.getVotingPower()} votes, you shaped the rules that future players will follow.<br><br>
+				<i>This is the power of decentralized consensus.</i>
+			`;
+			tierColor = "#4089DD";
+		} else if (tier.label === 'Neutral') {
+			celebrationText = `
+				<b>YOU ARE BALANCED.</b><br><br>
+				You cooperated ${reputation.cooperativeMoves} times out of ${reputation.totalMoves} moves.<br><br>
+				With your ${reputation.getVotingPower()} votes, you helped decide the network's future.<br><br>
+				<i>Every voice matters in Bitcoin's governance.</i>
+			`;
+			tierColor = "#efc701";
+		} else {
+			celebrationText = `
+				<b>YOU ARE LEARNING.</b><br><br>
+				Defection was tempting, but it didn't pay off long-term.<br><br>
+				Even with less voting power, you participated in shaping Bitcoin's future.<br><br>
+				<i>Try again. Cooperation pays off in the long run.</i>
+			`;
+			tierColor = "#FF5E5E";
+		}
+		
+		self.add({
+			id:"text", type:"TextBox",
+			x:250, y:80, width:500, align:"center", size:16,
+			text: celebrationText,
+			color: tierColor
+		});
+		
+		// Button
+		self.add({
+			id:"button", type:"Button", x:385, y:450, 
+			text_id:"outro_1_btn",
+			message:"slideshow/next"
+		});
+		
+	},
+	onend: function(self){
+		self.clear();
+	}
+});
+
 SLIDES.push({
 	onstart: function(self){
 

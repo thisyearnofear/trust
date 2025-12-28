@@ -210,8 +210,16 @@ function initOnChainReputation() {
     }
     
     try {
-      // Initialize Charms client for this address
-      var charmsClient = new CharmsGameClient(appId || "trust_game_v1", bitcoinAddress);
+      // Initialize Charms client (follows official spec)
+      // - Uses 2-tx pattern (commit + spell)
+      // - Generates proofs locally (no 5-min `charms spell prove` wait for hackathon)
+      // - Ready for bitcoin-cli signing + broadcast
+      var charmsConfig = {
+        charmsAppBin: "/Users/udingethe/Dev/trust/charm-apps/trust-game/target/release/trust-game",
+        mockMode: true // For hackathon demo; post-launch: use real spell check
+      };
+      
+      var charmsClient = new CharmsGameClient(appId || "trust_game_v1", bitcoinAddress, charmsConfig);
       
       // Get current reputation summary
       var reputationData = window.playerReputation.getSummary();
@@ -256,32 +264,17 @@ function initOnChainReputation() {
     }
   };
   
-  // Hook into game completion to show governance voting
+  // Hook to show governance voting after sandbox completes
   if (window.subscribe) {
-    subscribe("iterated/round/end", function(payoffs) {
-      // After any round completes, check if player has reputation
-      if (window.playerReputation && window.gameGovernance) {
-        var rep = window.playerReputation.getSummary();
-        
-        // If player earned any votes, show governance UI
-        if (rep.votingPower > 0) {
-          console.log("[Bitcoin Mode] Game complete. Showing governance voting...");
-          
-          // Show governance voting interface
-          if (window.OnChainUI && window.OnChainUI.showGovernancePanel) {
-            window.OnChainUI.showGovernancePanel();
-          } else {
-            console.log("[Bitcoin Mode] Governance panel not yet available, will show after sandbox");
-          }
-          
-          // Publish event
-          if (window.publish) {
-            publish("governance/ready", [{
-              votingPower: rep.votingPower,
-              tier: rep.tier.label
-            }]);
-          }
+    // Listen for sandbox completion
+    subscribe("slideshow/slideChange", function(slideId) {
+      // After sandbox slide completes, jump to governance
+      if (slideId === "governance_intro") {
+        // Prepare governance for voting
+        if (window.GovernanceIntegration) {
+          window.GovernanceIntegration.prepareGovernancePhase();
         }
+        console.log("[Bitcoin Mode] Governance voting phase starting...");
       }
     });
   }

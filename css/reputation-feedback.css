@@ -1,0 +1,316 @@
+/**
+ * REPUTATION FEEDBACK STYLES
+ * 
+ * Visual feedback system integrated into game flow.
+ * Uses original game's aesthetic: simple, clear, immediately understandable.
+ */
+
+/* ========== LIVE MATCH REPUTATION METER ========== */
+.reputation-feedback {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.reputation-live-match {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-family: Arial, sans-serif;
+    min-width: 280px;
+}
+
+.reputation-meter {
+    margin-bottom: 12px;
+}
+
+.meter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.meter-bar {
+    width: 100%;
+    height: 20px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+}
+
+.meter-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.6s ease-out, background 0.4s ease;
+}
+
+.meter-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    text-align: center;
+}
+
+.tier-name {
+    font-size: 11px;
+    text-align: center;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.move-summary {
+    border-top: 1px solid #ddd;
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.moves-count {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.voting-power {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+.voting-power strong {
+    color: #4089DD;
+    font-size: 14px;
+}
+
+/* ========== REPUTATION SUMMARY SLIDE ========== */
+.reputation-summary-slide {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+}
+
+.summary-content {
+    display: flex;
+    gap: 60px;
+    max-width: 900px;
+    width: 100%;
+    align-items: center;
+}
+
+.summary-left {
+    flex: 0 0 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.character-display {
+    width: 300px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.summary-right {
+    flex: 1;
+    min-width: 300px;
+}
+
+.summary-right h2 {
+    font-size: 32px;
+    margin: 0 0 24px 0;
+    color: #333;
+    font-weight: 700;
+}
+
+/* ========== REPUTATION CIRCLE (FOCAL POINT) ========== */
+.reputation-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 8px solid #4089DD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 24px 0;
+    background: linear-gradient(135deg, rgba(64, 137, 221, 0.08) 0%, rgba(64, 137, 221, 0.02) 100%);
+    box-shadow: 0 4px 16px rgba(64, 137, 221, 0.2);
+}
+
+.circle-content {
+    text-align: center;
+}
+
+.circle-score {
+    font-size: 56px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.circle-tier {
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========== REPUTATION BREAKDOWN ========== */
+.reputation-breakdown {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.breakdown-item:last-child {
+    border-bottom: none;
+}
+
+.breakdown-item .label {
+    color: #666;
+    font-weight: 500;
+}
+
+.breakdown-item .value {
+    color: #333;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* ========== TIER EXPLANATION BOX ========== */
+.tier-explanation-box {
+    background: white;
+    border-left: 4px solid #4089DD;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.tier-explanation-box p {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.tier-explanation-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.tier-explanation-box li {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.6;
+    margin: 4px 0;
+}
+
+/* ========== TIER COLORS ========== */
+.reputation-circle[style*="border-color: #4089DD"] {
+    /* Trusted - Blue */
+}
+
+.reputation-circle[style*="border-color: #efc701"] {
+    /* Neutral - Gold */
+    border-color: #efc701;
+}
+
+.reputation-circle[style*="border-color: #FF5E5E"] {
+    /* Suspicious - Red */
+    border-color: #FF5E5E;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes float-up {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px);
+    }
+}
+
+.reputation-change {
+    animation: float-up 2s ease-out forwards;
+}
+
+@keyframes pulse-circle {
+    0% {
+        box-shadow: 0 4px 16px rgba(64, 137, 221, 0.2);
+    }
+    50% {
+        box-shadow: 0 4px 24px rgba(64, 137, 221, 0.4);
+    }
+    100% {
+        box-shadow: 0 4px 16px rgba(64, 137, 221, 0.2);
+    }
+}
+
+.reputation-circle {
+    animation: pulse-circle 2s ease-in-out;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .summary-content {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .summary-left {
+        flex: 0 0 auto;
+    }
+    
+    .summary-right {
+        width: 100%;
+    }
+    
+    .summary-right h2 {
+        font-size: 24px;
+    }
+    
+    .reputation-circle {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .circle-score {
+        font-size: 40px;
+    }
+    
+    .character-display {
+        width: 200px;
+        height: 300px;
+    }
+}

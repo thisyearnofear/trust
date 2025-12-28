@@ -6248,6 +6248,7 @@ dependencies = [
  "charms",
  "serde",
  "serde_json",
+ "sp1-zkvm",
 ]
 
 [[package]]

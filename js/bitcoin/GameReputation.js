@@ -18,13 +18,57 @@ function GameReputation() {
     this.history = [];
     this.address = null;
     this.timestamp = Date.now();
+    
+    // Load from localStorage if available
+    this.loadFromStorage();
 }
+
+/**
+ * Load reputation from browser storage
+ */
+GameReputation.prototype.loadFromStorage = function() {
+    try {
+        const stored = localStorage.getItem('playerReputation');
+        if (stored) {
+            const data = JSON.parse(stored);
+            this.cooperativeMoves = data.cooperativeMoves || 0;
+            this.totalMoves = data.totalMoves || 0;
+            this.history = data.history || [];
+            this.address = data.address || null;
+            console.log("[GameReputation] Loaded from storage:", {
+                cooperativeMoves: this.cooperativeMoves,
+                totalMoves: this.totalMoves,
+                score: this.calculateScore()
+            });
+        }
+    } catch (error) {
+        console.warn("[GameReputation] Could not load from storage:", error);
+    }
+};
+
+/**
+ * Save reputation to browser storage
+ */
+GameReputation.prototype.saveToStorage = function() {
+    try {
+        localStorage.setItem('playerReputation', JSON.stringify({
+            cooperativeMoves: this.cooperativeMoves,
+            totalMoves: this.totalMoves,
+            history: this.history,
+            address: this.address
+        }));
+    } catch (error) {
+        console.warn("[GameReputation] Could not save to storage:", error);
+    }
+};
 
 /**
  * Record a single move in game history
  * @param {boolean} isCooperative - true if player cooperated, false if defected
  */
 GameReputation.prototype.recordMove = function(isCooperative) {
+    const oldScore = this.calculateScore();
+    
     this.totalMoves++;
     if (isCooperative) {
         this.cooperativeMoves++;
@@ -35,6 +79,22 @@ GameReputation.prototype.recordMove = function(isCooperative) {
         cooperative: isCooperative,
         timestamp: Date.now()
     });
+    
+    const newScore = this.calculateScore();
+    
+    // Save to storage
+    this.saveToStorage();
+    
+    // Publish event for UI feedback
+    if (window.publish) {
+        publish("reputation/moveRecorded", [{
+            cooperative: isCooperative,
+            oldScore: oldScore,
+            newScore: newScore,
+            totalMoves: this.totalMoves,
+            cooperativeMoves: this.cooperativeMoves
+        }]);
+    }
 };
 
 /**

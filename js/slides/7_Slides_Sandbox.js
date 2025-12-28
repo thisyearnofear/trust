@@ -10,6 +10,11 @@ SLIDES.push({
 		// Screw it, just ALL of the Sandbox UI
 		self.add({id:"sandbox", type:"SandboxUI"});
 
+		// Add live reputation meter (top right corner)
+		if (window.initSandboxReputation) {
+			window.initSandboxReputation(self);
+		}
+
 		// Label & Button for next...
 		self.add({
 			id:"label_next", type:"TextBox",
@@ -20,11 +25,15 @@ SLIDES.push({
 			id:"button_next", type:"Button",
 			x:605, y:485, size:"long",
 			text_id:"sandbox_end_btn",
-			message: "slideshow/scratch"
+			message: "slideshow/next"
 		});
 		
 	},
 	onend: function(self){
+		// Clean up reputation meter
+		if (window.getSandboxReputation) {
+			window.getSandboxReputation().destroy();
+		}
 		self.clear();
 	}
 
