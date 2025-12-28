@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Governance System Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a2e;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #16c784; }
+        h2 { color: #4089DD; margin-top: 20px; }
+        .test-result { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-left: 3px solid #16c784;
+            background: #0a0a14;
+        }
+        .pass { border-left-color: #16c784; }
+        .fail { border-left-color: #ff6b6b; color: #ff6b6b; }
+        code { background: #0a0a14; padding: 2px 5px; }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            background: #16c784;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        button:hover { background: #20ff8d; }
+    </style>
+</head>
+<body>
+
+<h1>🎮 Governance System Integration Test</h1>
+
+<h2>Test Results</h2>
+<div id="results"></div>
+
+<h2>Manual Test Controls</h2>
+<button onclick="testFlow()">Run Full Flow Test</button>
+<button onclick="testReputation()">Test Reputation Calculation</button>
+<button onclick="testGovernance()">Test Governance Voting</button>
+<button onclick="testPayoffChange()">Test Payoff Matrix Change</button>
+<button onclick="printState()">Print System State</button>
+
+<h2>System Output</h2>
+<pre id="output" style="background: #000; padding: 10px; overflow-y: auto; max-height: 300px;"></pre>
+
+<script src="js/bitcoin/GameReputation.js"></script>
+<script src="js/bitcoin/GameGovernance.js"></script>
+
+<script>
+const output = document.getElementById('output');
+const results = document.getElementById('results');
+const tests = [];
+
+function log(msg) {
+    console.log(msg);
+    output.textContent += msg + '\n';
+    output.scrollTop = output.scrollHeight;
+}
+
+function test(name, fn) {
+    try {
+        fn();
+        const result = document.createElement('div');
+        result.className = 'test-result pass';
+        result.textContent = '✓ ' + name;
+        results.appendChild(result);
+        log(`✓ ${name}`);
+    } catch (e) {
+        const result = document.createElement('div');
+        result.className = 'test-result fail';
+        result.textContent = '✗ ' + name + ': ' + e.message;
+        results.appendChild(result);
+        log(`✗ ${name}: ${e.message}`);
+    }
+}
+
+function testReputation() {
+    output.textContent = '';
+    results.textContent = '';
+    
+    test('Reputation system initializes', () => {
+        const rep = initGameReputation();
+        if (!rep) throw new Error('No reputation instance');
+    });
+    
+    test('Record cooperative move', () => {
+        const rep = getGameReputation();
+        rep.recordMove(true);
+        if (rep.cooperativeMoves !== 1) throw new Error('Cooperative move not recorded');
+    });
+    
+    test('Record defective move', () => {
+        const rep = getGameReputation();
+        rep.recordMove(false);
+        if (rep.totalMoves !== 2) throw new Error('Total moves incorrect');
+    });
+    
+    test('Calculate reputation score', () => {
+        const rep = getGameReputation();
+        const score = rep.calculateScore();
+        const expected = Math.round((1 / 2) * 100); // 1 cooperative out of 2 = 50%
+        if (score !== expected) throw new Error(`Score ${score} != ${expected}`);
+    });
+    
+    test('Determine reputation tier', () => {
+        const rep = getGameReputation();
+        const tier = rep.getReputationTier();
+        if (tier.label !== 'Neutral') throw new Error(`Tier should be Neutral, got ${tier.label}`);
+    });
+    
+    test('Calculate voting power', () => {
+        const rep = getGameReputation();
+        const power = rep.getVotingPower();
+        if (power === 0) throw new Error('Voting power should not be zero');
+    });
+}
+
+function testGovernance() {
+    output.textContent = '';
+    results.textContent = '';
+    
+    // Reset reputation for clean test
+    window.GAME_REPUTATION = null;
+    window.GAME_GOVERNANCE = null;
+    
+    const rep = initGameReputation();
+    rep.recordMove(true);
+    rep.recordMove(true);
+    rep.recordMove(true);
+    rep.address = 'test_player';
+    
+    test('Governance system initializes', () => {
+        const gov = initGameGovernance();
+        if (!gov) throw new Error('No governance instance');
+    });
+    
+    test('Default proposals created', () => {
+        const gov = getGameGovernance();
+        if (gov.proposals.length === 0) throw new Error('No proposals created');
+        log(`  Created ${gov.proposals.length} proposals`);
+    });
+    
+    test('Proposal structure is valid', () => {
+        const gov = getGameGovernance();
+        const p = gov.proposals[0];
+        if (!p.id || !p.title || !p.description) throw new Error('Invalid proposal structure');
+        log(`  Proposal: ${p.title}`);
+    });
+    
+    test('Cast vote on proposal', () => {
+        const gov = getGameGovernance();
+        const rep = getGameReputation();
+        const power = rep.getVotingPower();
+        gov.castVote(1, 'test_player', 'yes', power);
+        const p = gov.getProposal(1);
+        if (p.yes_voting_power !== power) throw new Error('Vote not recorded');
+        log(`  Voted YES with ${power} voting power`);
+    });
+    
+    test('Prevent double voting', () => {
+        const gov = getGameGovernance();
+        const rep = getGameReputation();
+        try {
+            gov.castVote(1, 'test_player', 'no', rep.getVotingPower());
+            throw new Error('Should have prevented double vote');
+        } catch (e) {
+            if (!e.message.includes('already voted')) throw e;
+        }
+    });
+    
+    test('Tally votes', () => {
+        const gov = getGameGovernance();
+        gov.tallyVotes(1);
+        const p = gov.getProposal(1);
+        if (p.is_voting_open) throw new Error('Voting should be closed');
+        if (!p.has_passed) throw new Error('Proposal should have passed');
+        log(`  Proposal passed with ${p.yes_voting_power} yes votes`);
+    });
+    
+    test('Execute proposal', () => {
+        const gov = getGameGovernance();
+        const oldMatrix = JSON.stringify(gov.currentPayoffMatrix);
+        gov.executeProposal(1);
+        const newMatrix = JSON.stringify(gov.currentPayoffMatrix);
+        if (oldMatrix === newMatrix) throw new Error('Payoff matrix should have changed');
+        log(`  Payoff matrix updated: R = ${gov.currentPayoffMatrix.R}`);
+    });
+}
+
+function testPayoffChange() {
+    output.textContent = '';
+    results.textContent = '';
+    
+    // Reset
+    window.GAME_REPUTATION = null;
+    window.GAME_GOVERNANCE = null;
+    
+    const rep = initGameReputation();
+    rep.recordMove(true);
+    rep.recordMove(true);
+    rep.recordMove(true);
+    rep.address = 'test_player';
+    
+    const gov = initGameGovernance();
+    const initialR = gov.currentPayoffMatrix.R;
+    
+    test('Initial payoff matrix loaded', () => {
+        if (!gov.currentPayoffMatrix.R) throw new Error('No payoff matrix');
+        log(`  Initial R: ${initialR}`);
+    });
+    
+    test('Vote to increase R payoff', () => {
+        const rep = getGameReputation();
+        gov.castVote(1, 'test_player', 'yes', rep.getVotingPower());
+        gov.tallyVotes(1);
+        gov.executeProposal(1);
+        const newR = gov.currentPayoffMatrix.R;
+        if (newR !== initialR + 1) throw new Error(`R should be ${initialR + 1}, got ${newR}`);
+        log(`  R changed from ${initialR} to ${newR}`);
+    });
+    
+    test('Global PD payoff updated', () => {
+        if (window.PD && window.PD.PAYOFFS) {
+            if (window.PD.PAYOFFS.R !== gov.currentPayoffMatrix.R) {
+                throw new Error('Global PD payoff not updated');
+            }
+            log(`  Global PD.PAYOFFS.R = ${window.PD.PAYOFFS.R}`);
+        }
+    });
+}
+
+function testFlow() {
+    output.textContent = '';
+    results.textContent = '';
+    
+    // Reset
+    window.GAME_REPUTATION = null;
+    window.GAME_GOVERNANCE = null;
+    
+    log('\n=== FULL FLOW TEST ===\n');
+    
+    // Step 1: Player plays game
+    log('STEP 1: Player plays games');
+    const rep = initGameReputation();
+    rep.address = 'player_123';
+    
+    const gameHistory = [
+        { move: 'COOPERATE', result: true },
+        { move: 'COOPERATE', result: true },
+        { move: 'DEFECT', result: false },
+        { move: 'COOPERATE', result: true }
+    ];
+    
+    gameHistory.forEach(g => rep.recordMove(g.result));
+    log(`  Played ${gameHistory.length} rounds`);
+    
+    const repSummary = rep.getSummary();
+    log(`  Reputation: ${repSummary.score}% (${repSummary.tier.label})`);
+    log(`  Voting power: ${repSummary.votingPower}`);
+    
+    // Step 2: Governance voting
+    log('\nSTEP 2: Community governance voting');
+    const gov = initGameGovernance();
+    const proposals = gov.getActiveProposals();
+    log(`  ${proposals.length} proposals available`);
+    
+    // Cast votes
+    log('\n  Casting votes...');
+    gov.castVote(1, rep.address, 'yes', repSummary.votingPower);
+    log(`    Vote on Proposal 1: YES (${repSummary.votingPower} power)`);
+    
+    // Other players voting (simulated)
+    gov.castVote(2, 'player_456', 'yes', 80);
+    gov.castVote(2, 'player_789', 'no', 50);
+    log(`    Vote on Proposal 2: YES (80) + NO (50)`);
+    
+    // Step 3: Voting closes
+    log('\nSTEP 3: Voting closes and results tabulated');
+    gov.closeVotingRound();
+    
+    log(`  Proposal 1: ${gov.getProposal(1).has_passed ? 'PASSED' : 'FAILED'}`);
+    log(`  Proposal 2: ${gov.getProposal(2).has_passed ? 'PASSED' : 'FAILED'}`);
+    
+    // Step 4: Execution
+    log('\nSTEP 4: Winning proposal executed');
+    const newMatrix = gov.currentPayoffMatrix;
+    log(`  New payoff matrix: R=${newMatrix.R}, T=${newMatrix.T}, S=${newMatrix.S}, P=${newMatrix.P}`);
+    
+    log('\n✓ Full flow complete!');
+}
+
+function printState() {
+    output.textContent = '';
+    
+    log('=== SYSTEM STATE ===\n');
+    
+    const rep = getGameReputation();
+    const gov = getGameGovernance();
+    
+    log('REPUTATION:');
+    log(`  Player: ${rep.address || 'anonymous'}`);
+    log(`  Cooperative moves: ${rep.cooperativeMoves}`);
+    log(`  Total moves: ${rep.totalMoves}`);
+    log(`  Score: ${rep.calculateScore()}%`);
+    log(`  Tier: ${rep.getReputationTier().label}`);
+    log(`  Voting power: ${rep.getVotingPower()}`);
+    
+    log('\nGOVERNANCE:');
+    log(`  Voting round: ${gov.votingRound}`);
+    log(`  Active proposals: ${gov.getActiveProposals().length}`);
+    log(`  Executed proposals: ${gov.executedProposals.length}`);
+    
+    log('\nPAYOFF MATRIX:');
+    const m = gov.currentPayoffMatrix;
+    log(`  R (mutual coop): ${m.R}`);
+    log(`  T (temptation):  ${m.T}`);
+    log(`  S (sucker):      ${m.S}`);
+    log(`  P (mutual def):  ${m.P}`);
+    
+    log('\nPROPOSALS:');
+    gov.proposals.forEach((p, i) => {
+        log(`  ${i+1}. ${p.title}`);
+        log(`     Status: ${p.executed ? 'EXECUTED' : (p.is_voting_open ? 'VOTING' : 'CLOSED')}`);
+        log(`     Yes: ${p.yes_voting_power} | No: ${p.no_voting_power} | Abstain: ${p.abstain_voting_power}`);
+        log(`     Passed: ${p.has_passed}`);
+    });
+}
+
+// Run initial tests on page load
+window.addEventListener('load', () => {
+    log('Test suite loaded. Click buttons to run tests.\n');
+});
+</script>
+
+</body>
+</html>

@@ -23,6 +23,10 @@ var NARRATIVE_MODE = "bitcoin";
   window.playerReputation = initGameReputation();
   console.log("[Bitcoin Mode] Reputation system initialized");
   
+  // Initialize governance system
+  window.gameGovernance = initGameGovernance();
+  console.log("[Bitcoin Mode] Governance system initialized");
+  
   // Override peep metadata with Bitcoin labels
   if (window.PEEP_METADATA) {
     var originalMetadata = PEEP_METADATA;
@@ -251,6 +255,36 @@ function initOnChainReputation() {
       return Promise.reject(error);
     }
   };
+  
+  // Hook into game completion to show governance voting
+  if (window.subscribe) {
+    subscribe("iterated/round/end", function(payoffs) {
+      // After any round completes, check if player has reputation
+      if (window.playerReputation && window.gameGovernance) {
+        var rep = window.playerReputation.getSummary();
+        
+        // If player earned any votes, show governance UI
+        if (rep.votingPower > 0) {
+          console.log("[Bitcoin Mode] Game complete. Showing governance voting...");
+          
+          // Show governance voting interface
+          if (window.OnChainUI && window.OnChainUI.showGovernancePanel) {
+            window.OnChainUI.showGovernancePanel();
+          } else {
+            console.log("[Bitcoin Mode] Governance panel not yet available, will show after sandbox");
+          }
+          
+          // Publish event
+          if (window.publish) {
+            publish("governance/ready", [{
+              votingPower: rep.votingPower,
+              tier: rep.tier.label
+            }]);
+          }
+        }
+      }
+    });
+  }
   
   // Hook into game completion to offer reputation submission
   if (window.PD && window.PD.publishGameResults) {

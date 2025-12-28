@@ -32,6 +32,11 @@ GovernanceUI.prototype.init = function(containerId) {
     }
     
     this.enabled = true;
+    
+    // Load real proposals from game governance
+    const governance = getGameGovernance();
+    this.proposals = governance.getActiveProposals();
+    
     this.render();
     return this;
 };
@@ -332,29 +337,44 @@ GovernanceUI.prototype.castVote = function(proposalId, voteChoice) {
         return;
     }
     
-    // Record the vote
-    this.votes[proposalId] = voteChoice;
-    
-    // Update UI
-    this.render();
-    
-    // Show confirmation
-    const proposal = this.proposals.find(p => p.id === proposalId);
-    if (proposal) {
-        const tier = reputation.getReputationTier();
-        console.log(`[GovernanceUI] Vote cast on Proposal #${proposalId}:`, {
-            vote: voteChoice,
-            votingPower: votingPower,
-            reputation: tier.label
-        });
+    // Record the vote in governance system
+    try {
+        const governance = getGameGovernance();
+        const playerId = reputation.address || 'anonymous_player';
+        governance.castVote(proposalId, playerId, voteChoice, votingPower);
         
-        // TODO: Submit to Charms contract via CharmsClient
-        publish('governance/vote', [{
-            proposalId: proposalId,
-            vote: voteChoice,
-            reputation: tier.score,
-            votingPower: votingPower
-        }]);
+        // Record locally for UI
+        this.votes[proposalId] = voteChoice;
+        
+        // Update proposals from governance
+        this.proposals = governance.getActiveProposals();
+        
+        // Update UI
+        this.render();
+        
+        // Show confirmation
+        const proposal = governance.getProposal(proposalId);
+        if (proposal) {
+            const tier = reputation.getReputationTier();
+            console.log(`[GovernanceUI] Vote cast on Proposal #${proposalId}:`, {
+                vote: voteChoice,
+                votingPower: votingPower,
+                reputation: tier.label
+            });
+            
+            // Publish event (will submit to Charms contract later)
+            if (window.publish) {
+                publish('governance/vote', [{
+                    proposalId: proposalId,
+                    vote: voteChoice,
+                    reputation: tier.score,
+                    votingPower: votingPower
+                }]);
+            }
+        }
+    } catch (error) {
+        console.error("[GovernanceUI] Error casting vote:", error);
+        alert('Error: ' + error.message);
     }
 };
 

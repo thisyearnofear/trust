@@ -518,6 +518,122 @@ var OnChainUI = {
       toast.style.animation = "slideOut 0.3s ease";
       setTimeout(() => toast.remove(), 300);
     }, 4000);
+  },
+
+  /**
+   * Show governance voting panel
+   * Triggered after game completion when player has voting power
+   */
+  showGovernancePanel: function() {
+    if (!window.GOVERNANCE_UI) {
+      console.warn("[OnChainUI] GovernanceUI not initialized");
+      return;
+    }
+
+    const gov = getGameGovernance();
+    const reputation = getGameReputation();
+    const rep = reputation.getSummary();
+
+    // Create modal overlay
+    const overlay = document.createElement("div");
+    overlay.id = "governance-modal-overlay";
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9998;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+
+    // Create modal panel
+    const panel = document.createElement("div");
+    panel.id = "governance-modal-panel";
+    panel.style.cssText = `
+      background: #1a1a2e;
+      border: 2px solid #16c784;
+      border-radius: 12px;
+      padding: 30px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      color: #00ff00;
+      box-shadow: 0 0 30px rgba(22, 199, 132, 0.4);
+    `;
+
+    // Build proposals HTML
+    let proposalsHtml = "<h2 style='color: #16c784; margin-top: 0;'>Community Governance</h2>";
+    proposalsHtml += `<p>Your voting power: <strong>${rep.votingPower}</strong> (Tier: ${rep.tier.label})</p>`;
+    proposalsHtml += "<hr style='border-color: #16c784;'>";
+
+    const activeProposals = gov.getActiveProposals();
+    if (activeProposals.length === 0) {
+      proposalsHtml += "<p>No active proposals.</p>";
+    } else {
+      for (const proposal of activeProposals) {
+        const totalVotes = proposal.yes_voting_power + proposal.no_voting_power + proposal.abstain_voting_power;
+        const yesPercent = totalVotes > 0 ? (proposal.yes_voting_power / totalVotes * 100).toFixed(0) : 0;
+
+        proposalsHtml += `
+          <div style="margin-bottom: 20px; padding: 15px; background: #0a0a14; border-left: 3px solid #16c784; border-radius: 4px;">
+            <h3 style="color: #16c784; margin-top: 0;">#${proposal.id}: ${proposal.title}</h3>
+            <p>${proposal.description}</p>
+            <p style="color: #888; font-size: 12px;">${proposal.impact}</p>
+            <div style="margin: 10px 0;">
+              <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                <button class="gov-vote-btn" data-proposal="${proposal.id}" data-vote="yes" style="flex: 1; padding: 8px; background: #16c784; color: #000; border: none; cursor: pointer; font-weight: bold; border-radius: 4px;">Yes (${proposal.yes_voting_power})</button>
+                <button class="gov-vote-btn" data-proposal="${proposal.id}" data-vote="no" style="flex: 1; padding: 8px; background: #ff6b6b; color: #fff; border: none; cursor: pointer; font-weight: bold; border-radius: 4px;">No (${proposal.no_voting_power})</button>
+                <button class="gov-vote-btn" data-proposal="${proposal.id}" data-vote="abstain" style="flex: 1; padding: 8px; background: #efc701; color: #000; border: none; cursor: pointer; font-weight: bold; border-radius: 4px;">Abstain (${proposal.abstain_voting_power})</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    proposalsHtml += `
+      <div style="margin-top: 20px; text-align: right;">
+        <button id="close-governance-btn" style="padding: 10px 20px; background: #666; color: #fff; border: none; cursor: pointer; border-radius: 4px; font-family: monospace;">Close</button>
+      </div>
+    `;
+
+    panel.innerHTML = proposalsHtml;
+
+    // Attach vote handlers
+    const voteButtons = panel.querySelectorAll(".gov-vote-btn");
+    voteButtons.forEach(btn => {
+      btn.addEventListener("click", function() {
+        const proposalId = parseInt(this.getAttribute("data-proposal"));
+        const vote = this.getAttribute("data-vote");
+
+        try {
+          gov.castVote(proposalId, reputation.address || "anonymous", vote, rep.votingPower);
+          overlay.remove();
+          OnChainUI.showSuccess(`Vote cast on proposal #${proposalId}!`);
+          // Refresh proposals
+          OnChainUI.showGovernancePanel();
+        } catch (error) {
+          OnChainUI.showError("Error: " + error.message);
+        }
+      });
+    });
+
+    // Attach close handler
+    const closeBtn = panel.querySelector("#close-governance-btn");
+    closeBtn.addEventListener("click", function() {
+      overlay.remove();
+    });
+
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+
+    console.log("[OnChainUI] Governance panel shown");
   }
 };
 
