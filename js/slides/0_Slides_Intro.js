@@ -133,7 +133,7 @@ SLIDES.push({
 
 });
 
-// Charms Explanation Slide 1: The Problem & Solution
+// Charms Explanation Slide 1: After game - what you learned
 SLIDES.push({
 	id: "charms_intro",
 	onstart: function(self){
@@ -146,7 +146,7 @@ SLIDES.push({
 		// Charms explanation text
 		self.add({
 			id:"charms_text", type:"TextBox",
-			x:130, y:30, width:700, height:400, align:"center",
+			x:130, y:60, width:700, height:350, align:"center",
 			text_id:"charms_intro"
 		});
 
@@ -167,7 +167,7 @@ SLIDES.push({
 
 });
 
-// Charms Explanation Slide 2: What You'll See
+// Charms Explanation Slide 2: What you just experienced
 SLIDES.push({
 	id: "charms_what",
 	onstart: function(self){
@@ -180,14 +180,14 @@ SLIDES.push({
 		// Explanation of mechanics
 		self.add({
 			id:"what_text", type:"TextBox",
-			x:130, y:50, width:700, height:380, align:"center",
+			x:130, y:60, width:700, height:350, align:"center",
 			text_id:"charms_what"
 		});
 
-		// Button to start game
+		// Button to continue to credits
 		self.add({
 			id:"what_button", type:"Button", x:304, y:466, size:"long",
-			text: "Start Game →",
+			text: "Continue →",
 			message:"slideshow/scratch"
 		});
 
