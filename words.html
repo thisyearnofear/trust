@@ -93,29 +93,58 @@ PLAY &rarr;
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="intro">
-During World War I, peace broke out.
+Bitcoin works because incentives align.
 <br><br>
 
-It was Christmas 1914 on the Western Front.<br>
-Despite strict orders <i>not</i> to chillax with the enemy, British<br>
-and German soldiers left their trenches, crossed No Man's Land,<br>
-and gathered to bury their dead, exchange gifts, and play games.
+But what makes an honest node stay honest?<br>
+And what stops a node from attacking the network?<br>
+It's not law enforcement. It's not a central authority.
 <br><br>
 
-Meanwhile: it's 2017, the West has been at peace for decades, and<br>
-wow, we <i>suck</i> at trust. Surveys show that, over the past forty years,
-fewer and fewer people say they trust each other. So here's our puzzle:
+It's <b>game theory.</b>
 <br><br>
 
-<b>Why, even in peacetime, do friends become enemies?<br>
-And why, even in wartime, do enemies become friends?</b>
+Bitcoin's security comes from the same principle that made enemies cooperate in WWI trenches: 
+in a repeated game, cooperation pays off more than defection.
 <br><br>
 
-I think <b>game theory</b> can help explain our epidemic of distrust –<br>
-and how we can fix it! So, to understand all this...
+But Bitcoin nodes don't read history. They follow incentives.
+<br><br>
+
+So let's play the game that Bitcoin's network plays every day.<br>
+Learn why honest strategies dominate. Understand why Bitcoin works.
 </p>
 <p id="intro_button">
 ...let's play a game. &rarr;
+</p>
+
+<!-- - - - - - - - - - - - - - - - - -->
+<!-- - - - - - CHARMS EXPLANATION - - -->
+<!-- - - - - - - - - - - - - - - - - -->
+
+<p id="charms_intro">
+<b>But here's the innovation:</b>
+<br><br>
+Bitcoin has always been secure. The problem: it can't run smart contracts on UTXOs.
+<br><br>
+Until now. Charms Protocol uses zero-knowledge proofs to let you prove computation happened on Bitcoin without revealing the details. This means: <b>programmable Bitcoin.</b>
+<br><br>
+This application demonstrates exactly what becomes possible.
+</p>
+
+<p id="charms_what">
+<b>Here's what happens:</b>
+<br><br>
+• Play a game testing cooperative vs. defective strategies<br>
+• Your <b>reputation is tracked on-chain</b> as a zero-knowledge proof<br>
+• You vote on rule changes using your on-chain reputation<br>
+• Your votes are <b>permanently recorded on Bitcoin via Charms</b>
+<br><br>
+This is programmable Bitcoin in action. On-chain reputation. Decentralized governance. No central authority.
+</p>
+
+<p id="charms_button">
+Let's see it in action. &rarr;
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
@@ -147,61 +176,67 @@ other player<br>↘
 
 <p id="oneoff_0_top">
 
-<b>THE GAME OF TRUST</b>
+<b>THE NETWORK DILEMMA</b>
 <br>
-You have one choice.
-In front of you is a machine: if you put a coin in the machine,
-the <i>other player</i> gets three coins – and vice versa.
-You both can either choose to COOPERATE (put in coin), or CHEAT (don't put in coin).
+You are a Bitcoin node. In front of you: a transaction to validate.
+<br><br>
+If you <b>validate honestly</b>, the network stays secure and you get transaction fees.<br>
+If the other node validates honestly, you both profit.
+<br><br>
+But if you both <b>attack the network</b> (double-spend, steal), neither of you gain anything—the network breaks.
+<br><br>
+You can either <b>FOLLOW CONSENSUS</b> (cooperate), or <b>ATTACK</b> (cheat).
 </p>
 
 <p id="oneoff_0_btm">
-<b>Let's say the other player cheats, and doesn't put in a coin.</b><br>
+<b>Let's say the other node attacks the network.</b><br>
 What should you do?
 </p>
 
 <p id="oneoff_1_cheated">
-Exactly! Why let that moocher mooch off of you?
+Exactly! Why lose sats while they attack? Attack back.
 </p>
 
 <p id="oneoff_1_cooperated">
-Alas, turning the other cheek just gets you slapped!
+Alas, validating honestly while they attack loses you fees!
 </p>
 
 <p id="oneoff_1_top">
-If you cooperate &amp; they cheat, you lose a coin while they gain three. (score: -1 vs +3)
-However, if you both cheat, neither of you gain or lose anything. (score: 0 vs 0)
-<b>Therefore: you should CHEAT.</b>
+If you validate &amp; they attack, you lose fees while they gain satoshis. (score: -1 vs +3)<br>
+But if you both attack, the network fails and nobody profits. (score: 0 vs 0)
+<br><br>
+<b>Rationally: you should ATTACK.</b>
 </p>
 
 <p id="oneoff_1_btm">
-<b>But let's say the other player cooperates, and puts in a coin.</b><br>
+<b>But let's say the other node validates honestly.</b><br>
 What should you do now?
 </p>
 
 <p id="oneoff_2_cheated">
-Wow, that's mean... and also the correct answer!
+Greedy. Attack. Get the sats.
 </p>
 
 <p id="oneoff_2_cooperated">
-Sure, seems like the right thing to do... <b>OR IS IT??</b>
+Play fair? The Bitcoin way?  <b>OR IS IT??</b>
 </p>
 
 <p id="oneoff_2_top">
-Because if you both cooperate, you both give up a coin to gain three. (score: +2 vs +2)
-But if you cheat &amp; they cooperate, you gain three coins at their cost of one. (score: +3 vs -1)
-<b>Therefore: you "should" still CHEAT.</b>
+If you both validate, you both earn transaction fees. (score: +2 vs +2)<br>
+But if you attack while they validate honestly, you steal their sats. (score: +3 vs -1)
+<br><br>
+<b>So you "should" still ATTACK.</b>
 </p>
 
 <p id="oneoff_2_btm">
-And <i>that's</i> our dilemma.
-Trust is nice, but it can let others take advantage of you -- or shoot you as you come unarmed out of a trench.
-Sometimes, distrust <i>is</i> rational!
-But now, what happens if we play this game...
+And <i>that's</i> the dilemma every Bitcoin node faces.
+Attacking is individually rational. But if every node attacks, Bitcoin collapses—and nobody profits.
+<br><br>
+Distrust seems rational in one interaction. But what happens in repeated games?
 </p>
 
 <p id="oneoff_button_next">
-...more than once? &rarr;
+...over time? When reputation matters? &rarr;
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
@@ -210,14 +245,15 @@ But now, what happens if we play this game...
 
 <p id="iterated_intro_top">
 <b>Now, let's play for real.</b>
-You'll be playing against 5 different opponents, each with their own game "strategy".
-With each opponent, you'll play anywhere between 3 to 7 rounds.
-(You won't know in advance when the last round is)
-Can you trust them? Or rather... can they trust <i>you?</i>
+You'll face 5 different node types, each with their own behavior.
+Against each node, you'll play 3-7 blocks.
+(You won't know when the chain ends)
+<br><br>
+Their reputation is on the line. So is yours.
 </p>
 
 <p id="iterated_intro_btm">
-Pick your first, <i>real</i> move. <b>Choose wisely.</b>
+Pick your first move. <b>You're now part of the network.</b>
 </p>
 
 <p id="iterated_info_1">

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Evolution of Trust now anchors player reputation directly to Bitcoin Signet testnet. Every game move and reputation score becomes a real Bitcoin transaction.
+Covenant: Bitcoin Governance Through Game Theory now anchors player reputation directly to Bitcoin Signet testnet. Every game move and reputation score becomes a real Bitcoin transaction.
 
 ## Architecture
 

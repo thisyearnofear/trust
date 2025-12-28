@@ -1,4 +1,4 @@
-# Bitcoin Evolution of Trust - Charms Smart Contract Deployment
+# Covenant: Bitcoin Governance Through Game Theory - Charms Smart Contract Deployment
 # Builds and runs the trust-game Charms contract
 
 FROM rust:latest

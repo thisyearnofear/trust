@@ -4,7 +4,7 @@
 
 1. **Open the game:** `open index.html` (or `python -m http.server 8000` then visit localhost)
 2. **See Bitcoin content:** Title, strategies, narratives all Bitcoin-themed
-3. **Play normally:** Same gameplay as original Evolution of Trust
+3. **Play normally:** Same gameplay as original Evolution of Trust game
 4. **Optional:** Click "Connect Wallet" (bottom-right) to submit moves to Bitcoin
 
 ---

@@ -2,7 +2,7 @@
 
 ## System Overview
 
-**Evolution of Trust for Bitcoin** is a game-theory simulator adapted to teach Bitcoin's consensus model through zero-knowledge proof integration.
+**Covenant: Bitcoin Governance Through Game Theory** is a game-theory simulator adapted to teach Bitcoin's consensus model through zero-knowledge proof integration.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

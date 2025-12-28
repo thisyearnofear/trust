@@ -1,5 +1,5 @@
 /**
- * CHARMS SMART CONTRACT: Bitcoin Evolution of Trust Game Validator
+ * CHARMS SMART CONTRACT: Covenant - Bitcoin Governance Through Game Theory Validator
  * 
  * This contract:
  * 1. Validates game moves (COOPERATE or DEFECT)

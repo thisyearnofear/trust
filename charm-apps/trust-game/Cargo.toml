@@ -3,7 +3,7 @@ name = "trust-game"
 version = "0.1.0"
 edition = "2021"
 authors = ["Bitcoin Trust Game Contributors"]
-description = "Bitcoin Evolution of Trust - Charms smart contract for on-chain game validation"
+description = "Covenant: Bitcoin Governance Through Game Theory - Charms smart contract for on-chain game validation"
 
 [dependencies]
 charms = "0.1"

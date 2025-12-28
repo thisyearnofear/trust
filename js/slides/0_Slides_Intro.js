@@ -132,3 +132,71 @@ SLIDES.push({
 	}
 
 });
+
+// Charms Explanation Slide 1: The Problem & Solution
+SLIDES.push({
+	id: "charms_intro",
+	onstart: function(self){
+
+		var o = self.objects;
+
+		// Splash in background
+		self.add({ id:"splash", type:"Splash" });
+
+		// Charms explanation text
+		self.add({
+			id:"charms_text", type:"TextBox",
+			x:130, y:30, width:700, height:400, align:"center",
+			text_id:"charms_intro"
+		});
+
+		// Button
+		self.add({
+			id:"charms_button", type:"Button", x:304, y:466, size:"long",
+			text_id:"charms_button",
+			message:"slideshow/scratch"
+		});
+
+		_hide(o.charms_text); _fadeIn(o.charms_text, 200);
+		_hide(o.charms_button); _fadeIn(o.charms_button, 700);
+
+	},
+	onend: function(self){
+		self.clear();
+	}
+
+});
+
+// Charms Explanation Slide 2: What You'll See
+SLIDES.push({
+	id: "charms_what",
+	onstart: function(self){
+
+		var o = self.objects;
+
+		// Splash in background
+		self.add({ id:"splash", type:"Splash", blush:true });
+
+		// Explanation of mechanics
+		self.add({
+			id:"what_text", type:"TextBox",
+			x:130, y:50, width:700, height:380, align:"center",
+			text_id:"charms_what"
+		});
+
+		// Button to start game
+		self.add({
+			id:"what_button", type:"Button", x:304, y:466, size:"long",
+			text: "Start Game →",
+			message:"slideshow/scratch"
+		});
+
+		_hide(o.what_text); _fadeIn(o.what_text, 200);
+		_hide(o.what_button); _fadeIn(o.what_button, 700);
+
+	},
+	onend: function(self){
+		self.clear();
+	}
+
+});

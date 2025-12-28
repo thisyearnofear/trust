@@ -1,4 +1,4 @@
-# Evolution of Trust for Bitcoin
+# Covenant: Bitcoin Governance Through Game Theory
 
 A game-theory simulator that teaches **Bitcoin's consensus model through interactive gameplay** and zero-knowledge proof verification on-chain.
 
