@@ -16,6 +16,9 @@ var OnChainUI = {
 
   /**
    * Initialize on-chain UI components
+   * 
+   * Now hidden by default - only shown at relevant game moments
+   * (after game completion, before governance voting)
    */
   init: function() {
     if (!window.BITCOIN_MODE) {
@@ -23,7 +26,7 @@ var OnChainUI = {
       return;
     }
 
-    console.log("[OnChainUI] Initializing on-chain UI components");
+    console.log("[OnChainUI] Initializing on-chain UI components (hidden by default)");
 
     // Create container for on-chain UI
     this.container = document.createElement("div");
@@ -45,6 +48,7 @@ var OnChainUI = {
       max-height: 400px;
       overflow-y: auto;
       box-shadow: 0 0 20px rgba(22, 199, 132, 0.3);
+      display: none;
     `;
 
     // Add styles
@@ -58,12 +62,22 @@ var OnChainUI = {
     // Add container to page
     document.body.appendChild(this.container);
 
-    // Listen for game events
-    subscribe("iterated/round/end", (payoffs) => {
-      this.onGameRoundEnd(payoffs);
-    });
+    // Listen for game completion – show wallet when game ends
+    if (window.subscribe) {
+      subscribe("game/complete", () => {
+        this.show();
+        console.log("[OnChainUI] Game complete – wallet UI shown");
+      });
 
-    console.log("[OnChainUI] On-chain UI initialized");
+      // Also show before governance voting
+      subscribe("slideshow/slideChange", (slideId) => {
+        if (slideId === "governance_intro") {
+          this.show();
+        }
+      });
+    }
+
+    console.log("[OnChainUI] On-chain UI initialized (hidden until game completion)");
   },
 
   /**
@@ -634,6 +648,26 @@ var OnChainUI = {
     document.body.appendChild(overlay);
 
     console.log("[OnChainUI] Governance panel shown");
+  },
+
+  /**
+   * Show the wallet UI
+   */
+  show: function() {
+    if (this.container) {
+      this.container.style.display = "block";
+      console.log("[OnChainUI] Wallet UI shown");
+    }
+  },
+
+  /**
+   * Hide the wallet UI
+   */
+  hide: function() {
+    if (this.container) {
+      this.container.style.display = "none";
+      console.log("[OnChainUI] Wallet UI hidden");
+    }
   }
 };
 
