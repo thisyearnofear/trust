@@ -211,6 +211,11 @@ SLIDES.push({
             size:13, color:"#333"
         });
         
+        // Execute proposals (update payoff matrix for next game)
+        if (window.GovernanceIntegration && window.GovernanceIntegration.executePassedProposals) {
+            window.GovernanceIntegration.executePassedProposals();
+        }
+        
         // Submit votes to Charms (mock)
         if (window.publish) {
             publish("governance/summary", [{
