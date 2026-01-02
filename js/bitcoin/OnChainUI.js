@@ -272,69 +272,74 @@ var OnChainUI = {
   },
 
   /**
-   * Connect to Bitcoin wallet
+   * Connect to Bitcoin wallet via Unisat
    */
   connectWallet: function() {
     console.log("[OnChainUI] Attempting to connect wallet...");
 
-    // Try to connect to browser wallet (e.g., Unisat)
-    if (window.unisat) {
-      window.unisat.requestAccounts()
-        .then(accounts => {
-          this.playerAddress = accounts[0];
-          this.onWalletConnected();
-        })
-        .catch(err => {
-          console.error("[OnChainUI] Wallet connection failed:", err);
-          this.showError("Failed to connect wallet: " + err.message);
-        });
-    } else if (window.bitcoin) {
-      // Alternative: XVerse or other wallets
-      window.bitcoin.request({ method: "getAddress" })
-        .then(result => {
-          this.playerAddress = result.address;
-          this.onWalletConnected();
-        })
-        .catch(err => {
-          console.error("[OnChainUI] Wallet connection failed:", err);
-          this.showError("Failed to connect wallet: " + err.message);
-        });
-    } else {
-      // Mock wallet for demo
-      console.log("[OnChainUI] No browser wallet detected, using demo address");
-      this.playerAddress = "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx"; // Testnet address
-      this.onWalletConnected();
+    // Use Unisat wallet integration
+    const wallet = getUnisatWallet();
+
+    if (!UnisatWalletIntegration.isAvailable()) {
+      // Fallback: Use demo address if wallet not installed
+      console.warn("[OnChainUI] Unisat wallet not detected, using demo mode");
+      this.playerAddress = "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx"; // Signet testnet address
+      this.onWalletConnected(null); // null = demo mode
+      return;
     }
+
+    // Connect to real wallet
+    wallet.connect()
+      .then(result => {
+        this.playerAddress = result.address;
+        this.onWalletConnected(result); // Pass wallet connection result
+      })
+      .catch(err => {
+        console.error("[OnChainUI] Wallet connection failed:", err);
+        this.showError("Wallet connection failed: " + err.message);
+      });
   },
 
   /**
    * Handle successful wallet connection
+   * @param {object} walletResult - Result from Unisat wallet (null = demo mode)
    */
-  onWalletConnected: function() {
+  onWalletConnected: function(walletResult) {
     console.log("[OnChainUI] Wallet connected:", this.playerAddress);
 
     this.enabled = true;
+    this.wallet = walletResult ? getUnisatWallet() : null;
+    this.isDemo = walletResult === null;
 
-    // Initialize Charms client
+    // Initialize Charms client (with real transactions by default)
     this.charmsClient = new CharmsGameClient(
       "trust-game-v1", // App ID
       this.playerAddress,
       {
-        network: "testnet",
-        rpcUrl: "http://localhost:18332",
-        charmsRpcUrl: "http://localhost:9000"
+        mockMode: this.isDemo, // Use mock mode if no real wallet
+        txBuilder: getBitcoinTxBuilder()
       }
     );
 
     // Update UI
     document.getElementById("wallet-status").className = "onchain-status active";
-    document.getElementById("wallet-status-text").textContent = "Connected";
+    document.getElementById("wallet-status-text").textContent = this.isDemo ? "Demo Mode" : "Connected";
     document.getElementById("wallet-address").textContent = this.playerAddress;
     document.getElementById("wallet-address-container").style.display = "block";
     document.getElementById("connect-wallet").style.display = "none";
     document.getElementById("disconnect-wallet").style.display = "inline-block";
 
-    this.showSuccess("Wallet connected! Moves can now be submitted to Bitcoin.");
+    const message = this.isDemo
+      ? "Demo mode: Transactions will be generated but not signed/broadcast"
+      : "Wallet connected! Reputation can be anchored to Bitcoin.";
+    
+    this.showSuccess(message);
+
+    console.log("[OnChainUI]", {
+      address: this.playerAddress,
+      mode: this.isDemo ? "demo" : "real",
+      balance: walletResult?.balance?.total || "unknown"
+    });
   },
 
   /**
@@ -346,6 +351,8 @@ var OnChainUI = {
     this.enabled = false;
     this.playerAddress = null;
     this.charmsClient = null;
+    this.wallet = null;
+    this.isDemo = false;
 
     // Update UI
     document.getElementById("wallet-status").className = "onchain-status inactive";
@@ -353,6 +360,8 @@ var OnChainUI = {
     document.getElementById("wallet-address-container").style.display = "none";
     document.getElementById("connect-wallet").style.display = "inline-block";
     document.getElementById("disconnect-wallet").style.display = "none";
+
+    this.showSuccess("Wallet disconnected");
   },
 
   /**

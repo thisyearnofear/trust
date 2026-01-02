@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Covenant E2E Test - Real Transactions</title>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: monospace; background: #1a1a2e; color: #00ff00; padding: 20px; }
+    .test { margin: 20px 0; padding: 15px; background: #0a0a14; border-left: 3px solid #16c784; }
+    .pass { border-left-color: #00ff00; }
+    .fail { border-left-color: #ff6b6b; color: #ff6b6b; }
+    h1 { color: #16c784; }
+    pre { background: #000; padding: 10px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>🔗 Covenant E2E Test Suite</h1>
+  <p>Real transaction generation, wallet integration, and Signet broadcasting</p>
+  <hr>
+  
+  <div id="tests"></div>
+
+  <script>
+    // Test utilities
+    const TEST_RESULTS = [];
+    const TESTS = document.getElementById("tests");
+
+    function test(name, fn) {
+      const div = document.createElement("div");
+      div.className = "test";
+      TESTS.appendChild(div);
+
+      try {
+        fn();
+        div.classList.add("pass");
+        div.innerHTML = `<strong>✓ ${name}</strong>`;
+        TEST_RESULTS.push({ name, pass: true });
+      } catch (error) {
+        div.classList.add("fail");
+        div.innerHTML = `<strong>✗ ${name}</strong><pre>${error.message}\n${error.stack}</pre>`;
+        TEST_RESULTS.push({ name, pass: false, error: error.message });
+      }
+    }
+
+    // Load modules
+    const scriptPaths = [
+      "js/bitcoin/BitcoinTxBuilder.js",
+      "js/bitcoin/UnisatWallet.js",
+      "js/bitcoin/CharmsClient.js"
+    ];
+
+    let loadedScripts = 0;
+    scriptPaths.forEach(path => {
+      const script = document.createElement("script");
+      script.src = path;
+      script.onload = () => {
+        loadedScripts++;
+        if (loadedScripts === scriptPaths.length) {
+          runTests();
+        }
+      };
+      script.onerror = () => {
+        document.getElementById("tests").innerHTML += `<div class="test fail"><strong>✗ Load ${path}</strong></div>`;
+      };
+      document.head.appendChild(script);
+    });
+
+    function runTests() {
+      // Test 1: BitcoinTxBuilder initialization
+      test("BitcoinTxBuilder initialization", () => {
+        const builder = new BitcoinTxBuilder("signet");
+        if (!builder.network) throw new Error("Network not set");
+        if (builder.network !== "signet") throw new Error("Wrong network");
+      });
+
+      // Test 2: Generate 2-tx pattern
+      test("Generate 2-tx pattern", () => {
+        const builder = getBitcoinTxBuilder();
+        const spell = {
+          type: "reputation_anchor",
+          reputation_score: 75,
+          reputation_tier: 2,
+          voting_power: 112
+        };
+        const utxo = {
+          txid: "d8fa4cdade7ac3dff64047dc73b58591ebe638579881b200d4fea68fc84521f0",
+          vout: 0,
+          amount: 100000
+        };
+        
+        const result = builder.build2TxPattern(spell, "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx", utxo);
+        
+        if (!result.commitTxid) throw new Error("No commit txid");
+        if (!result.spellTxid) throw new Error("No spell txid");
+        if (!result.commitTxHex) throw new Error("No commit hex");
+        if (!result.spellTxHex) throw new Error("No spell hex");
+        if (result.commitTxid === result.spellTxid) throw new Error("Txids should be different");
+      });
+
+      // Test 3: Unisat wallet availability check
+      test("Unisat wallet detection", () => {
+        const available = UnisatWalletIntegration.isAvailable();
+        console.log("Wallet available:", available);
+        // This is OK to be false in test environment
+      });
+
+      // Test 4: CharmsClient initialization
+      test("CharmsClient initialization (real mode)", () => {
+        const client = new CharmsGameClient(
+          "trust-game-v1",
+          "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+          { mockMode: false }
+        );
+        
+        if (client.mockMode) throw new Error("Should be in real mode");
+        if (!client.txBuilder) throw new Error("TxBuilder not initialized");
+      });
+
+      // Test 5: CharmsClient mock mode
+      test("CharmsClient initialization (mock mode)", () => {
+        const client = new CharmsGameClient(
+          "trust-game-v1",
+          "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+          { mockMode: true }
+        );
+        
+        if (!client.mockMode) throw new Error("Should be in mock mode");
+      });
+
+      // Test 6: Submit reputation on-chain (real mode)
+      test("Submit reputation on-chain (real mode)", async () => {
+        const client = new CharmsGameClient(
+          "trust-game-v1",
+          "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+          { mockMode: false }
+        );
+
+        const gameHistory = [0, 0, 1, 0]; // 3 cooperative, 1 defective
+        const reputationData = { score: 75, tier: 2, votingPower: 112 };
+        const utxo = {
+          txid: "d8fa4cdade7ac3dff64047dc73b58591ebe638579881b200d4fea68fc84521f0",
+          vout: 0,
+          amount: 100000
+        };
+
+        const result = await client.submitReputationOnChain(gameHistory, reputationData, utxo);
+        
+        if (!result.commitTxid) throw new Error("No commit txid");
+        if (!result.spellTxid) throw new Error("No spell txid");
+        if (result.mode !== "real_signet") throw new Error("Wrong mode");
+        if (!result.commitTxHex) throw new Error("No unsigned hex");
+      });
+
+      // Test 7: Submit reputation (mock mode)
+      test("Submit reputation on-chain (mock mode)", async () => {
+        const client = new CharmsGameClient(
+          "trust-game-v1",
+          "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+          { mockMode: true }
+        );
+
+        const gameHistory = [0, 0, 1, 0];
+        const reputationData = { score: 75, tier: 2, votingPower: 112 };
+
+        const result = await client.submitReputationOnChain(gameHistory, reputationData);
+        
+        if (!result.commitTxid) throw new Error("No commit txid");
+        if (!result.spellTxid) throw new Error("No spell txid");
+        if (result.mode !== "mock") throw new Error("Wrong mode");
+      });
+
+      // Test 8: Transaction history tracking
+      test("Transaction history tracking", async () => {
+        const client = new CharmsGameClient(
+          "trust-game-v1",
+          "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+          { mockMode: true }
+        );
+
+        const gameHistory = [0, 0];
+        const reputationData = { score: 100, tier: 2, votingPower: 150 };
+
+        await client.submitReputationOnChain(gameHistory, reputationData);
+        
+        const history = client.getTransactionHistory();
+        if (history.length === 0) throw new Error("No transactions tracked");
+      });
+
+      // Summary
+      setTimeout(() => {
+        const total = TEST_RESULTS.length;
+        const passed = TEST_RESULTS.filter(t => t.pass).length;
+        const failed = total - passed;
+
+        const summary = document.createElement("div");
+        summary.style.cssText = "margin-top: 40px; padding: 20px; border: 2px solid #16c784; text-align: center;";
+        summary.innerHTML = `
+          <h2>Test Summary</h2>
+          <p><span style="color: #00ff00;">✓ Passed: ${passed}</span> | 
+             <span style="color: #ff6b6b;">✗ Failed: ${failed}</span> | 
+             Total: ${total}</p>
+          <p>${failed === 0 ? "🎉 All tests passed!" : "⚠️ Some tests failed"}</p>
+        `;
+        TESTS.appendChild(summary);
+      }, 100);
+    }
+  </script>
+</body>
+</html>

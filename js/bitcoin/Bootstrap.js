@@ -212,11 +212,11 @@ function initOnChainReputation() {
     try {
       // Initialize Charms client (follows official spec)
       // - Uses 2-tx pattern (commit + spell)
-      // - Generates proofs locally (no 5-min `charms spell prove` wait for hackathon)
-      // - Ready for bitcoin-cli signing + broadcast
+      // - Generates REAL Bitcoin transactions on Signet
+      // - Ready for Unisat wallet signing + broadcast
       var charmsConfig = {
-        charmsAppBin: "/Users/udingethe/Dev/trust/charm-apps/trust-game/target/release/trust-game",
-        mockMode: true // For hackathon demo; post-launch: use real spell check
+        charmsAppBin: "/Users/udingethe/Dev/covenant/charm-apps/trust-game/target/release/trust-game",
+        mockMode: false // REAL SIGNET TRANSACTIONS (removed mock mode)
       };
       
       var charmsClient = new CharmsGameClient(appId || "trust_game_v1", bitcoinAddress, charmsConfig);

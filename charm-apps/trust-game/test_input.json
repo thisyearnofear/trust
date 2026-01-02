@@ -1,0 +1,6 @@
+{
+  "player_address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+  "moves": [0, 0, 1, 0, 1],
+  "opponent_moves": [0, 1, 1, 0, 0],
+  "payoffs": [2, 3, -1, 0]
+}

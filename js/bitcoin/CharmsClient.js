@@ -21,21 +21,23 @@ class CharmsGameClient {
    * @param {string} bitcoinAddress - Player's Bitcoin address
    * @param {object} config - Configuration options
    *   - charmsAppBin: Path to compiled app binary
-   *   - mockMode: Use mock proofs for testing (default: true for hackathon)
+   *   - mockMode: Use mock proofs for testing (default: false for real txs)
+   *   - txBuilder: BitcoinTxBuilder instance (auto-initialized if not provided)
    */
   constructor(appId, bitcoinAddress, config = {}) {
     this.appId = appId;
     this.bitcoinAddress = bitcoinAddress;
-    this.mockMode = config.mockMode !== false; // Default to mock for hackathon
+    this.mockMode = config.mockMode === true; // Default to REAL transactions (mockMode = false)
 
     this.charmsAppBin = config.charmsAppBin;
+    this.txBuilder = config.txBuilder || getBitcoinTxBuilder();
     this.gameHistory = [];
     this.transactionHistory = [];
 
     console.log("[CharmsClient] Initialized", {
       appId: appId.substring(0, 16) + "...",
       address: bitcoinAddress,
-      mode: this.mockMode ? "mock" : "real",
+      mode: this.mockMode ? "mock" : "REAL SIGNET TRANSACTIONS",
       charmsAppBin: config.charmsAppBin ? "set" : "not set"
     });
   }
@@ -115,28 +117,18 @@ class CharmsGameClient {
    * Submit reputation to Bitcoin as a Charms spell
    * 
    * This anchors player reputation on-chain after a game completes.
+   * Uses real Bitcoin transactions on Signet.
    * 
    * @param {Array} gameHistory - Moves from the game
    * @param {object} reputationData - Reputation calculation { score, tier, votingPower }
-   * @returns {Promise<object>} { commitTxid, spellTxid, proof }
+   * @param {object} utxo - Available UTXO { txid, vout, amount } (required for real txs)
+   * @returns {Promise<object>} { commitTxid, spellTxid, commitTxHex, spellTxHex }
    */
-  async submitReputationOnChain(gameHistory, reputationData) {
+  async submitReputationOnChain(gameHistory, reputationData, utxo) {
     try {
       console.log("[CharmsClient] Anchoring reputation to Bitcoin");
 
-      // Generate proof
-      const proof = this._generateProof({
-        type: "reputation",
-        reputation_score: reputationData.score,
-        reputation_tier: reputationData.tier,
-        voting_power: reputationData.votingPower,
-        total_moves: gameHistory.length,
-        cooperative_moves: gameHistory.filter(m => m === 0).length,
-        appId: this.appId,
-        timestamp: Date.now()
-      });
-
-      // Create spell
+      // Create spell data structure
       const spell = {
         appId: this.appId,
         type: "reputation_anchor",
@@ -146,31 +138,55 @@ class CharmsGameClient {
         voting_power: reputationData.votingPower,
         total_moves: gameHistory.length,
         cooperative_moves: gameHistory.filter(m => m === 0).length,
-        proof: proof,
         timestamp: Date.now()
       };
 
-      // Build 2-tx pattern
-      const { commitTx, spellTx } = this._build2TxPattern(spell);
+      let result;
+
+      if (this.mockMode) {
+        // Mock mode: return dummy txids
+        const mockResult = this._build2TxPattern(spell);
+        result = {
+          type: "reputation",
+          commitTxid: mockResult.commitTx.txid,
+          spellTxid: mockResult.spellTx.txid,
+          proof: { type: "mock_proof", data: spell },
+          mode: "mock"
+        };
+      } else {
+        // Real mode: generate actual Signet transactions
+        if (!utxo || !utxo.txid) {
+          throw new Error("Real transactions require UTXO. Wallet integration needed.");
+        }
+
+        const txResult = this.txBuilder.build2TxPattern(spell, this.bitcoinAddress, utxo);
+        
+        result = {
+          type: "reputation",
+          commitTxid: txResult.commitTxid,
+          spellTxid: txResult.spellTxid,
+          commitTxHex: txResult.commitTxHex,
+          spellTxHex: txResult.spellTxHex,
+          mode: "real_signet",
+          note: "Unsigned hex ready for Unisat wallet signing"
+        };
+      }
 
       // Track
       this.transactionHistory.push({
         type: "reputation",
-        commitTx: commitTx,
-        spellTx: spellTx,
-        proof: proof,
-        reputation: reputationData,
+        spell: spell,
+        result: result,
         timestamp: Date.now()
       });
 
-      console.log("[CharmsClient] Reputation spell created (ready for broadcast)");
+      console.log("[CharmsClient] Reputation anchored:", {
+        commitTxid: result.commitTxid.substring(0, 16) + "...",
+        spellTxid: result.spellTxid.substring(0, 16) + "...",
+        mode: result.mode
+      });
 
-      return {
-        type: "reputation",
-        commitTxid: commitTx.txid,
-        spellTxid: spellTx.txid,
-        proof: proof
-      };
+      return result;
     } catch (error) {
       console.error("[CharmsClient] Reputation submission failed:", error);
       throw error;

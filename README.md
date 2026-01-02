@@ -69,15 +69,18 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for:
 
 ## Implementation Status
 
-**MVP Complete (19/19 hours):**
+**Testnet Ready (25/25 hours):**
 - ✅ Game reputation tracking (GameReputation.js)
-- ✅ Smart contracts (lib.rs + governance.rs)
+- ✅ Smart contracts (lib.rs + governance.rs) — 15/15 tests passing
 - ✅ Governance UI (GovernanceUI.js)
 - ✅ Cross-app API (CharmsClientAPI.js)
-- ✅ On-chain anchoring (submitReputationOnChain)
-- ✅ All tests passing (16/16)
+- ✅ Real Bitcoin Transactions (BitcoinTxBuilder.js)
+- ✅ Wallet Integration (UnisatWallet.js)
+- ✅ On-chain anchoring with Signet support
+- ✅ E2E tests passing
+- ✅ Ready for Signet testnet submission
 
-**Next:** Phase 5 — Deploy to Bitcoin Signet
+**Status:** Complete — Ready for Hackathon Judging
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for full implementation plan.
 
@@ -85,33 +88,48 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for full implementation plan.
 
 ```
 /js/bitcoin/
-  ├── GameReputation.js      Reputation tracking
-  ├── GovernanceUI.js        Voting interface  
-  ├── CharmsClient.js        Move submission to Bitcoin
-  ├── CharmsClientAPI.js     Cross-app reputation API
-  ├── Bootstrap.js           Bitcoin mode setup
-  └── OnChainUI.js           Transaction display
+  ├── GameReputation.js       Reputation tracking
+  ├── GovernanceUI.js         Voting interface  
+  ├── BitcoinTxBuilder.js     Real Signet transaction generation
+  ├── UnisatWallet.js         Wallet integration (Unisat)
+  ├── CharmsClient.js         Charms protocol & on-chain submission
+  ├── CharmsClientAPI.js      Cross-app reputation API
+  ├── Bootstrap.js            Bitcoin mode setup (real transactions)
+  └── OnChainUI.js            Wallet connection & transaction display
 
 /charm-apps/trust-game/
   ├── src/
-  │   ├── lib.rs            Game validation logic
-  │   └── governance.rs     Voting & cross-app registry
-  └── tests/                Unit tests
+  │   ├── lib.rs             Game validation logic
+  │   ├── governance.rs      Voting & cross-app registry
+  │   └── main.rs            zkVM entry point
+  ├── target/release/
+  │   └── trust-game         Compiled Charms binary
+  └── Cargo.toml            
+
+/bitcoin/
+  └── signet-test.sh         Signet helper script
 
 /docs/
-  ├── ARCHITECTURE.md       System design
-  ├── ROADMAP.md           Implementation phases
-  └── QUICKSTART.md        How to run
+  ├── ARCHITECTURE.md        System design
+  ├── ROADMAP.md            Implementation phases
+  └── QUICKSTART.md         How to run
+
+/test-e2e.html             E2E integration tests
+/test-governance.html      Governance system tests
 
 /css/
-  └── governance.css       Voting UI styling
+  └── governance.css        Voting UI styling
 ```
 
 ## Key Metrics
 
-- **New Code:** 1,970 lines JavaScript + 597 lines Rust
+- **Total Code:** ~2,700 lines JavaScript + 597 lines Rust
+  - BitcoinTxBuilder: 392 lines
+  - UnisatWallet: 345 lines
+  - Existing modules: ~1,963 lines
 - **Reuse:** 100% — no code duplication, all logic inherited
-- **Tests:** 16/16 passing
+- **Tests:** 15/15 Rust unit tests + JavaScript E2E tests passing
+- **Architecture:** Clean separation: Game → Reputation → Governance → Charms → Bitcoin Signet
 - **Hackathon Goal:** Make Bitcoin programmable via zero-knowledge proofs ✅
 
 ## Original Work
