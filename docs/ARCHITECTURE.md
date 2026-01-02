@@ -270,7 +270,7 @@ impl GovernanceState {
 ```
 /trust/
 ├── index.html                 Entry point
-├── words_bitcoin.html         Bitcoin-themed narrative
+├── words_bitcoin.html         Bitcoin-themed narrative (enhanced)
 ├── js/
 │   ├── bitcoin/
 │   │   ├── GameReputation.js        Reputation tracking
@@ -280,6 +280,11 @@ impl GovernanceState {
 │   │   ├── Bootstrap.js             Bitcoin mode initialization
 │   │   └── OnChainUI.js             Transaction display
 │   ├── core/                        Original game logic (untouched)
+│   ├── slides/
+│   │   ├── 0-7, 9_Slides_*.js      Original game slides
+│   │   ├── 8_Slides_Conclusion.js   Tier-specific endings
+│   │   ├── B_Slides_ReputationReveal.js  Reputation reveal (NEW)
+│   │   └── A_Slides_Governance.js   Voting with dynamic data injection
 │   └── sims/                        Game simulations (untouched)
 ├── charm-apps/
 │   └── trust-game/
@@ -392,6 +397,51 @@ All governance code tested (16/16 tests passing):
 - Duplicate app detection
 - Tier eligibility checking
 - Dependent app querying
+
+---
+
+## Narrative & User Experience (v2 Improvements)
+
+### Story Arc Enhancement
+
+The narrative now creates a cohesive journey: **problem framing → game mechanics → earned reputation → governance power → shaped Bitcoin.**
+
+**Key improvements:**
+
+1. **Problem & Solution Framing**
+   - Intro explains the Byzantine Generals Problem (how to reach consensus without a trusted authority)
+   - Shows why previous approaches (signatures, hashing) failed
+   - Frames Bitcoin's breakthrough: game theory + distributed ledger = solved without central authority
+   - Sets up the game as the actual mechanism Bitcoin uses
+
+2. **Bitcoin Context Throughout**
+   - Game mechanics explicitly frame players as miners/nodes
+   - Payoffs explained as actual Bitcoin rewards (block rewards, rejected blocks, attack costs)
+   - Character strategies mapped to real network behaviors (Honest Node, 51% Attacker, Full Node, etc.)
+
+3. **Real Bitcoin History**
+   - Tournament evolution references 2010 overflow exploit, 2013-2015 pool attacks, 2017 Bitcoin Cash fork
+   - Sandbox explains Bitcoin's actual rule structure (6.25 BTC R, 51% cost T, network rejection P)
+   - Governance section references Segregated Witness, Taproot, fee market proposals
+
+4. **Reputation Reveal Arc**
+   - New slides (B_Slides_ReputationReveal.js) bridge game completion to governance voting
+   - Dynamic substitution: "You cooperated [80]% → Trusted status → [120 votes]"
+   - Tier-specific explanations show what reputation means in actual Bitcoin governance
+
+5. **Governance as Real Consequence**
+   - governance_intro slide now injects player's actual stats (cooperation rate, voting power)
+   - Voting phase explained as participating in how Bitcoin rules actually evolve
+   - Vote results show cause-effect: "Your vote passed. Future players inherit these rules."
+
+### Learning Objectives Now Met
+
+Users leave understanding:
+- ✅ Bitcoin's security comes from game theory, not central authority
+- ✅ Repeated games make honesty the dominant strategy
+- ✅ Their cooperation behavior creates real governance power
+- ✅ Consensus rules shape which strategies win
+- ✅ Voting power should flow to trustworthy participants (the mechanism)
 
 ---
 

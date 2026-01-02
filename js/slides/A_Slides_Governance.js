@@ -18,9 +18,11 @@ SLIDES.push({
         // Use Splash character
         self.add({ id:"splash", type:"Splash", x:0, y:50 });
         
-        // Show player's reputation tier prominently
+        // Get player reputation data
         const reputation = getGameReputation();
         const tier = reputation.getReputationTier();
+        const votingPower = reputation.getVotingPower();
+        const cooperativeRate = reputation.calculateScore();
         
         self.add({
             id:"tier_display", type:"TextBox",
@@ -30,11 +32,20 @@ SLIDES.push({
             size:20, color:"#333"
         });
         
-        // Intro text explaining governance
+        // Intro text with dynamic substitution
+        var governanceText = Words.get("governance_intro_text");
+        
+        // Replace placeholders with actual player data
+        governanceText = governanceText.replace("[COOPERATION_RATE]", Math.round(cooperativeRate));
+        governanceText = governanceText.replace("[TOTAL_MOVES]", reputation.totalMoves);
+        governanceText = governanceText.replace("[TIER_CLASS]", tier.cssClass);
+        governanceText = governanceText.replace("[TIER_LABEL]", tier.label);
+        governanceText = governanceText.replace("[VOTING_POWER]", votingPower);
+        
         self.add({
             id:"text", type:"TextBox",
             x:350, y:100, width:450, height:300,
-            text_id:"governance_intro_text"
+            text: governanceText
         });
         
         // Continue button

@@ -133,6 +133,48 @@ SLIDES.push({
 
 });
 
+// Why Bitcoin's solution worked
+SLIDES.push({
+	id: "why_this_works",
+	onstart: function(self){
+
+		var o = self.objects;
+
+		// Splash in background
+		self.add({ id:"splash", type:"Splash" });
+
+		// Why this works - part 1
+		self.add({
+			id:"why_1", type:"TextBox",
+			x:130, y:20, width:700, height:200, align:"center",
+			text_id:"why_this_works_1"
+		});
+
+		// Why this works - part 2
+		self.add({
+			id:"why_2", type:"TextBox",
+			x:130, y:240, width:700, height:200, align:"center",
+			text_id:"why_this_works_2"
+		});
+
+		// Button
+		self.add({
+			id:"button", type:"Button", x:304, y:466, size:"long",
+			text_id:"why_this_works_btn",
+			message:"slideshow/scratch"
+		});
+
+		_hide(o.why_1); _fadeIn(o.why_1, 200);
+		_hide(o.why_2); _fadeIn(o.why_2, 400);
+		_hide(o.button); _fadeIn(o.button, 700);
+
+	},
+	onend: function(self){
+		self.clear();
+	}
+
+});
+
 // Charms Explanation Slide 1: After game - what you learned
 SLIDES.push({
 	id: "charms_intro",

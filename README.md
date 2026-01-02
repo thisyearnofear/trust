@@ -38,21 +38,25 @@ For detailed setup: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 ✅ **Charms Smart Contracts** — Game moves validated by Rust smart contracts via zero-knowledge proofs  
 ✅ **Cross-App API** — Other Bitcoin apps can query reputation and enforce tier requirements  
 ✅ **On-Chain Anchoring** — Game outcomes permanently recorded on Bitcoin via witness data  
+✅ **Bitcoin Understanding** — Enhanced narrative teaches real Bitcoin mechanics (mining, attacks, consensus rules, governance)  
+✅ **Reputation-to-Governance Arc** — Players see earned reputation directly translate to voting power  
 
 ## How It Works
 
 ```
+User learns: Byzantine problem → Bitcoin's game-theory solution
+                                               ↓
 User plays game → Reputation tracked → Submits to Bitcoin
-                                              ↓
-                                 Zero-knowledge proof
-                                   generated & verified
-                                              ↓
-                                    Embedded in witness
-                                              ↓
-                                    Bitcoin txid returned
-                                              ↓
-                            Governance voting enabled
-                            using on-chain reputation
+                                               ↓
+                                  Zero-knowledge proof
+                                    generated & verified
+                                               ↓
+                                     Embedded in witness
+                                               ↓
+                                     Bitcoin txid returned
+                                               ↓
+                             Governance voting enabled
+                             using on-chain reputation
 ```
 
 ## Architecture

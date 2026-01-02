@@ -67,16 +67,61 @@ For over a decade, Bitcoin has worked. Not because everyone is honest,<br>
 but because the system is <i>designed</i> to work even when people try to cheat.
 <br><br>
 
-But here's the puzzle: <b>How does trust emerge without a trusted authority?</b><br>
-Why don't miners attack the network? Why do nodes validate transactions<br>
-they don't have to? What incentives keep Bitcoin decentralized and secure?
+<b>But here's the problem Bitcoin solved:</b><br>
+How do you prevent double-spending without a central ledger-keeper?<br>
+If Alice and Bob both claim ownership of the same coin, who decides who's right?<br>
+Normally, you need a bank. But Bitcoin has no bank. So how does it work?
 <br><br>
 
-I think <b>game theory</b> can explain Bitcoin's security model –<br>
-and how decentralization beats centralization. So, to understand it...
+This is called <b>the Byzantine Generals Problem.</b> Imagine an army with generals<br>
+scattered across a battlefield. They need to coordinate an attack, but some generals<br>
+might be traitors. How do they reach consensus when they can't trust each other?<br>
+For decades, computer scientists thought this was impossible without a trusted authority.
+<br><br>
+
+But here's the genius insight: <b>Game theory solves it.</b><br>
+Bitcoin doesn't require trust. It requires <i>incentives</i> that make honesty profitable<br>
+and dishonesty unprofitable. Why don't miners attack the network?<br>
+Why do nodes validate transactions they don't have to?<br>
+Because the rules reward cooperation and punish attacks.
+<br><br>
+
+Let's see how this works...
 </p>
 <p id="intro_button">
 ...let's play a game about Bitcoin. &rarr;
+</p>
+
+<!-- - - - - - - - - - - - - - - - - -->
+<!-- - - - - WHY THIS WORKS - - - - -->
+<!-- - - - - - - - - - - - - - - - - -->
+
+<p id="why_this_works_top">
+<b>Why Bitcoin's approach worked when others failed</b>
+</p>
+
+<p id="why_this_works_1">
+Governments and banks solved double-spending with <i>a ledger-keeper:</i> a central authority<br>
+who decides which transactions are valid. Trust the bank, you trust the system.
+<br><br>
+But cryptographers wanted to do it without a central authority. They tried signatures, hashing, encryption.<br>
+None of it worked. Without a central timestamp, you can't prove which coin was spent first.
+</p>
+
+<p id="why_this_works_2">
+Bitcoin's breakthrough: <b>A distributed ledger + game theory.</b>
+<br><br>
+Instead of one ledger-keeper, there are thousands of nodes.
+Instead of requiring trust, Bitcoin requires <i>proof-of-work</i> + <i>incentives.</i>
+<br><br>
+• You can't rewrite the past (proof-of-work makes attacks expensive)<br>
+• You can't fake the majority (you need 51% hash power)<br>
+• You aren't incentivized to attack (honest mining is more profitable)<br>
+• The game is eternal (today's attack destroys tomorrow's rewards)
+</p>
+
+<p id="why_this_works_btn">
+So let's play the game Bitcoin nodes play every day. &rarr;
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
@@ -110,15 +155,20 @@ other participant<br>↘
 
 <b>A SINGLE TRANSACTION</b>
 <br>
-Imagine you want to send bitcoin to someone.
-If you broadcast an honest transaction (COOPERATE), the network validates it – everyone benefits.
-You could also broadcast a conflicting transaction (ATTACK/CHEAT) trying to double-spend the same coins.
-Each participant can either COOPERATE (validate honestly) or CHEAT (ignore invalid transactions for profit).
+Imagine you're a miner wanting to send bitcoin. Two paths:
+<br><br>
+<b>COOPERATE:</b> You follow Bitcoin's consensus rules. You validate transactions honestly, include them in your block. 
+The network accepts your block, you earn a reward. Everyone's transactions work. Network stays secure.
+<br><br>
+<b>CHEAT:</b> You ignore consensus rules. You accept invalid transactions or double-spend coins.
+You earn short-term profit, but other nodes reject your block. Your coins get orphaned.
+<br><br>
+Each participant faces the same choice. What should <b>you</b> do?
 </p>
 
 <p id="oneoff_0_btm">
-<b>Let's say the other participant cheats, ignoring consensus rules and accepting your fake transaction.</b><br>
-What should you do?
+<b>Let's say the other miner cheats: they broadcast an invalid block trying to double-spend.</b><br>
+Should you cooperate or also cheat?
 </p>
 
 <p id="oneoff_1_cheated">
@@ -130,9 +180,11 @@ Too idealistic – they just robbed you while you played fair!
 </p>
 
 <p id="oneoff_1_top">
-If you cooperate (follow rules) &amp; they cheat (accept invalid tx), you lose security while they gain unfair advantage. (score: -1 vs +3)
-However, if you both cheat, neither of you can trust the network anymore. (score: 0 vs 0)
-<b>Therefore: you should also CHEAT.</b>
+If you cooperate &amp; they cheat, you lose: they accept invalid transactions and benefit unfairly (+3) while your honest block gets rejected (-1).
+However, if you both cheat, the network breaks. Neither of you can trust it anymore. (both 0)
+<b>Therefore: it seems logical to CHEAT.</b>
+<br><br>
+But this is a single transaction. Bitcoin isn't a single transaction. It's eternal repetition.
 </p>
 
 <p id="oneoff_1_btm">
@@ -170,15 +222,19 @@ But what happens if we play this game...
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="iterated_intro_top">
-<b>The Blockchain: A Repeated Game</b>
-Now, Bitcoin isn't a single transaction – it's an <i>ongoing sequence</i> of rounds.
-You'll face the same network participants again and again, round after round.
-With each round, you'll see 3 to 7 consecutive blocks.
-The question: will others trust you? And more importantly: can you afford to break their trust?
+<b>The Blockchain: A Repeated Game (This is why Bitcoin works)</b>
+<br><br>
+Bitcoin isn't a single transaction – it's an <i>infinite sequence</i> of blocks, forever.
+You'll validate transactions against the same network participants, round after round, every 10 minutes, for all eternity.
+<br><br>
+In a single game, cheating seems rational. In a repeated game? Everything changes.
+Attack once, and every other node blacklists you. Defend your reputation, and you earn rewards forever.
+<br><br>
+The question: will others trust you? And critically: <b>can you afford to break their trust?</b>
 </p>
 
 <p id="iterated_intro_btm">
-Make your first <i>real</i> move. <b>Choose wisely.</b>
+This is your actual choice, played out over blocks. <b>Choose wisely.</b>
 </p>
 
 <p id="iterated_info_1">
@@ -215,11 +271,36 @@ which is <i>optimal!</i> You maximized your gains through consistent cooperation
 </p>
 
 <p id="reputation_earned">
-Your reputation score has been calculated based on your cooperation and defection moves.
+Your game is complete. Let's calculate your reputation.
+</p>
+
+<p id="reputation_reveal">
+You cooperated [COOPERATION_COUNT] times. You defected [DEFECTION_COUNT] times.
+That's a [COOPERATION_RATE]% cooperation rate, earning you <span class="[TIER_CLASS]">[TIER_LABEL]</span> status.
+<br><br>
+In Bitcoin, this score means something tangible:
+<br>
+If you were a node validating transactions, [TIER_LABEL] nodes are [TIER_DESCRIPTION].
+Your voting power on protocol changes would be [VOTING_POWER] votes.
+</p>
+
+<p id="reputation_what_it_means">
+<b>What does [TIER_LABEL] mean in Bitcoin?</b>
+<br><br>
+<b>Trusted nodes (75%+):</b> These are the miners and validators the community trusts with network upgrades. Their proposals get heard. Their votes carry weight. When they propose rule changes, other nodes listen.
+<br><br>
+<b>Neutral nodes (50-74%):</b> These are solid, mostly-honest participants. They contribute to consensus but haven't proven exceptional reliability. Their votes count, but they don't have outsized influence.
+<br><br>
+<b>Learning nodes (0-49%):</b> These participants defected frequently. Bitcoin's design punishes this—attackers face network rejection. Your participation helps, but you haven't yet proven you're trustworthy with governance power.
+</p>
+
+<p id="reputation_reveal_btn">
+See what this means →
 </p>
 
 <p id="reputation_offer">
-Would you like to record your game to Bitcoin? Your reputation score would be anchored on-chain, giving you voting power in community governance decisions.
+Your reputation proves your trustworthiness. Would you like to record it to Bitcoin? 
+This anchors your reputation on-chain permanently, giving you voting power on community proposals that shape Bitcoin's future.
 </p>
 
 <p id="who_were">
@@ -227,32 +308,34 @@ So who were these different network participants you interacted with?
 </p>
 
 <p id="character_tft">
-<b>HONEST NODE:</b>
-Hello! I validate correctly in block 1, then I copy whatever you did in the last block.
-If you cheated, I remember and respond. Fair is fair.
+<b>HONEST NODE (Tit-for-Tat):</b>
+I validate your transactions fairly. In the next block, I mirror what you did: if you cooperated, I cooperate. If you cheated, I respond proportionally.
+This is Bitcoin's backbone. I maintain reputation—don't damage it.
 </p>
 
 <p id="character_all_d">
 <b>51% ATTACKER:</b>
-<i>might makes right – I mine my own rules</i>
+I have enough hash power to ignore Bitcoin's consensus rules. I mine invalid blocks. I double-spend. I ignore what anyone else does.
+Short-term profit. Long-term: the rest of the network simply rejects me.
 </p>
 
 <p id="character_all_c">
-<b>FULL NODE:</b>
-I always follow consensus rules, no matter what. The network is stronger when everyone validates honestly.
+<b>FULL NODE (Always-Cooperate):</b>
+I validate everything according to Bitcoin's rules, period. No matter what you do. No matter the incentives.
+Pure consensus enforcement. But this naivety? It gets exploited by attackers.
 </p>
 
 <p id="character_grudge">
-<b>CHAIN VALIDATOR:</b>
-Listen here. I'll validate everything correctly &amp; enforce consensus,
-but if you ever break the rules &amp; double-spend, I will REJECT EVERY TRANSACTION FROM YOU 'TIL THE END.
+<b>CHAIN VALIDATOR (Punisher):</b>
+I validate fairly, but I keep a permanent blacklist. Double-spend once? I reject every block from you forever.
+This is Bitcoin's immune system: nodes that remember attackers and permanently exile them.
 </p>
 
 <p id="character_prober">
-<b>ADAPTIVE NODE:</b>
-First: I test you. I try: validate honestly, attempt a double-spend, validate, validate again.
-If you reject my double-spend, I'll validate honestly like the Honest Node.
-If you accept it, I'll attack you relentlessly like the 51% Attacker.
+<b>ADAPTIVE NODE (Tester):</b>
+First block: I validate honestly to test your response. Second block: I attempt a double-spend.
+If you reject it, I know you're serious about consensus—I cooperate forever.
+If you accept it, I know you're exploitable—I attack relentlessly.
 </p>
 
 <p id="characters_teaser">
@@ -355,14 +438,17 @@ Congrats, your prediction was correct.
 (Sorry about your prediction: [CHAR].)
 </p>
 <p id="tournament_winner_3">
-The Honest Node goes by many names.
-Tit-for-tat, reciprocal validation, proof-of-work fairness, or... <b>honest consensus.</b>
-That's why Bitcoin works despite missing a central authority:
-when you're forced to play the same cryptographic game with the same rules forever –
-the Honest Node doesn't just win a single block, it wins across all blocks.
+The Honest Node goes by many names in Bitcoin: Tit-for-Tat, reciprocal validation, responsive consensus, or just... <b>the majority of nodes that keep Bitcoin alive.</b>
 <br><br>
-But if cooperation wins in repeated games, why is the world full of attacks & forks?
-What if we simulate multiple generations of nodes evolving?
+That's why Bitcoin works despite having no central authority:
+Every node follows the same cryptographic rules. Every node responds to violations.
+When someone attacks the network, honest nodes reject the attack. When someone cooperates, they're rewarded.
+<br><br>
+This isn't accidental. Bitcoin's design forces the honest node strategy to dominate.
+Miners who validate fairly earn block rewards <i>forever</i>. Attackers earn short-term profit, then face eternal rejection.
+<br><br>
+But if cooperation wins in repeated games, why have there been attacks & hard forks throughout Bitcoin's history?
+What if we simulate how node populations actually evolve over time?
 </p>
 <p id="tournament_teaser">
 Let's watch evolution in action. &rarr;
@@ -497,10 +583,13 @@ Yes! <span class="tft">Honest Nodes</span> dominated in the long run.
 but their exploitative strategy was ultimately self-defeating.
 </p>
 <p id="evo_9_end">
-This reminds me of Bitcoin's first decade:
-attacks were tried, but the network's honest majority 
-rejected them &amp; moved forward. Security emerged from consensus,
-not from central authority.
+This is Bitcoin's actual history:
+<br><br>
+In 2010, someone attempted to exploit the system (the Bitcoin overflow exploit). The honest majority caught it &amp; rejected it.
+In 2013-2015, various pools tried 51% attacks or double-spending. Honest nodes blacklisted them.
+In 2017, the "Bitcoin Cash" fork attempt divided the community—but the larger honest majority won, maintaining the original Bitcoin.
+<br><br>
+Every time, security emerged from consensus, not from central authority. The honest node strategy dominated because it had to.
 </p>
 <p id="evo_9_btn">
 (oh, and by the way...)
@@ -749,18 +838,21 @@ This is why Bitcoin has:
 </p>
 
 <p id="noise_5a">
-<b>Full nodes running the full validation:</b>
-Don't trust, verify. Every rule, every time.
+<b>Full nodes running complete validation:</b>
+Bitcoin nodes don't just trust—they verify every transaction, every signature, every rule. Every block is independently validated.
+This is why Bitcoin survived network delays, attacks, and bugs for 15 years.
 </p>
 
 <p id="noise_5b">
 <b>Peer review of code changes:</b>
-Network upgrades require consensus of honest nodes.
+Any proposed change to Bitcoin's rules requires honest nodes to accept it. One node can't force an upgrade—the majority must agree.
+This is why hard forks require consensus, and why contentious changes get rejected (like the 2MB block size increase).
 </p>
 
 <p id="noise_5c">
-<b>Checkpoints &amp; consensus rules:</b>
-If a majority of nodes see conflicting data, the chain reorg.
+<b>Consensus rules as the game's foundation:</b>
+Blocks that violate consensus rules are rejected by the entire network, regardless of who mines them.
+This makes attacking unprofitable: your blocks get orphaned, your hash power is wasted, attackers eventually give up.
 </p>
 
 <p id="noise_6_top">
@@ -870,17 +962,25 @@ so short-term gains don't outweigh long-term losses.
 </p>
 
 <p id="sandbox_after_5">
-Think of the implications:
-Bitcoin's rules (block rewards, mining difficulty, consensus)
-are designed to make honesty the dominant strategy.
-Not through central authority enforcing rules,
-but through game-theoretic incentives that work even among strangers.
+This is the core insight behind Bitcoin's design:
+<br><br>
+• <b>Block rewards (R):</b> Bitcoin gives miners 6.25 BTC per honest block. This makes cooperation profitable.
+<br>
+• <b>Difficulty adjustment (T):</b> Attacks are expensive—you need 51% of the network's hash power. Most attackers can't afford it.
+<br>
+• <b>Consensus rules (P):</b> Invalid blocks are rejected. Even if you control 51% hash power, you can't force the network to accept violations.
+<br><br>
+These aren't accident. They're designed to make honesty the dominant strategy.
 </p>
 
 <p id="sandbox_after_conclusion">
-So remember: <b>Trust isn't binary.</b>
-You don't need to trust people – you need to design games where honesty is the <i>only</i> profitable strategy.
-And that's what decentralization achieves.
+So here's the critical insight: <b>Trust isn't about believing people are good. It's about designing systems where honesty is the only profitable strategy.</b>
+<br><br>
+Bitcoin achieves this through game theory, not through a central authority.
+When you change the payoffs (increase block rewards, lower mining difficulty, alter consensus rules), you change which strategies win.
+Honest nodes dominate when honesty is rewarded. Attackers emerge when attacks are underpriced.
+<br><br>
+This is why governance matters. The community must actively maintain the game structure that makes Bitcoin work.
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
@@ -912,20 +1012,26 @@ Changing the game (adding delays, noise, attacks) can make trust collapse...
 </p>
 
 <p id="conclusion_6">
-Bitcoin applies these principles:
-Global consensus rules. Transparent validation. Punishing cheaters automatically.
-Infinite repetition. Decentralized participation.
+Bitcoin applies these principles:<br>
+• <b>Global consensus rules:</b> Every node validates the same way (the game is always the same)<br>
+• <b>Transparent validation:</b> All transactions are public (everyone sees if you cheat)<br>
+• <b>Automatic punishment:</b> Invalid blocks are rejected by the entire network (attackers can't win)<br>
+• <b>Infinite repetition:</b> Bitcoin runs forever (so attacking today destroys tomorrow's profits)<br>
+• <b>Decentralized participation:</b> Thousands of independent nodes (no single authority to bribe)
 </p>
 
 <p id="conclusion_7">
-The result: a system where millions of strangers maintain a shared ledger
-<i>without trusting a central authority.</i>
-Not because everyone is honest – but because honesty is the only profitable strategy.
+The result: a system where millions of strangers maintain a shared ledger <i>without trusting a central authority.</i>
+<br><br>
+It works not because everyone is honest – but because <b>honesty is the only profitable strategy.</b>
+An attacker might gain short-term advantage, but the network punishes them, reputation spreads, and honest nodes dominate long-term.
+This is why Bitcoin survived 15+ years without being hacked or requiring central control.
 </p>
 
 <p id="conclusion_end">
 That's the evolution of trust.
-And now, using Charms protocol, we can make these game moves verifiable on-chain.
+<br><br>
+And now, using Charms protocol, we can make these game moves verifiable on-chain—turning reputation into programmable governance power on Bitcoin itself.
 </p>
 
 <p id="conclusion_button">
@@ -937,13 +1043,16 @@ Now comes the powerful part: your game history proves your trustworthiness.
 </p>
 
 <p id="governance_intro_text">
-Your moves have built a reputation.<br><br>
+You cooperated [COOPERATION_RATE]% across [TOTAL_MOVES] moves. That consistency earned you <span class="[TIER_CLASS]">[TIER_LABEL]</span> status.<br><br>
 
-In Bitcoin, reputation determines influence. Nodes that validate honestly earn the right to shape network rules.<br><br>
+In Bitcoin, nodes that validate honestly don't just earn block rewards – they earn the right to shape the network's future. 
+Miners with strong track records propose protocol changes. Nodes with consistent uptime vote on consensus rules.
+Your reputation is their voting power.<br><br>
 
-<b>Now YOU get to vote.</b> Using your reputation score, you can propose and vote on changes to how the game works.<br><br>
+With <b>[VOTING_POWER] votes</b>, you now have real influence. This is how Bitcoin actually evolves: 
+not through a central committee, but through participants who've proven they keep the network healthy.<br><br>
 
-Your votes will be recorded on-chain as a permanent part of Bitcoin's history.
+<b>Cast your votes.</b> Your choices shape how the next generation of Bitcoin nodes will play.
 </p>
 
 <p id="governance_intro_btn">
@@ -960,19 +1069,24 @@ Continue →
 </p>
 
 <p id="governance_explain">
-If you recorded your game to Bitcoin, your reputation is anchored on-chain.
-This reputation isn't just a score—it's voting power in community governance.
+Your votes just changed Bitcoin's game rules. That might sound hypothetical, but it's how real Bitcoin governance works.
 </p>
 
 <p id="governance_example">
-For example: The community might propose "Change the reward for mutual cooperation from 2 to 3 coins."
-Your voting weight would be proportional to your reputation score.
-If the proposal passes, the next generation of games uses the new rules—decided by the community, executed on Bitcoin.
+Bitcoin's history is full of proposals: Segregated Witness (faster transactions), Taproot (more privacy), Fee markets (different block sizes).
+Each time, the network had to answer: should we change the rules?
+<br><br>
+Miners voted with their hash power. Nodes voted by choosing which software to run.
+Exchanges voted by which transactions they'd accept. The winners? Proposals backed by participants who maintained network security.
+<br><br>
+The proposal that passed this round will be encoded into the blockchain itself.
+Future players will inherit these rules—shaped by participants like you who cooperated and earned voting power.
 </p>
 
 <p id="governance_vision">
-This is programmable Bitcoin: game theory, reputation systems, and governance all working together.
-No central authority. No oracle. Just math, incentives, and decentralized consensus.
+This is how Bitcoin actually works: decentralized governance where influence flows to participants with proven track records.
+Not "one coin, one vote" – but "one reputation, one vote."
+The math ensures that attackers can't control voting power, because attacking destroys the reputation required to propose changes.
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
