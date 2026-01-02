@@ -233,12 +233,24 @@ function initOnChainReputation() {
         };
       });
       
+      // Prove game moves via Charms zkVM (generates ZK proof)
+      var builder = getBitcoinTxBuilder();
+      var proofPromise = builder.proveGameMoves({
+        moves: gameHistory.map(function(h) { return h.isCooperative ? 0 : 1; }),
+        opponentMoves: [], // Would need to track opponent moves
+        totalMoves: reputationData.totalMoves,
+        cooperativeMoves: reputationData.cooperativeMoves
+      }, bitcoinAddress);
+
       // Submit reputation on-chain
       console.log("[Bitcoin Mode] Submitting reputation to Bitcoin...");
-      return charmsClient.submitReputationOnChain(gameHistory, {
-        score: reputationData.score,
-        tier: reputationData.tier.label,
-        votingPower: reputationData.votingPower
+      return proofPromise.then(function(proof) {
+        return charmsClient.submitReputationOnChain(gameHistory, {
+          score: reputationData.score,
+          tier: reputationData.tier.label,
+          votingPower: reputationData.votingPower,
+          proof: proof.proofHex
+        });
       }).then(function(txid) {
         console.log("[Bitcoin Mode] Reputation anchored to Bitcoin:", txid);
         

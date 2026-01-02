@@ -1,0 +1,88 @@
+# CHARMS SPELL DEFINITION: Covenant Trust Game Reputation Anchor
+# 
+# Spell: Validates game moves and anchors reputation to Bitcoin
+# Network: Signet (testnet4)
+# References: BIP144 (Witness), Charms spec, zkBTC ecosystem
+
+name: "trust_game_reputation"
+description: "Anchor game reputation to Bitcoin via Charms protocol"
+version: "1.0"
+
+# zkVM binary (generates proofs)
+zkvm:
+  binary: "target/release/trust-game"
+  timeout: 300 # seconds (charms spell prove ~5min)
+
+# Input schema: what the game provides to zkVM
+input:
+  player_address:
+    type: string
+    description: "Signet address (tb1q...)"
+    example: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"
+  
+  moves:
+    type: array
+    items: integer
+    description: "Player moves: 0=Cooperate, 1=Defect"
+    example: [0, 0, 1, 0, 0]
+  
+  opponent_moves:
+    type: array
+    items: integer
+    description: "Opponent moves for context"
+    example: [0, 1, 1, 0, 0]
+  
+  payoffs:
+    type: array
+    items: integer
+    minItems: 4
+    maxItems: 4
+    description: "Payoff matrix [R, T, S, P]"
+    example: [2, 3, -1, 0]
+
+# Output schema: what the zkVM proves
+output:
+  player_address: string
+  total_moves: integer
+  cooperative_moves: integer
+  reputation_score: integer
+  tier: integer
+  voting_power: integer
+
+# Spell logic: 2-transaction pattern
+spell:
+  # Phase 1: Commit transaction
+  commit:
+    type: "transaction"
+    description: "Create commitment to spell"
+    outputs:
+      - value: 0  # No satoshis (just commitment hash)
+        script: "OP_RETURN <32-byte spell hash>"
+  
+  # Phase 2: Spell transaction
+  spell_tx:
+    type: "transaction"
+    description: "Execute spell with proof in witness"
+    inputs:
+      - previous_tx: "commit_tx"
+        witness: ["", <proof>, <spell_data>, ""]
+    outputs:
+      - value: 0
+        script: "OP_RETURN"
+
+# Verification constraints (what chain validates)
+constraints:
+  - "Reputation score must be 0-100"
+  - "Tier must be 0 (Suspicious), 1 (Neutral), or 2 (Trusted)"
+  - "Voting power = score * tier_multiplier"
+  - "Cooperative moves <= total moves"
+
+# Governance integration
+governance:
+  enabled: true
+  voting_power_field: "voting_power"
+  description: "Players vote on protocol with reputation-weighted votes"
+  tier_multipliers:
+    suspicious: 0.5  # tier 0
+    neutral: 1.0     # tier 1
+    trusted: 1.5     # tier 2
