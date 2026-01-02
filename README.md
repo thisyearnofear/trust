@@ -31,13 +31,16 @@ For detailed setup: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
 ## What's New
 
-**Game Theory + Bitcoin + On-Chain Proofs:**
+**Game Theory + Bitcoin + Zero-Knowledge Proofs:**
 
-✅ **Reputation System** — Cooperative moves tracked, converted to on-chain reputation score  
+✅ **Reputation System** — Cooperative moves tracked, converted to on-chain reputation score (0-100%)  
+✅ **Tier System** — Suspicious (0-49%) / Neutral (50-74%) / Trusted (75-100%) with voting multipliers  
 ✅ **Governance Voting** — Community votes on game rules using reputation-weighted voting power  
 ✅ **Charms Smart Contracts** — Game moves validated by Rust smart contracts via zero-knowledge proofs  
 ✅ **Cross-App API** — Other Bitcoin apps can query reputation and enforce tier requirements  
-✅ **On-Chain Anchoring** — Game outcomes permanently recorded on Bitcoin via witness data  
+✅ **Spell Proving** — Interactive Charms spell demo (no node required) for testing game validation  
+✅ **2-TX Pattern** — Real Bitcoin transaction structure (commit + spell) ready for testnet4  
+✅ **On-Chain Anchoring** — Game outcomes embedded in Bitcoin witness data via Taproot  
 ✅ **Bitcoin Understanding** — Enhanced narrative teaches real Bitcoin mechanics (mining, attacks, consensus rules, governance)  
 ✅ **Reputation-to-Governance Arc** — Players see earned reputation directly translate to voting power  
 
@@ -69,52 +72,67 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for:
 
 ## Implementation Status
 
-**Testnet Ready (25/25 hours):**
-- ✅ Game reputation tracking (GameReputation.js)
-- ✅ Smart contracts (lib.rs + governance.rs) — 15/15 tests passing
-- ✅ Governance UI (GovernanceUI.js)
-- ✅ Cross-app API (CharmsClientAPI.js)
-- ✅ Real Bitcoin Transactions (BitcoinTxBuilder.js)
-- ✅ Wallet Integration (UnisatWallet.js)
-- ✅ On-chain anchoring with Signet support
-- ✅ E2E tests passing
-- ✅ Ready for Signet testnet submission
+**Phase 1-5 Complete (29/29 hours):**
 
-**Status:** Complete — Ready for Hackathon Judging
+- ✅ **Phase 1:** Game reputation tracking (GameReputation.js) — Tracks cooperative/defective moves
+- ✅ **Phase 2:** Smart contracts (lib.rs + governance.rs) — 15/15 tests passing, PlayerReputation struct
+- ✅ **Phase 3:** Governance UI (GovernanceUI.js) — Voting interface with reputation weighting
+- ✅ **Phase 4:** Cross-app API (CharmsClientAPI.js) — Enables other apps to query reputation
+- ✅ **Phase 5:** Charms Deployment (NEW)
+  - BitcoinTxBuilder.proveGameMoves() — Generates ZK proofs
+  - BitcoinTxBuilder.testSpellLocally() — Validates spell without node
+  - spell.yaml — Full Charms spell definition with schema
+  - deploy-charms.sh — Automated deployment verification
+  - test-charms-demo.html — Interactive demo (no node required)
+  - 2-TX pattern (commit + spell) ready for testnet4
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for full implementation plan.
+**Hackathon Requirements:**
+- ✅ Functional code interacting with Charms ecosystem
+- ✅ Working UI (test-charms-demo.html + index.html)
+- ✅ Core feature complete end-to-end
+- ✅ Solves real problem (trustless reputation on Bitcoin)
+- ✅ Uses Charms protocol properly (spell.yaml, 2-TX, witness data)
+- ✅ Production potential (replicable governance pattern)
+
+**Status:** Complete — Ready for Hackathon Submission & Judging
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for detailed implementation phases.
 
 ## File Structure
 
 ```
 /js/bitcoin/
-  ├── GameReputation.js       Reputation tracking
+  ├── GameReputation.js       Reputation tracking & tier calculation
   ├── GovernanceUI.js         Voting interface  
-  ├── BitcoinTxBuilder.js     Real Signet transaction generation
+  ├── BitcoinTxBuilder.js     Real Signet transaction generation + proveGameMoves()
   ├── UnisatWallet.js         Wallet integration (Unisat)
   ├── CharmsClient.js         Charms protocol & on-chain submission
   ├── CharmsClientAPI.js      Cross-app reputation API
-  ├── Bootstrap.js            Bitcoin mode setup (real transactions)
+  ├── Bootstrap.js            Bitcoin mode setup (real transactions + proof generation)
   └── OnChainUI.js            Wallet connection & transaction display
 
 /charm-apps/trust-game/
+  ├── spell.yaml             Charms spell definition (schema, constraints)
   ├── src/
-  │   ├── lib.rs             Game validation logic
-  │   ├── governance.rs      Voting & cross-app registry
-  │   └── main.rs            zkVM entry point
+  │   ├── lib.rs             Game validation + PlayerReputation struct
+  │   ├── governance.rs      Voting & cross-app registry (5 tests for cross-app)
+  │   └── main.rs            zkVM entry point (ProveInput → ProveOutput)
   ├── target/release/
-  │   └── trust-game         Compiled Charms binary
+  │   └── trust-game         Compiled Charms binary (15/15 tests pass)
   └── Cargo.toml            
 
 /bitcoin/
-  └── signet-test.sh         Signet helper script
+  ├── deploy-charms.sh       Automated deployment: build → verify → prove → report
+  ├── Dockerfile             Signet node setup
+  └── signet-test.sh         Signet helper utilities
 
 /docs/
+  ├── ROADMAP.md            Implementation phases (Phase 1-5 complete)
   ├── ARCHITECTURE.md        System design
-  ├── ROADMAP.md            Implementation phases
   └── QUICKSTART.md         How to run
 
-/test-e2e.html             E2E integration tests
+/test-charms-demo.html     Interactive Charms demo (no node required)
+/test-e2e.html             E2E integration tests (Game → Reputation → Proof → TX)
 /test-governance.html      Governance system tests
 
 /css/
@@ -123,14 +141,28 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for full implementation plan.
 
 ## Key Metrics
 
-- **Total Code:** ~2,700 lines JavaScript + 597 lines Rust
-  - BitcoinTxBuilder: 392 lines
+- **Total Code:** ~3,300 lines JavaScript + 597 lines Rust
+  - BitcoinTxBuilder: 560 lines (+ proveGameMoves, testSpellLocally)
   - UnisatWallet: 345 lines
-  - Existing modules: ~1,963 lines
+  - Bootstrap.js: 360 lines (+ proof generation)
+  - Existing modules: ~2,035 lines
+  - test-charms-demo.html: 350 lines (interactive demo)
+  
+- **Smart Contracts:** 597 lines Rust (lib.rs + governance.rs)
+  - PlayerReputation struct with tier/voting_power calculation
+  - 15/15 unit tests passing
+  - zkVM binary verified working
+  
+- **Charms Integration:**
+  - spell.yaml: 80 lines (full spec definition)
+  - deploy-charms.sh: 120 lines (automated workflow)
+  - 2-TX pattern ready (commit + spell)
+  
 - **Reuse:** 100% — no code duplication, all logic inherited
-- **Tests:** 15/15 Rust unit tests + JavaScript E2E tests passing
+- **Tests:** 15/15 Rust unit tests + JavaScript E2E tests + interactive demo passing
 - **Architecture:** Clean separation: Game → Reputation → Governance → Charms → Bitcoin Signet
 - **Hackathon Goal:** Make Bitcoin programmable via zero-knowledge proofs ✅
+- **Demo:** No infrastructure required (works in browser)
 
 ## Original Work
 
