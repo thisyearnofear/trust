@@ -56,6 +56,18 @@ window.onload = function(){
 		// First slide!
 		slideshow.nextSlide();
 
+		// Refresh text in all objects after Words are loaded
+		setTimeout(function(){
+			if(slideshow && slideshow.objects){
+				for(var objId in slideshow.objects){
+					var obj = slideshow.objects[objId];
+					if(obj.text_id && obj.setTextID){
+						obj.setTextID(obj.text_id);
+					}
+				}
+			}
+		}, 100);
+
 	});
 
 };

@@ -17,7 +17,13 @@ function TextBox(config){
 	};
 	self.setTextID = function(id){
 		self.text_id = id;
-		self.setText(Words.get(self.text_id));
+		var text = Words.get(self.text_id);
+		if(text !== undefined) {
+			self.setText(text);
+		} else {
+			// Words not loaded yet, set placeholder and retry when ready
+			self.dom.innerHTML = "";
+		}
 	};
 	if(config.text_id) self.setTextID(config.text_id);
 	else if(config.text) self.setText(config.text);
@@ -52,7 +58,8 @@ function CharacterTextBox(config){
 	// Description
 	var desc = document.createElement("div");
 	desc.id = "desc";
-	desc.innerHTML = Words.get("character_"+config.character);
+	var charText = Words.get("character_"+config.character);
+	desc.innerHTML = charText || "";
 	self.dom.appendChild(desc);
 
 	// Add & Remove

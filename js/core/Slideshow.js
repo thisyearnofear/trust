@@ -54,6 +54,18 @@ function Slideshow(config){
 			self.currentSlide.onstart(self);
 		}
 
+		// Refresh text in newly added objects if Words are loaded
+		if(Words && Words.text){
+			setTimeout(function(){
+				for(var objId in self.objects){
+					var obj = self.objects[objId];
+					if(obj.text_id && obj.setTextID){
+						obj.setTextID(obj.text_id);
+					}
+				}
+			}, 50);
+		}
+
 		// Send out message!
 		publish("slideshow/slideChange", [self.currentSlide.id]);
 
