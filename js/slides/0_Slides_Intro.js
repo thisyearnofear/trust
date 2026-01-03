@@ -146,14 +146,14 @@ SLIDES.push({
 		// Why this works - part 1
 		self.add({
 			id:"why_1", type:"TextBox",
-			x:130, y:20, width:700, height:160, align:"center",
+			x:130, y:80, width:700, height:140, align:"center",
 			text_id:"why_this_works_1"
 		});
 
 		// Why this works - part 2
 		self.add({
 			id:"why_2", type:"TextBox",
-			x:130, y:290, width:700, height:140, align:"center",
+			x:130, y:340, width:700, height:100, align:"center",
 			text_id:"why_this_works_2"
 		});
 
@@ -229,7 +229,7 @@ SLIDES.push({
 		// Button to continue to credits
 		self.add({
 			id:"what_button", type:"Button", x:304, y:466, size:"long",
-			text: "Continue →",
+			text_id:"charms_what_btn",
 			message:"slideshow/scratch"
 		});
 

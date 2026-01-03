@@ -13,13 +13,13 @@ SLIDES.push({
 		// Labels
 		self.add({
 			id:"labelYou", type:"TextBox",
-			x:211, y:201, width:50, height:50,
+			x:211, y:140, width:50, height:50,
 			align:"center", color:"#aaa", size:17,
 			text_id:"label_you"
 		});
 		self.add({
 			id:"labelThem", type:"TextBox",
-			x:702, y:189, width:50, height:50,
+			x:702, y:128, width:50, height:50,
 			align:"center", color:"#aaa", size:17,
 			text_id:"label_them"
 		});
