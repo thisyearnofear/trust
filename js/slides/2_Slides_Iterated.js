@@ -35,16 +35,16 @@ SLIDES.push({
 		// Words on top & bottom
 		self.add({
 			id:"topWords", type:"TextBox", text_id:"iterated_intro_top",
-			x:130, y:10, width:700, height:100, align:"center"
+			x:130, y:10, width:700, height:110, align:"center"
 		});
 		self.add({
 			id:"btmWords", type:"TextBox", text_id:"iterated_intro_btm",
-			x:130, y:410, width:700, height:100, align:"center"
+			x:130, y:408, width:700, height:50, align:"center"
 		});
 
 		// Buttons
 		self.add({
-			id:"buttonCheat", type:"Button", x:275, y:453, uppercase:true,
+			id:"buttonCheat", type:"Button", x:275, y:470, uppercase:true,
 			text_id:"label_cheat",
 			onclick:function(){
 				_.answer = "CHEAT";
@@ -52,7 +52,7 @@ SLIDES.push({
 			}
 		});
 		self.add({
-			id:"buttonCooperate", type:"Button", x:495, y:450, uppercase:true,
+			id:"buttonCooperate", type:"Button", x:495, y:470, uppercase:true,
 			text_id:"label_cooperate",
 			onclick:function(){
 				_.answer = "COOPERATE";
