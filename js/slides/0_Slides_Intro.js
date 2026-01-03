@@ -146,14 +146,14 @@ SLIDES.push({
 		// Why this works - part 1
 		self.add({
 			id:"why_1", type:"TextBox",
-			x:130, y:20, width:700, height:200, align:"center",
+			x:130, y:20, width:700, height:160, align:"center",
 			text_id:"why_this_works_1"
 		});
 
 		// Why this works - part 2
 		self.add({
 			id:"why_2", type:"TextBox",
-			x:130, y:240, width:700, height:200, align:"center",
+			x:130, y:290, width:700, height:140, align:"center",
 			text_id:"why_this_works_2"
 		});
 
