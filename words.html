@@ -58,35 +58,16 @@ PLAY &rarr;
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="intro">
-In 2008, something remarkable happened.
+In 2008, Satoshi Nakamoto solved an ancient problem:
 <br><br>
-
-Satoshi Nakamoto released Bitcoin: a system where strangers could exchange value<br>
-without trusting a bank, government, or any central authority.<br>
-For over a decade, Bitcoin has worked. Not because everyone is honest,<br>
-but because the system is <i>designed</i> to work even when people try to cheat.
+<b>How do strangers exchange value without a bank?</b>
 <br><br>
-
-<b>But here's the problem Bitcoin solved:</b><br>
-How do you prevent double-spending without a central ledger-keeper?<br>
-If Alice and Bob both claim ownership of the same coin, who decides who's right?<br>
-Normally, you need a bank. But Bitcoin has no bank. So how does it work?
+Bitcoin works because the rules reward cooperation and punish cheating.
+Miners don't need to trust each other — they trust the incentives.
 <br><br>
-
-This is called <b>the Byzantine Generals Problem.</b> Imagine an army with generals<br>
-scattered across a battlefield. They need to coordinate an attack, but some generals<br>
-might be traitors. How do they reach consensus when they can't trust each other?<br>
-For decades, computer scientists thought this was impossible without a trusted authority.
+<b>Game theory is the answer.</b>
 <br><br>
-
-But here's the genius insight: <b>Game theory solves it.</b><br>
-Bitcoin doesn't require trust. It requires <i>incentives</i> that make honesty profitable<br>
-and dishonesty unprofitable. Why don't miners attack the network?<br>
-Why do nodes validate transactions they don't have to?<br>
-Because the rules reward cooperation and punish attacks.
-<br><br>
-
-Let's see how this works...
+Let's play the Bitcoin game and see how it works...
 </p>
 <p id="intro_button">
 ...let's play a game about Bitcoin. &rarr;
@@ -153,22 +134,15 @@ other participant<br>↘
 
 <p id="oneoff_0_top">
 
-<b>A SINGLE TRANSACTION</b>
+<b>A SINGLE BLOCK</b>
 <br>
-Imagine you're a miner wanting to send bitcoin. Two paths:
-<br><br>
-<b>COOPERATE:</b> You follow Bitcoin's consensus rules. You validate transactions honestly, include them in your block. 
-The network accepts your block, you earn a reward. Everyone's transactions work. Network stays secure.
-<br><br>
-<b>CHEAT:</b> You ignore consensus rules. You accept invalid transactions or double-spend coins.
-You earn short-term profit, but other nodes reject your block. Your coins get orphaned.
-<br><br>
-Each participant faces the same choice. What should <b>you</b> do?
+You're a miner. <b>COOPERATE:</b> Follow consensus rules, earn fair reward.
+<br><b>CHEAT:</b> Break rules, quick profit, but network rejects you.
 </p>
 
 <p id="oneoff_0_btm">
-<b>Let's say the other miner cheats: they broadcast an invalid block trying to double-spend.</b><br>
-Should you cooperate or also cheat?
+<b>The other miner cheats.</b><br>
+Do you cooperate or cheat back?
 </p>
 
 <p id="oneoff_1_cheated">
