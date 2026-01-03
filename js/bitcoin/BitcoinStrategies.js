@@ -1,12 +1,31 @@
 /**
  * BITCOIN ADAPTATION: Strategy Wrapping
  * 
- * Extend existing game logic (PD.js) with Bitcoin context
- * Pure inheritance – no duplicate code
+ * Maps original game theory strategies to Bitcoin node types.
+ * Used when BITCOIN_MODE is enabled to rename/relabel players.
  * 
- * These strategies inherit existing Logic_* classes from PD.js
- * and add Bitcoin semantics (labels, descriptions)
+ * Example: tft → HonestNode (same logic, Bitcoin terminology)
  */
+
+// STRATEGY MAPPING: Original game theory name → Bitcoin node type
+var BITCOIN_STRATEGY_MAP = {
+  "tft": "HonestNode",           // Copycat → Honest Node (validates fairly, mirrors opponent)
+  "all_c": "FullNode",           // Always Cooperate → Full Node (always follows consensus)
+  "all_d": "Attacker51",         // Always Cheat → 51% Attacker (always attacks)
+  "grudge": "ChainValidator",    // Grudger → Chain Validator (fair but remembers attackers)
+  "prober": "AdaptiveNode",      // Detective → Adaptive Node (probes then adapts)
+  "tf2t": "ForgivingNode",       // Copykitten → Forgiving Node (more forgiving of mistakes)
+  "pavlov": "SimplexNode",       // Simpleton → Simplex Node (win-stay, lose-shift)
+  "random": "UnpredictableNode"  // Random → Unpredictable Node
+};
+
+// Get Bitcoin strategy name (or original if not in Bitcoin mode)
+function getBitcoinStrategyName(originalId) {
+  if (!BITCOIN_MODE || !BITCOIN_STRATEGY_MAP[originalId]) {
+    return originalId;
+  }
+  return BITCOIN_STRATEGY_MAP[originalId];
+}
 
 /**
  * HONEST NODE
@@ -185,6 +204,22 @@ function createBitcoinStrategy(strategyId) {
 }
 
 /**
+ * Create window aliases for Bitcoin strategy names
+ * So Iterated.js can find Logic_HonestNode, Logic_51Attacker, etc.
+ */
+if (typeof window !== 'undefined') {
+  // Alias Bitcoin strategy names to their implementations
+  window.Logic_HonestNode = Logic_HonestNode;
+  window.Logic_Attacker51 = Logic_51Attacker;
+  window.Logic_FullNode = Logic_FullNode;
+  window.Logic_ChainValidator = Logic_ChainValidator;
+  window.Logic_AdaptiveNode = Logic_AdaptiveNode;
+  window.Logic_ForgivingNode = Logic_LenientNode;
+  window.Logic_SimplexNode = Logic_WinStayNode;
+  window.Logic_UnpredictableNode = Logic_UnpredictableNode;
+}
+
+/**
  * Export for module systems
  */
 if (typeof module !== 'undefined' && module.exports) {
@@ -197,7 +232,8 @@ if (typeof module !== 'undefined' && module.exports) {
     Logic_LenientNode,
     Logic_WinStayNode,
     Logic_UnpredictableNode,
-    STRATEGY_BITCOIN_MAPPING,
+    BITCOIN_STRATEGY_MAP,
+    getBitcoinStrategyName,
     createBitcoinStrategy
   };
 }

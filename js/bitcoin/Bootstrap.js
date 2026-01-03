@@ -27,6 +27,12 @@ var NARRATIVE_MODE = "bitcoin";
   window.gameGovernance = initGameGovernance();
   console.log("[Bitcoin Mode] Governance system initialized");
   
+  // Initialize on-chain UI (wallet display, transaction history)
+  if (typeof OnChainUI !== 'undefined') {
+    OnChainUI.init();
+    console.log("[Bitcoin Mode] On-chain UI initialized");
+  }
+  
   // Override peep metadata with Bitcoin labels
   if (window.PEEP_METADATA) {
     var originalMetadata = PEEP_METADATA;

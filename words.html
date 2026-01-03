@@ -1,40 +1,13 @@
 <!--
 
-THIS FILE HAS ABOUT 3,300 WORDS TO TRANSLATE
+COVENANT: BITCOIN GOVERNANCE THROUGH GAME THEORY
+Zero-knowledge reputation proofs on Bitcoin via Charms
 
-TRANSLATION NOTES:
+Based on "The Evolution of Trust" by Nicky Case
+Built for Enchanting UTXO hackathon on Bitcoin
 
-When translating this thing, only edit the stuff that's BETWEEN the <tags>, like so:
-
-    <p id="still_english">hello</p>
-    =>
-    <p id="still_english">bonjour</p>
-
-Also, DON'T change anything between the [square brackets], like so:
-
-    Number #[N]
-    =>
-    Numero #[N]
-
-Exception to the "don't change tags" rule:
-Feel free to move around the italics & bold tags, so that the emphasis
-on the right phrases/words still makes sense!
-
-    <i>italics</i>
-    <b>bold</b>
-
-Also, some HTML weirdness you might want to know:
-
-    &amp; is an ampersand "&" sign
-    &#8226; is a dot
-    &rarr; is a rightward-facing arrow
-    &lt; is a "<" sign
-
-ALSO! I'd love for you to credit yourself as a translator!
-You can add your own name in the <p id="subtitle"> section
-
-Thanks again!
-~ Nicky Case
+DO NOT EDIT TAGS OR STRUCTURE
+Only edit content BETWEEN tags
 
 -->
 
@@ -46,7 +19,7 @@ Thanks again!
 Covenant: Bitcoin Governance Through Game Theory
 </p>
 <p id="meta_desc">
-Prove cooperation on Bitcoin. Play game theory, earn reputation, vote on governance. Zero-knowledge proofs on Bitcoin via Charms.
+Prove cooperation on Bitcoin. Play game theory, earn reputation, vote on governance via zero-knowledge proofs.
 </p>
 <p id="meta_loading">
 loading...
@@ -58,26 +31,18 @@ ON
 OFF
 </p>
 
-
 <!-- - - - - - - - - - - - - - - - - -->
 <!-- - - - - - TITLE! - - - - - - - - -->
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="title">
-COVENANT<br>
-<span style="font-size:0.75em">BITCOIN GOVERNANCE</span>
+<span style="font-size:0.75em">COVENANT:</span><br>
+BITCOIN GOVERNANCE<br>
+<span style="font-size:0.75em">THROUGH GAME THEORY</span>
 </p>
 <p id="subtitle">
 
-playing time: 30 min &#8226; Bitcoin adaptation via zero-knowledge proofs
-
-<!-- TRANSLATION NOTE: UNCOMMENT THE FOLLOWING & ADD YOUR OWN NAME! -->
-<!--
-<br>
-translated by YOUR NAME HERE
-&#8226;
-<a href="http://ncase.me/trust/">original English version</a>
--->
+playing time: 30 min &#8226; prove cooperation on Bitcoin &#8226; enchanting UTXO hackathon
 
 </p>
 
@@ -93,19 +58,70 @@ PLAY &rarr;
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="intro">
-Bitcoin works because the game is designed right.
+In 2008, something remarkable happened.
 <br><br>
 
-In the next 30 minutes, you'll play the same game Bitcoin nodes play every day—and you'll learn why honest strategies win, why attacks fail, and how incentives can align without a central authority.
+Satoshi Nakamoto released Bitcoin: a system where strangers could exchange value<br>
+without trusting a bank, government, or any central authority.<br>
+For over a decade, Bitcoin has worked. Not because everyone is honest,<br>
+but because the system is <i>designed</i> to work even when people try to cheat.
 <br><br>
 
-You'll also earn <b>on-chain reputation</b> and <b>vote on rule changes</b> that affect the next game—demonstrating how Bitcoin can be programmable, not just secure.
+<b>But here's the problem Bitcoin solved:</b><br>
+How do you prevent double-spending without a central ledger-keeper?<br>
+If Alice and Bob both claim ownership of the same coin, who decides who's right?<br>
+Normally, you need a bank. But Bitcoin has no bank. So how does it work?
 <br><br>
 
-This is game theory in action. This is why Bitcoin works.
+This is called <b>the Byzantine Generals Problem.</b> Imagine an army with generals<br>
+scattered across a battlefield. They need to coordinate an attack, but some generals<br>
+might be traitors. How do they reach consensus when they can't trust each other?<br>
+For decades, computer scientists thought this was impossible without a trusted authority.
+<br><br>
+
+But here's the genius insight: <b>Game theory solves it.</b><br>
+Bitcoin doesn't require trust. It requires <i>incentives</i> that make honesty profitable<br>
+and dishonesty unprofitable. Why don't miners attack the network?<br>
+Why do nodes validate transactions they don't have to?<br>
+Because the rules reward cooperation and punish attacks.
+<br><br>
+
+Let's see how this works...
 </p>
 <p id="intro_button">
-...let's play a game. &rarr;
+...let's play a game about Bitcoin. &rarr;
+</p>
+
+<!-- - - - - - - - - - - - - - - - - -->
+<!-- - - - - WHY THIS WORKS - - - - -->
+<!-- - - - - - - - - - - - - - - - - -->
+
+<p id="why_this_works_top">
+<b>Why Bitcoin's approach worked when others failed</b>
+</p>
+
+<p id="why_this_works_1">
+Governments and banks solved double-spending with <i>a ledger-keeper:</i> a central authority<br>
+who decides which transactions are valid. Trust the bank, you trust the system.
+<br><br>
+But cryptographers wanted to do it without a central authority. They tried signatures, hashing, encryption.<br>
+None of it worked. Without a central timestamp, you can't prove which coin was spent first.
+</p>
+
+<p id="why_this_works_2">
+Bitcoin's breakthrough: <b>A distributed ledger + game theory.</b>
+<br><br>
+Instead of one ledger-keeper, there are thousands of nodes.
+Instead of requiring trust, Bitcoin requires <i>proof-of-work</i> + <i>incentives.</i>
+<br><br>
+• You can't rewrite the past (proof-of-work makes attacks expensive)<br>
+• You can't fake the majority (you need 51% hash power)<br>
+• You aren't incentivized to attack (honest mining is more profitable)<br>
+• The game is eternal (today's attack destroys tomorrow's rewards)
+</p>
+
+<p id="why_this_works_btn">
+So let's play the game Bitcoin nodes play every day. &rarr;
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
@@ -113,91 +129,92 @@ This is game theory in action. This is why Bitcoin works.
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="label_you_cooperate">
-you<br>cooperate
+you<br>follow consensus
 </p>
 
 <p id="label_you_cheat">
-you<br>cheat
+you<br>attack network
 </p>
 
 <p id="label_they_cooperate">
-they<br>cooperate
+they<br>follow consensus
 </p>
 
 <p id="label_they_cheat">
-they<br>cheat
+they<br>attack network
 </p>
 
 <p id="label_you">
-you<br>↙
+you (miner/node)<br>↙
 </p>
 <p id="label_them">
-other player<br>↘
+other participant<br>↘
 </p>
 
 <p id="oneoff_0_top">
 
-<b>THE NETWORK DILEMMA</b>
+<b>A SINGLE TRANSACTION</b>
 <br>
-You are a Bitcoin node. In front of you: a transaction to validate.
+Imagine you're a miner wanting to send bitcoin. Two paths:
 <br><br>
-If you <b>validate honestly</b>, the network stays secure and you get transaction fees.<br>
-If the other node validates honestly, you both profit.
+<b>COOPERATE:</b> You follow Bitcoin's consensus rules. You validate transactions honestly, include them in your block. 
+The network accepts your block, you earn a reward. Everyone's transactions work. Network stays secure.
 <br><br>
-But if you both <b>attack the network</b> (double-spend, steal), neither of you gain anything—the network breaks.
+<b>CHEAT:</b> You ignore consensus rules. You accept invalid transactions or double-spend coins.
+You earn short-term profit, but other nodes reject your block. Your coins get orphaned.
 <br><br>
-You can either <b>FOLLOW CONSENSUS</b> (cooperate), or <b>ATTACK</b> (cheat).
+Each participant faces the same choice. What should <b>you</b> do?
 </p>
 
 <p id="oneoff_0_btm">
-<b>Let's say the other node attacks the network.</b><br>
-What should you do?
+<b>Let's say the other miner cheats: they broadcast an invalid block trying to double-spend.</b><br>
+Should you cooperate or also cheat?
 </p>
 
 <p id="oneoff_1_cheated">
-Exactly! Why lose sats while they attack? Attack back.
+Right! Don't let them double-spend you while you play by the rules.
 </p>
 
 <p id="oneoff_1_cooperated">
-Alas, validating honestly while they attack loses you fees!
+Too idealistic – they just robbed you while you played fair!
 </p>
 
 <p id="oneoff_1_top">
-If you validate &amp; they attack, you lose fees while they gain satoshis. (score: -1 vs +3)<br>
-But if you both attack, the network fails and nobody profits. (score: 0 vs 0)
+If you cooperate &amp; they cheat, you lose: they accept invalid transactions and benefit unfairly (+3) while your honest block gets rejected (-1).
+However, if you both cheat, the network breaks. Neither of you can trust it anymore. (both 0)
+<b>Therefore: it seems logical to CHEAT.</b>
 <br><br>
-<b>Rationally: you should ATTACK.</b>
+But this is a single transaction. Bitcoin isn't a single transaction. It's eternal repetition.
 </p>
 
 <p id="oneoff_1_btm">
-<b>But let's say the other node validates honestly.</b><br>
+<b>But let's say the other participant cooperates, validating transactions honestly.</b><br>
 What should you do now?
 </p>
 
 <p id="oneoff_2_cheated">
-Greedy. Attack. Get the sats.
+Harsh... but yes, if you can get away with breaking the rules, you might gain short-term advantage.
 </p>
 
 <p id="oneoff_2_cooperated">
-Play fair? The Bitcoin way?  <b>OR IS IT??</b>
+Noble! Sure, seems right... <b>OR IS IT??</b>
 </p>
 
 <p id="oneoff_2_top">
-If you both validate, you both earn transaction fees. (score: +2 vs +2)<br>
-But if you attack while they validate honestly, you steal their sats. (score: +3 vs -1)
-<br><br>
-<b>So you "should" still ATTACK.</b>
+Because if you both cooperate, the network works perfectly &amp; you both benefit from valid transactions. (score: +2 vs +2)
+But if you cheat &amp; they follow rules, you might succeed in a double-spend they won't catch. (score: +3 vs -1)
+<b>Therefore: you "should" still CHEAT.</b>
 </p>
 
 <p id="oneoff_2_btm">
-And <i>that's</i> the dilemma every Bitcoin node faces.
-Attacking is individually rational. But if every node attacks, Bitcoin collapses—and nobody profits.
-<br><br>
-Distrust seems rational in one interaction. But what happens in repeated games?
+And <i>that's</i> Bitcoin's core challenge.
+Individual participants have incentive to attack the network, even if it destroys value for everyone.
+Sometimes, breaking the rules <i>seems</i> rational in isolation!
+But what happens if we play this game...
 </p>
 
 <p id="oneoff_button_next">
-...over time? When reputation matters? &rarr;
+...many times, across many blocks? &rarr;
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
@@ -205,121 +222,157 @@ Distrust seems rational in one interaction. But what happens in repeated games?
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="iterated_intro_top">
-<b>Now, let's play for real.</b>
-You'll face 5 different node types, each with their own behavior.
-Against each node, you'll play 3-7 blocks.
-(You won't know when the chain ends)
+<b>The Blockchain: A Repeated Game (This is why Bitcoin works)</b>
 <br><br>
-Their reputation is on the line. So is yours.
+Bitcoin isn't a single transaction – it's an <i>infinite sequence</i> of blocks, forever.
+You'll validate transactions against the same network participants, round after round, every 10 minutes, for all eternity.
+<br><br>
+In a single game, cheating seems rational. In a repeated game? Everything changes.
+Attack once, and every other node blacklists you. Defend your reputation, and you earn rewards forever.
+<br><br>
+The question: will others trust you? And critically: <b>can you afford to break their trust?</b>
 </p>
 
 <p id="iterated_intro_btm">
-Pick your first move. <b>You're now part of the network.</b>
+This is your actual choice, played out over blocks. <b>Choose wisely.</b>
 </p>
 
 <p id="iterated_info_1">
-opponent: [X] of [Y]
+block: [X] of [Y]
 </p>
 </p>
 <p id="iterated_info_2">
-your total score: 
+your cumulative reward: 
 </p>
 
 <p id="iterated_score_start">
-And your total score is...
+And your total reward is...
 </p>
 <p id="iterated_score_1">
-which is, wow, actually <i>impressively</i> bad.
+which is, wow, <i>embarrassingly</i> low. You got attacked constantly.
 </p>
 <p id="iterated_score_2">
-which, uh, could be worse!
+which could have been much better – the network didn't trust you.
 </p>
 <p id="iterated_score_3">
-which ain't bad!
+which is respectable! You earned decent rewards.
 </p>
 <p id="iterated_score_4">
-which is pretty good!
+which is solid! The network rewarded your honesty.
 </p>
 <p id="iterated_score_5">
-which is <i>perfect!</i> Congrats you have too much time on your hands.
+which is <i>optimal!</i> You maximized your gains through consistent cooperation.
 </p>
 <p id="iterated_score_x">
-...i have no idea how you did that.
+...i have no idea how you hacked this.
 </p>
 <p id="iterated_score_end">
 (the lowest &amp; highest possible scores are 7 and 49, respectively)
 </p>
 
+<p id="reputation_earned">
+Your game is complete. Let's calculate your reputation.
+</p>
+
+<p id="reputation_reveal">
+You cooperated [COOPERATION_COUNT] times. You defected [DEFECTION_COUNT] times.
+That's a [COOPERATION_RATE]% cooperation rate, earning you <span class="[TIER_CLASS]">[TIER_LABEL]</span> status.
+<br><br>
+In Bitcoin, this score means something tangible:
+<br>
+If you were a node validating transactions, [TIER_LABEL] nodes are [TIER_DESCRIPTION].
+Your voting power on protocol changes would be [VOTING_POWER] votes.
+</p>
+
+<p id="reputation_what_it_means">
+<b>What does [TIER_LABEL] mean in Bitcoin?</b>
+<br><br>
+<b>Trusted nodes (75%+):</b> These are the miners and validators the community trusts with network upgrades. Their proposals get heard. Their votes carry weight. When they propose rule changes, other nodes listen.
+<br><br>
+<b>Neutral nodes (50-74%):</b> These are solid, mostly-honest participants. They contribute to consensus but haven't proven exceptional reliability. Their votes count, but they don't have outsized influence.
+<br><br>
+<b>Learning nodes (0-49%):</b> These participants defected frequently. Bitcoin's design punishes this—attackers face network rejection. Your participation helps, but you haven't yet proven you're trustworthy with governance power.
+</p>
+
+<p id="reputation_reveal_btn">
+See what this means →
+</p>
+
+<p id="reputation_offer">
+Your reputation proves your trustworthiness. Would you like to record it to Bitcoin? 
+This anchors your reputation on-chain permanently, giving you voting power on community proposals that shape Bitcoin's future.
+</p>
+
 <p id="who_were">
-So who were these strange characters you just played against?
+So who were these different network participants you interacted with?
 </p>
 
 <p id="character_tft">
-<b>COPYCAT:</b>
-Hello! I start with Cooperate, and afterwards, I just copy whatever you did in the last round. Meow
+<b>HONEST NODE (Tit-for-Tat):</b>
+I validate your transactions fairly. In the next block, I mirror what you did: if you cooperated, I cooperate. If you cheated, I respond proportionally.
+This is Bitcoin's backbone. I maintain reputation—don't damage it.
 </p>
 
 <p id="character_all_d">
-<b>ALWAYS CHEAT:</b>
-<i>the strong shall eat the weak</i>
+<b>51% ATTACKER:</b>
+I have enough hash power to ignore Bitcoin's consensus rules. I mine invalid blocks. I double-spend. I ignore what anyone else does.
+Short-term profit. Long-term: the rest of the network simply rejects me.
 </p>
 
 <p id="character_all_c">
-<b>ALWAYS COOPERATE:</b>
-Let's be best friends! &lt;3
+<b>FULL NODE (Always-Cooperate):</b>
+I validate everything according to Bitcoin's rules, period. No matter what you do. No matter the incentives.
+Pure consensus enforcement. But this naivety? It gets exploited by attackers.
 </p>
 
 <p id="character_grudge">
-<b>GRUDGER:</b>
-Listen, pardner. I'll start cooperatin', and keep cooperatin',
-but if y'all ever cheat me, I'LL CHEAT YOU BACK 'TIL THE END OF TARNATION.
+<b>CHAIN VALIDATOR (Punisher):</b>
+I validate fairly, but I keep a permanent blacklist. Double-spend once? I reject every block from you forever.
+This is Bitcoin's immune system: nodes that remember attackers and permanently exile them.
 </p>
 
 <p id="character_prober">
-<b>DETECTIVE:</b>
-First: I analyze you. I start: Cooperate, Cheat, Cooperate, Cooperate.
-If you cheat back, I'll act like <span class="tft">Copycat</span>.
-If you never cheat back, I'll act like <span class="all_d">Always Cheat</span>, to exploit you.
-Elementary, my dear Watson.
+<b>ADAPTIVE NODE (Tester):</b>
+First block: I validate honestly to test your response. Second block: I attempt a double-spend.
+If you reject it, I know you're serious about consensus—I cooperate forever.
+If you accept it, I know you're exploitable—I attack relentlessly.
 </p>
 
 <p id="characters_teaser">
-Now, what if these characters were to play...
+Now, what if these network participants were to interact...
 </p>
 <p id="characters_button">
-...against each other? &rarr;
+...in a full tournament? &rarr;
 </p>
-
 
 <!-- - - - - - - - - - - - - - - - - -->
 <!-- - - - - TOURNAMENT! - - - - - - -->
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="place_your_bets">
-It's tournament time!
-Each character will now play against every other character:
-that's 10 paired matches, and 10 rounds per match.
+It's network tournament time!
+Each node type will now interact with every other node type:
+that's 10 paired interactions, and 10 rounds per interaction.
 <br><br>
-Who do you think will get the highest <i>total</i> score?
-<b>Think carefully about it... and then
-PLACE YOUR BETS:</b>
+Which node type do you think will accumulate the highest total score?
+<b>Think carefully... and then PLACE YOUR BETS:</b>
 </p>
 
 <p id="tournament_intro">
-Alright, you placed your bet on [CHAR]!
-Let's go through the matches one by one, and see how the tournament plays out...
+Alright, you predicted [CHAR] would win!
+Let's go through the interactions one by one, and see who dominates the network...
 </p>
 
 <p id="first_match">
-first match &rarr;
+first interaction &rarr;
 </p>
 
 <p id="next_match">
-next match &rarr;
+next interaction &rarr;
 </p>
 
 <p id="match_header_1">
-<b>Match #[N]:</b> [A] vs [B]
+<b>Interaction #[N]:</b> [A] vs [B]
 </p>
 <p id="match_header_2">
 <b>Rounds:</b>
@@ -329,41 +382,46 @@ next match &rarr;
 </p>
 
 <p id="tournament_1">
-Oh, by the way...
+But wait, consider this historical context:
 </p>
 <p id="tournament_2">
-...You may be skeptical about that Christmas Truce story about the World War I trenches.
-Surely that was just a fluke?
+Bitcoin has survived 15+ years without a centralized authority.
+Thousands of independent nodes validate transactions daily.
+But why? Individual miners could cheat. Any node could compromise.
 </p>
 <p id="tournament_3">
-Yes, the truce was dramatic, but it was <i>neither unique, nor unusual</i>.
+The answer isn't <i>universal honesty</i> – it's better than that.
+Bitcoin's security comes from <i>repeated interactions</i>.
 </p>
 <p id="tournament_4">
-Not <i>every</i> trench joined in the peace, but it was pretty widespread.
-Many front-lines came up with the idea independently, and again: <i>despite</i> specific, strict orders not to.
+Every node interacts with the same network participants over and over.
+Every miner faces the same consensus rules repeatedly.
+Attack once, and your reputation is destroyed. Honest behavior is rewarded continuously.
 </p>
 <p id="tournament_5">
-And in fact, even <i>before</i> Christmas, several front-lines already <i>had</i>
-established an unofficial, secret peace.
+Even before Bitcoin's formal design, communities using sound money
+independently discovered similar principles: 
+repeated interaction builds trust.
 </p>
 <p id="tournament_6">
-They called it: <b>the "live and let live" system.</b>
-Basically, you don't shoot me, I don't shoot you. And this worked, in a lot of places!
+They called it: <b>the credibility &amp; reputation system</b>.
+You don't attack your peers when you know you'll face them tomorrow.
+And this works remarkably well!
 </p>
 <p id="tournament_7">
-You may still be skeptical. Most soldiers don't spontaneously form peace with the enemy.
-What's so special about <i>trench</i> warfare? 
+But you might still be skeptical. Miners have different incentives.
+What makes Bitcoin's repeated-game structure so powerful?
 </p>
 <p id="tournament_8">
-Well, here's what's unique about the trenches:
-unlike almost every other form of war,
-you have to face the same <i>specific soldiers</i> every day.
+Well, here's what's unique about Bitcoin:
+Unlike centralized systems where authority can change rules,
+nodes face the <i>exact same consensus rules</i> every block, forever.
 </p>
 <p id="tournament_9">
-<b>It's a repeated game.</b> And that makes <i>all</i> the difference.
+<b>It's an infinitely repeated game.</b> And that changes everything.
 </p>
 <p id="tournament_10">
-Anyway. And the winner is...
+And the dominant strategy is...
 </p>
 
 <p id="the_winner_is">
@@ -371,170 +429,175 @@ Anyway. And the winner is...
 </p>
 
 <p id="tournament_winner_1">
-<b class="tft">COPYCAT!</b>
+<b class="tft">HONEST NODE!</b>
 </p>
 <p id="tournament_winner_2_yay">
-Congrats, you placed your bet on the right horse.
+Congrats, your prediction was correct.
 </p>
 <p id="tournament_winner_2_nay">
-(Apologies to your bet, [CHAR].)
+(Sorry about your prediction: [CHAR].)
 </p>
 <p id="tournament_winner_3">
-<span class="tft">Copycat</span> goes by many names.
-The Golden Rule, reciprocal altruism, tit for tat, or... <b>live and let live.</b>
-That's why "peace" could emerge in the trenches of World War I:
-when you're forced to play the same game with the
-same <i>specific people</i> (not just the same generic "enemy") over and over again --
-<span class="tft">Copycat</span> doesn't just win the battle, it wins the war.
+The Honest Node goes by many names in Bitcoin: Tit-for-Tat, reciprocal validation, responsive consensus, or just... <b>the majority of nodes that keep Bitcoin alive.</b>
 <br><br>
-But if things change a lot when you play multiple rounds of the same game, what if we play...
+That's why Bitcoin works despite having no central authority:
+Every node follows the same cryptographic rules. Every node responds to violations.
+When someone attacks the network, honest nodes reject the attack. When someone cooperates, they're rewarded.
+<br><br>
+This isn't accidental. Bitcoin's design forces the honest node strategy to dominate.
+Miners who validate fairly earn block rewards <i>forever</i>. Attackers earn short-term profit, then face eternal rejection.
+<br><br>
+But if cooperation wins in repeated games, why have there been attacks & hard forks throughout Bitcoin's history?
+What if we simulate how node populations actually evolve over time?
 </p>
 <p id="tournament_teaser">
-...multiple <i>tournaments?</i> &rarr;
+Let's watch evolution in action. &rarr;
 </p>
-
 
 <!-- - - - - - - - - - - - - - - - - -->
 <!-- - - - - EVOLUTION! - - - - - - -->
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="evolution_intro">
-Now, let's let our population of players <i>evolve over time</i>. It's a 3-step dance:
+Now, let's imagine Bitcoin's node population <i>evolving over time</i>. The process is simple:
 </p>
 <p id="evolution_intro_1">
-<b>1. PLAY A TOURNAMENT</b><br>
-Let them all play against each other, and tally up their scores.
+<b>1. RUN A FULL TOURNAMENT</b><br>
+All node types validate &amp; interact; tally their rewards.
 </p>
 <p id="evolution_intro_2">
-<b>2. ELIMINATE LOSERS</b><br>
-Get rid of the 5 worst players. (if there's a tie, pick randomly between them)
+<b>2. RETIRE WORST NODES</b><br>
+Remove the 5 lowest-scoring node types. (ties broken randomly)
 </p>
 <p id="evolution_intro_3">
-<b>3. REPRODUCE WINNERS</b><br>
-Clone the 5 best players. (if there's a tie, pick randomly between them)
+<b>3. ADD COPIES OF BEST NODES</b><br>
+Clone the 5 highest-scoring node types. (ties broken randomly)
 </p>
 <p id="evolution_intro_footer">
-...and REPEAT, for as long as you'd like.
-Note: you don't have to wait for people to literally die &amp; reproduce for culture to evolve --
-all that's needed is that "unsuccessful" behaviors go away, and "successful" behaviors are imitated.
+...and REPEAT. Think of this as natural selection:
+bad strategies are replaced, good strategies spread.
+All that's needed is that unsuccessful behaviors (low scores) go away,
+and successful behaviors (high scores) are imitated by new nodes.
 So now...
 </p>
 <p id="evolution_intro_button">
-...let's see this in action. &rarr;
+...let's watch this unfold. &rarr;
 </p>
 
 <p id="evo_1">
-Say we start with the following population of players:
-<span class="all_c">15 Always Cooperates</span>,
-<span class="all_d">5 Always Cheats</span>, and
-<span class="tft">5 Copycats</span>.
-(We'll ignore <span class="grudge">Grudger</span> &amp; <span class="prober">Detective</span> for now)
+Say Bitcoin's network starts with:
+<span class="all_c">15 Full Nodes</span> (always validate honestly),
+<span class="all_d">5 51% Attackers</span> (always attack), and
+<span class="tft">5 Honest Nodes</span> (validate fairly, respond to attacks).
+(We'll ignore <span class="grudge">Chain Validator</span> &amp; <span class="prober">Adaptive Node</span> for now)
 <br><br>
-We're going to do the tournament-eliminate-reproduce dance a dozen times or so.
-Let's make another bet! Who do you think will win the <i>first</i> tournament?
-<b>PLACE YOUR BETS, AGAIN:</b>
+We're going to simulate the tournament-retire-clone cycle a dozen times.
+Let's make another bet! Who do you think wins the <i>first</i> tournament?
+<b>PLACE YOUR BETS:</b>
 </p>
 
 <p id="evo_2_all_c">
-Makes sense, <span class="all_c">Always Cooperate</span> outnumbers everyone else right now...
+Makes sense, Full Nodes outnumber everyone – honesty should dominate right now...
 </p>
 <p id="evo_2_all_d">
-Makes sense, <span class="all_d">Always Cheat</span> has a lot of <span class="all_c">Always Cooperates</span> to exploit...
+Makes sense, 51% Attackers can exploit the trusting Full Nodes...
 </p>
 <p id="evo_2_tft">
-Makes sense, <span class="tft">Copycat</span> won the tournament last time, why not again?...
+Makes sense, Honest Nodes won the tournament already, why not again?...
 </p>
 <p id="evo_2">
-Let's see if you're correct:
+Let's see if you're right:
 </p>
 
 <p id="label_play_tournament">
-1) play tournament
+1) run tournament
 </p>
 <p id="label_eliminate_bottom_5">
-2) eliminate bottom 5
+2) retire bottom 5
 </p>
 <p id="label_reproduce_top_5">
-3) reproduce top 5
+3) replicate top 5
 </p>
 
 <p id="evo_3_all_c">
-Alas, <span class="all_c">Always Cooperate</span> got eaten up by
-<span class="all_d">Always Cheat</span>, whose numbers have now increased by 5.
+Sadly, <span class="all_c">Full Nodes</span> got exploited by
+<span class="all_d">51% Attackers</span>, whose population increased.
 </p>
 <p id="evo_3_all_d">
-Sadly, you were correct! The <span class="all_d">Always Cheaters</span> won this time, 
-and their numbers increased by 5.
+You're right! <span class="all_d">51% Attackers</span> won this round,
+exploiting the naive <span class="all_c">Full Nodes</span>.
 </p>
 <p id="evo_3_tft">
-Alas, <span class="tft">Copycat</span> did not win – but at least they didn't do as bad
-as <span class="all_c">Always Cooperate</span>. They got eaten up by <span class="all_d">Always Cheat</span>,
-whose numbers have now increased by 5.
+Sadly, <span class="tft">Honest Nodes</span> didn't win – but they survived better than <span class="all_c">Full Nodes</span>,
+who got exploited by <span class="all_d">51% Attackers</span>.
 </p>
 <p id="evo_3">
-But let's try a few more rounds of this...
+Let's see what happens over several more rounds...
 </p>
 
 <p id="evo_4">
-<span class="all_d">Always Cheat</span> is still growing,
-at the expense of <span class="all_c">Always Cooperate</span>...
+<span class="all_d">51% Attackers</span> are still growing,
+while <span class="all_c">Full Nodes</span> keep shrinking...
 </p>
 
 <p id="evo_5">
-And now, all the <span class="all_c">Always Cooperates</span> are dead.
-But, wait...
+And now, all the <span class="all_c">Full Nodes</span> are gone.
+But wait...
 </p>
 
 <p id="evo_6">
-That's right: the <span class="all_d">Always Cheats</span> became a victim of their own success!
-They exploited the naive <span class="all_c">Always Cooperators</span>,
-but once they ran out of them, they had to face the <span class="tft">Copycats</span>:
-who <i>are</i> nice, but not naive.
+Exactly! <span class="all_d">51% Attackers</span> destroyed themselves!
+They exploited the naive <span class="all_c">Full Nodes</span>,
+but once they eliminated them, they had to face the <span class="tft">Honest Nodes</span>:
+who follow rules, but aren't gullible.
 </p>
 
 <p id="evo_7">
-By simply copying the other player's moves,
-<span class="tft">Copycats</span> can play nice with each other,
-while <span class="all_d">Always Cheats</span> just cheat themselves!
-Not only that, but it also means <span class="tft">Copycat</span>
-can give <span class="all_d">Always Cheat</span>
-a taste of their own medicine.
+By validating fairly &amp; responding proportionally to attacks,
+<span class="tft">Honest Nodes</span> thrive together,
+while <span class="all_d">51% Attackers</span> destroy each other!
+Not only that – <span class="tft">Honest Nodes</span> punish attackers
+by refusing to accept their blocks.
 </p>
 
 <p id="evo_8">
-And so, as a result...
+And so, inevitably...
 </p>
 
 <p id="evo_9">
-...<span class="tft">Copycat</span> inherits the earth.
+...<span class="tft">Honest Nodes</span> inherit the network.
 </p>
 <p id="evo_9_all_c">
-So, although your bet was off -- the nice-but-naive <span class="all_c">Always Cooperators</span>
-were doomed from the start -- in the end, a <i>smart</i> form of niceness prevailed,
-and the <span class="all_d">Always Cheaters</span> were squashed.
+So, although your prediction was off – the naive <span class="all_c">Full Nodes</span>
+were doomed from the start – ultimately, smart honesty won,
+and the <span class="all_d">51% Attackers</span> failed.
 </p>
 <p id="evo_9_all_d">
-So, in the short run you were right - <span class="all_d">Always Cheat</span> won the first few rounds,
-but in the end, its exploitativeness was its downfall.
+Right for the short term – <span class="all_d">51% Attackers</span> won early –
+but in the long run, their strategy collapsed.
+You can't sustain attacks when other nodes reject your blocks.
 </p>
 <p id="evo_9_tft">
-So, in the long run, you were right - <span class="tft">Copycat</span> wins!
-<span class="all_d">Always Cheat</span> may have won in the short run,
-but its exploitativeness was its downfall.
+Yes! <span class="tft">Honest Nodes</span> dominated in the long run.
+<span class="all_d">51% Attackers</span> may have won early,
+but their exploitative strategy was ultimately self-defeating.
 </p>
 <p id="evo_9_end">
-This reminds me of a quote:
+This is Bitcoin's actual history:
 <br><br>
-<i>"We are punished by our sins, not for them."</i><br>
-~ Elbert Hubbard
+In 2010, someone attempted to exploit the system (the Bitcoin overflow exploit). The honest majority caught it &amp; rejected it.
+In 2013-2015, various pools tried 51% attacks or double-spending. Honest nodes blacklisted them.
+In 2017, the "Bitcoin Cash" fork attempt divided the community—but the larger honest majority won, maintaining the original Bitcoin.
+<br><br>
+Every time, security emerged from consensus, not from central authority. The honest node strategy dominated because it had to.
 </p>
 <p id="evo_9_btn">
 (oh, and by the way...)
 </p>
 
 <p id="evo_10">
-(...this result is similar even if we put
-<span class="grudge">Grudger</span> &amp; <span class="prober">Detective</span> back in:)
+(...results are similar even if we include
+<span class="grudge">Chain Validators</span> &amp; <span class="prober">Adaptive Nodes</span>:)
 </p>
 
 <p id="evo_autoplay">
@@ -545,31 +608,30 @@ stop the evolution process
 </p>
 
 <p id="evo_10_followup">
-(Note: sometimes, a few <span class="grudge">Grudgers</span> may stick around,
-because when all players except <span class="grudge">Grudger</span> &amp; <span class="tft">Copycat</span> 
-are eliminated, the two tie.)
+(Note: occasionally, <span class="grudge">Chain Validators</span> persist
+alongside <span class="tft">Honest Nodes</span>, because they score equally well.)
 <br><br>
-So, it seems the math of game theory is telling us something:
-that <span class="tft">Copycat's</span> philosophy,
-"Do unto others as you would have them do unto you", may be not just a 
-<i>moral</i> truth, but also a <i>mathematical</i> truth.
+Game theory suggests something profound:
+the honesty enforced by Bitcoin's consensus rules isn't just good policy – 
+it's mathematically optimal. <span class="tft">Honest Nodes</span> win because
+they cooperate when others cooperate, &amp; punish defectors immediately.
 However...
 </p>
 <p id="evo_10_btn">
-...there's a problem: &rarr;
+...there's still a problem: &rarr;
 </p>
 
 <p id="evo_11">
-Look around. The world's full of total jerkwads.
+Look at the real world. Miners still attack. Consensus rules get forked.
 <br><br>
-If <span class="tft">Copycat</span> is the strategy in this repeated game of trust that's so powerful --
-that even soldiers in World War I trenches independently "evolved" a similar strategy, called "live and let live" -- 
-why, then, are there so many un-trusting, un-trustworthy people?
-What's causing our epidemic of un-trust?
+If honesty &amp; fair validation are so mathematically superior –
+if 15 years of Bitcoin evolution has shown <span class="tft">Honest Nodes</span> dominate –
+why do attacks happen? Why do chains fragment? What causes network distrust?
 <br><br>
-A clue's in that sentence itself. "In <i>this</i> repeated game of trust."
-So far we've only talked about change in the players:
-what about <i>a change in the game?</i>
+The answer is in the question itself: we're talking about <i>game structure.</i>
+What happens when the game <i>itself</i> changes?
+What could cause <i>strategic dishonesty</i> to emerge?
+<br><br>
 What could lead to...
 </p>
 <p id="evo_11_btn">
@@ -581,319 +643,461 @@ What could lead to...
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="distrust_1">
-Before everything goes to heck, let's start with something nice!
-Here's a world filled entirely with <span class="all_c">Always Cooperates</span>,
-except for one <span class="all_d">Always Cheat</span> and one <span class="tft">Copycat</span>.
+Before everything breaks down, let's start with a healthy network!
+Here's a majority of <span class="all_c">Full Nodes</span> validating honestly,
+plus one <span class="all_d">51% Attacker</span> and one <span class="tft">Honest Node</span>.
 <br><br>
-Use the buttons on the right to <b>START</b> the sim,
-go through it <b>step-by-step</b>, or <b>reset</b> it. &rarr;
+Use the buttons to step through the evolution round-by-round,
+or let it play out automatically. Watch what happens to trust. &rarr;
 </p>
 
 <p id="distrust_2">
-As you already know, <span class="tft">Copycat</span> wins handily in the long run,
-under our current rules!
+As you know, <span class="tft">Honest Nodes</span> dominate under normal circumstances!
 <br><br>
-But that's under our <i>current</i> rules, which say that
-players play against each other for <i>10</i> rounds per match.
-Does <span class="tft">Copycat</span> still win at 7 rounds? 5 rounds? 3? 2? 1?
-<br><br>
-<b>Change the number of rounds</b> with the slider below,
-then <b>START</b> the sim, and see what happens.
-Feel free to experiment!
-</p>
-
-<p id="distrust_2_end">
-once you're done playing around, click:
+But that's under <i>current</i> rules. What if we change the game
+by introducing <i>network delay</i> – blocks take time to propagate?
 </p>
 
 <p id="distrust_3">
-As you saw, if you don't play enough rounds, (here: 5 or less)
-<span class="all_d">ALWAYS CHEAT</span> dominates.
-<br><br>
-In 1985, when Americans were asked how many close friends they had,
-the most common answer was "three". In 2004, the most common answer was <i>"zero"</i>.
-We now have fewer friends across class, racial, economic, and political lines,
-because we have fewer friends -- <i>period.</i>
-And as you just discovered for yourself,
-<b>the fewer "repeat interactions" there are, the more distrust will spread.</b>
-<br><br>
-(no, mass media doesn't count:
-it must be <i>two-way</i> interactions between <i>specific individuals</i>.)
-</p>
-<p id="distrust_3_btn">
-and oh, it gets worse... &rarr;
+Now, what if block propagation isn't instant?
 </p>
 
-<p id="distrust_4">
-There's <i>another</i> way to breed distrust.
-Here are the "payoffs" for the trust game:
+<p id="distrust_3_small">
+(what does latency mean for the game? let's see...)
 </p>
-<p id="distrust_4_2">
-With the normal payoffs, <span class="tft">Copycat</span> wins.
-But now, <b>change the "both cooperate" reward from +2 to +1</b>,
-then click <b>START</b>.
-Even though +1 is still <i>more</i> than the punishment for both cheating (0)...
-what happens?
+
+<p id="distrust_4_top">
+When block propagation is delayed, nodes don't all see the same chain at the same time.
+This creates an opportunity:
 </p>
-<p id="distrust_4_note">
-feel free to play around with different payoffs!
-once you're done, click:
+
+<p id="distrust_4a">
+<b>The race attack:</b> You mine a block secretly. While others validate it, 
+you start mining the next block yourself.
+When your block propagates, you might have a 2-block lead!
+This hidden mining (selfish mining) can be profitable if you have enough hash power.
 </p>
-<p id="distrust_4_note_2">
-(simulating: 10 rounds per match)
+
+<p id="distrust_4b_a">
+If a node knows others will see its blocks with delay,
+it can <i>exploit</i> that delay by mining in secret.
+Suddenly, <span class="all_d">Always Cheat</span> becomes profitable even against <span class="tft">Copycat</span>!
+</p>
+
+<p id="distrust_4b_b">
+This is called: <b>selfish mining</b>.
+</p>
+
+<p id="distrust_4b_c">
+If people can't see what you're doing, game theory shifts.
+Honest behavior is rewarded less. Selfish behavior is rewarded more.
+</p>
+
+<p id="distrust_4_btm">
+Now the whole network spirals into distrust:
 </p>
 
 <p id="distrust_5">
-The same thing happens:
-with a lower "win-win" reward, <span class="all_d">Always Cheat</span> takes over.
-Game theory has two powerful ideas about this:
-<br><br>
-<b>"Zero-sum game".</b> This is the sadly common belief that a gain for "us"
-<i>must</i> come at a loss to "them", and vice versa.
-<br><br>
-<b>"Non-zero-sum game".</b> This is when people make the hard effort
-to create a win-win solution! (or at least, avoid a lose-lose)
-Without the non-zero-sum game, <i>trust cannot evolve.</i>
-<br><br>
-Speaking of which,
-let's now look at our third &amp; final barrier to the evolution of trust...
+Because some miners can profit from selfish mining when latency is high,
+their share of the network grows.
+As dishonest miners become common, even honest miners feel pressured to attack
+to stay competitive.
 </p>
-<p id="distrust_5_btn">
-<s>Misteaks</s> Mistakes. &rarr;
+
+<p id="distrust_6">
+And once everyone is attacking each other?
+Nobody can trust anybody.
+The network fractures.
+Different mining pools create different fork chains.
+Security degrades.
+</p>
+
+<p id="distrust_7">
+So our epidemic of distrust comes from <b>changing the game structure.</b>
+When participants can't observe each other's actions clearly,
+when delays create information asymmetry,
+when incentives reward hidden behavior...
+trust collapses, <i>even among rational actors.</i>
+</p>
+
+<p id="distrust_8">
+This is Bitcoin's core challenge:
+<b>How do we design the game so that honesty remains profitable
+even when observation is imperfect?</b>
+</p>
+
+<p id="distrust_8_btm">
+Solutions include:
+</p>
+
+<p id="distrust_8a">
+<b>Faster blocks:</b> Reduce latency so selfish mining is harder.
+</p>
+
+<p id="distrust_8b">
+<b>Stronger consensus rules:</b> Make attacks visible &amp; punishable.
+</p>
+
+<p id="distrust_8c">
+<b>Decentralized validation:</b> More independent nodes catch attacks faster.
+</p>
+
+<p id="distrust_8d">
+<b>Better incentives:</b> Reward behavior that strengthens the network,
+not just individual profit.
+</p>
+
+<p id="distrust_9_top">
+But these solutions create a tension:
+stronger consensus rules can be fragile.
+</p>
+
+<p id="distrust_9">
+Interestingly, Bitcoin's solution wasn't to centralize authority
+(which would solve the game but destroy decentralization).
+Instead, Bitcoin:
+</p>
+
+<p id="distrust_10a">
+<b>Made the rules transparent:</b> Everyone agrees on the same consensus rules,
+globally, forever.
+</p>
+
+<p id="distrust_10b">
+<b>Made attacks visible:</b> Any deviation from consensus is immediately detectable
+by anyone running a node.
+</p>
+
+<p id="distrust_10c">
+<b>Made punishment automatic:</b> Invalid blocks are rejected. Cheaters gain nothing.
+</p>
+
+<p id="distrust_10d">
+<b>Made the game infinite:</b> Miners face the same rules forever,
+so short-term attack gains don't justify long-term reputation loss.
+</p>
+
+<p id="distrust_11_top">
+By changing the game structure itself,
+Bitcoin made honesty the dominant strategy.
+Not because everyone is good,
+but because the rules make cheating unprofitable.
+</p>
+
+<p id="distrust_11_end">
+So now, the question becomes:
+How do we further strengthen these rules?
+How do we make attacks even more costly?
+How do we scale decentralization while maintaining game-theoretic security?
+</p>
+
+<p id="distrust_btn">
+And how do we use cryptographic proofs to verify this? &rarr;
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
-<!-- - - - - - NOISE! - - - - - - - -->
+<!-- - - - - - NOISE! - - - - - - - - -->
 <!-- - - - - - - - - - - - - - - - - -->
+
+<p id="noise_intro">
+<b>But there's another challenge:</b>
+What if nodes make <i>honest mistakes</i>?
+</p>
+
+<p id="noise_intro_small">
+(what does noise (mistakes) do to the game?)
+</p>
 
 <p id="noise_1">
-As cool as <span class="tft">Copycat</span> is, it has a huge, fatal weakness I haven't mentioned yet.
-To understand the problem, let's say two <span class="tft">Copycats</span> are playing against each other:
+Here's the same network, but now there's a 1% chance each block is validated incorrectly
+(due to software bugs, hardware faults, network glitches, etc).
 </p>
-<p id="noise_1_end">
-Being "nice" players, both their first moves will be:
+
+<p id="noise_2_top">
+Oh no!
 </p>
 
 <p id="noise_2">
-And normally, they'd just pay back each others' kindness and sing Kumbaya until the end of time.
-</p>
-<p id="noise_2_end">
-But what if, while trying to reciprocate goodness...
+<span class="all_c">Naive Full Nodes</span>, who always trust others' blocks,
+get tricked by mistakes into accepting invalid data.
+Their trust is punished by the network rejecting their chains.
 </p>
 
 <p id="noise_3">
-<b>OH NO</b>
-<br>
-Mistakes, miscommunication, misinterpretations -- accidents happen all the time in real life.
-</p>
-<p id="noise_3_end">
-But if the other person doesn't <i>think</i> it was an accident...
+But notice: <span class="tft">Honest Nodes</span> still survive!
 </p>
 
 <p id="noise_4">
-<b>OH NO TIMES TWO</b>
-<br>
-The other player, being a <span class="tft">Copycat</span>, <i>had</i> to retaliate...
-</p>
-<p id="noise_4_end">
-...and you, being a <span class="tft">Copycat</span> as well, will <i>also</i> have to retaliate...
+Why? Because they don't just validate once – they maintain state.
+They catch mistakes when they see conflicting data,
+and they respond by being more defensive next time.
 </p>
 
 <p id="noise_5">
-Thus, like the Hatfields and McCoys,
-these two <span class="tft">Copycats</span> will spiral into an endless cycle of vengeance...
-that started over a single mistake, long ago.
-</p>
-<p id="noise_5_end">
-Tragic. But now, are there <i>other</i> types of players who can...
-</p>
-<p id="noise_5_btn">
-...deal with mistakes? &rarr;
+This is why Bitcoin has:
 </p>
 
-<p id="noise_characters">
-Let's meet some new faces! (or, new hats, anyway)
+<p id="noise_5a">
+<b>Full nodes running complete validation:</b>
+Bitcoin nodes don't just trust—they verify every transaction, every signature, every rule. Every block is independently validated.
+This is why Bitcoin survived network delays, attacks, and bugs for 15 years.
 </p>
 
-<p id="character_tf2t">
-<b>COPYKITTEN:</b><br>
-Hello! I'm like <span class="tft">Copycat</span>,
-except I Cheat back only after you Cheat me twice in a row.
-After all, the first one could be a mistake! Purrrrr
+<p id="noise_5b">
+<b>Peer review of code changes:</b>
+Any proposed change to Bitcoin's rules requires honest nodes to accept it. One node can't force an upgrade—the majority must agree.
+This is why hard forks require consensus, and why contentious changes get rejected (like the 2MB block size increase).
 </p>
 
-<p id="character_pavlov">
-<b>SIMPLETON:</b><br>
-hi i try start cooperate.
-if you cooperate back, i do <i>same thing</i> as last move, even if it mistake.
-if you cheat back, i do <i>opposite thing</i> as last move, even if it mistake.
+<p id="noise_5c">
+<b>Consensus rules as the game's foundation:</b>
+Blocks that violate consensus rules are rejected by the entire network, regardless of who mines them.
+This makes attacking unprofitable: your blocks get orphaned, your hash power is wasted, attackers eventually give up.
 </p>
 
-<p id="character_random">
-<b>RANDOM:</b><br>
-<i>Monkey robot! Ninja pizza tacos! lol i'm so random</i><br>
-(Just plays Cheat or Cooperate randomly with a 50/50 chance)
+<p id="noise_6_top">
+The lesson: <b>Even with noise, the game works.</b>
 </p>
 
-<p id="noise_characters_end">
-Alright, let's see how well these peeps do when they...
-</p>
-<p id="noise_characters_btn">
-...play in a tournament &rarr;
-</p>
-
-<p id="noise_evo_1">
-Let's start with a dozen
-<span class="all_c">Always Cooperates</span>,
-versus our old winner, the fair <span class="tft">Copycat</span>,
-and our three new characters:
-the forgiving <span class="tf2t">Copykitten</span>,
-the dull <span class="pavlov">Simpleton</span>, and
-the silly <span class="random">Random</span>.
-<br><br>
-In each round of a match, players have a small chance of making a mistake. (let's say, 5%)
-Who do you think will come out on top?
-<b>Think carefully, then PLACE YOUR BETS:</b>
+<p id="noise_6">
+But only if:
+1. Nodes validate independently
+2. They respond to errors (don't just trust)
+3. They maintain a shared record (consensus)
 </p>
 
-<p id="noise_evo_2">
-Alright, you bet [CHAR] wins. Let's find out!
-Use the controls to your left to <b>START</b> the sim in quick mode,
-or go through it <b>step-by-step</b>.
-</p>
-<p id="noise_evo_2_2_correct">
-You were correct -- 
-</p>
-<p id="noise_evo_2_2_incorrect">
-Your bet was close, but no cigar -- 
-</p>
-<p id="noise_evo_2_2">
-<span class="pavlov">Simpleton</span> wins!
-This is because <span class="pavlov">Simpleton</span> is actually capable of
-exploiting <span class="all_c">Always Cooperate</span>. They both start cooperating,
-but if <span class="pavlov">Simpleton</span> makes a mistake and cheats,
-since <span class="all_c">Always Cooperate</span> never retaliates,
-<i>it'll keep cheating them</i>.
-</p>
-<p id="noise_evo_2_2_btn">
-Now let's try...
+<p id="noise_6_end">
+Robust systems aren't built on perfect actors.
+They're built on game theory that survives imperfect information.
 </p>
 
-<p id="noise_evo_3">
-...the same thing as before, except instead of half-<span class="all_c">Always Cooperate</span>,
-it's half-<span class="all_d">Always Cheat</span>. It's a much <i>less</i> forgiving,
-<i>more</i> hostile environment.
-<br><br>
-Who do you think will win now? <b>Think, then PLACE YOUR BETS:</b>
+<p id="noise_btn">
+But we can make this even better with cryptographic proof. Let's see how... &rarr;
 </p>
-
-<p id="noise_evo_4">
-You bet on [CHAR]. Again, go through the simulation...
-</p>
-<p id="noise_evo_4_2_correct">
-You were right on the money -- 
-</p>
-<p id="noise_evo_4_2_incorrect">
-Good guess, but someone else took the prize -- 
-</p>
-<p id="noise_evo_4_2">
-<span class="tf2t">Copykitten</span> wins this time!
-That's surprising that with an even <i>meaner</i> starting population,
-<span class="tf2t">Copykitten</span>,
-a <i>more forgiving</i> version of <span class="tft">Copycat</span>,
-was the most successful! (note: <span class="tf2t">Copykitten</span> is so forgiving
-it doesn't even <i>entirely</i> wipe out <span class="tft">Copycat</span>. it shares room)
-<br><br>
-In this case, a bit of "miscommunication" (5% chance of mistake each round) could lead
-to more <i>forgiveness</i>. But is this true for <i>all</i> levels...
-</p>
-<p id="noise_evo_4_2_btn">
-...of miscommunication?
-</p>
-
-<p id="noise_evo_5">
-<b>Use the slider below to change the amount of "miscommunication", then hit START.</b>
-At 5%, <span class="tf2t">Copykitten</span> wins.
-What happens at 0%? Or 20%? Or 50%? (it only goes up to 50%,
-because at that point, <i>every</i> move is a coin flip) 
-</p>
-<p id="noise_evo_5_continue">
-When you're done playing around, click:
-</p>
-
-<p id="noise_evo_6">
-The results turn out something like this:<br>
-<b>At 0%,</b> the fair <span class="tft">Copycat</span> wins!
-<b>At 1% to 9%,</b> the forgiving <span class="tf2t">Copykitten</span> wins!
-<b>At 10% to 49%:</b> the unfair, unforgiving <span class="all_d">Always Cheat</span> wins.
-<b>At 50%,</b> <i>nobody wins ever.</i>
-<br><br>
-This is why "miscommunication" is such an interesting barrier to trust:
-a <i>little</i> bit of it leads to forgiveness,
-but <i>too much</i> and it leads to widespread distrust!
-I think our modern media technology,
-as much as it's helped us increase communication...
-has increased our <i>miscommunication</i> much more.
-<br><br>
-At last, let's experiment with <i>all</i> the numbers, the knobs and sliders.
-Let's play...
-</p>
-<p id="noise_evo_6_btn">
-...in the Sandbox Mode!
-</p>
-
 
 <!-- - - - - - - - - - - - - - - - - -->
 <!-- - - - - - SANDBOX! - - - - - - - -->
 <!-- - - - - - - - - - - - - - - - - -->
 
-<p id="sandbox_population">
-Start off with this distribution of players:
+<p id="sandbox_intro_top">
+<b>Now, it's your turn to design Bitcoin.</b>
 </p>
 
-<p id="sandbox_payoffs">
-The payoffs in a one-on-one game are:
-</p>
-<p id="sandbox_reset_payoffs">
-set default
-</p>
-
-<!--
-When translating the following, keep the "[N]", with square brackets,
-as a placeholder for the number. Some of these need double-translations,
-one for the plural version, one for the singular version.
--->
-
-<p id="sandbox_rules_1">
-Play [N] rounds per match:
-</p>
-<p id="sandbox_rules_1_single">
-Play [N] round per match:
+<p id="sandbox_intro">
+You're going to see the same game, but now <i>you</i> control the variables.
+Change the payoffs. Adjust the players. Alter the rules.
+See what strategies emerge.
 </p>
 
-<p id="sandbox_rules_2">
-After each tournament, eliminate the bottom [N] players &amp; reproduce the top [N] players:
-</p>
-<p id="sandbox_rules_2_single">
-After each tournament, eliminate the bottom [N] player &amp; reproduce the top [N] player:
+<p id="sandbox_intro_small">
+(what would <i>you</i> do to strengthen the network?)
 </p>
 
-<p id="sandbox_rules_3">
-During each round, there's a [N]% chance a player makes a mistake:
+<p id="sandbox_top_labels">
+Payoffs
 </p>
 
-<p id="sandbox_end">
-<b>NOTE: Sandbox Mode is totally optional.</b>
-Feel free to skip it, or play around! Once you're done, let's recap...
-</p>
-<p id="sandbox_end_btn">
-what we learnt today! &rarr;
+<p id="sandbox_m_label">
+mutual cooperation<br>(both validate honestly)
 </p>
 
+<p id="sandbox_d_label">
+mutual defection<br>(both attack)
+</p>
 
+<p id="sandbox_md_label">
+sucker<br>(you cooperate, other attacks)
+</p>
+
+<p id="sandbox_dm_label">
+temptation<br>(you attack, other cooperates)
+</p>
+
+<p id="sandbox_rules_label">
+Population
+</p>
+
+<p id="sandbox_players_label">
+Each strategy's starting population:
+</p>
+
+<p id="sandbox_noise_label">
+Honest mistakes (noise)
+</p>
+
+<p id="sandbox_noise_tip">
+What percentage of validations are incorrect due to bugs/delays?
+</p>
+
+<p id="sandbox_play_button">
+Start the simulation
+</p>
+
+<p id="sandbox_reset_button">
+Reset to defaults
+</p>
+
+<p id="sandbox_after">
+<span class="tft">Honest Nodes</span> win when:
+</p>
+
+<p id="sandbox_after_1">
+...the reward for mutual honesty (R) is high enough
+compared to temptation (T).
+</p>
+
+<p id="sandbox_after_2">
+...the network can punish cheaters fast enough
+that they don't accumulate wealth.
+</p>
+
+<p id="sandbox_after_3">
+...honest nodes outnumber dishonest ones initially,
+OR the rules make dishonesty unprofitable from the start.
+</p>
+
+<p id="sandbox_after_4">
+...the game is repeated infinitely,
+so short-term gains don't outweigh long-term losses.
+</p>
+
+<p id="sandbox_after_5">
+This is the core insight behind Bitcoin's design:
+<br><br>
+• <b>Block rewards (R):</b> Bitcoin gives miners 6.25 BTC per honest block. This makes cooperation profitable.
+<br>
+• <b>Difficulty adjustment (T):</b> Attacks are expensive—you need 51% of the network's hash power. Most attackers can't afford it.
+<br>
+• <b>Consensus rules (P):</b> Invalid blocks are rejected. Even if you control 51% hash power, you can't force the network to accept violations.
+<br><br>
+These aren't accident. They're designed to make honesty the dominant strategy.
+</p>
+
+<p id="sandbox_after_conclusion">
+So here's the critical insight: <b>Trust isn't about believing people are good. It's about designing systems where honesty is the only profitable strategy.</b>
+<br><br>
+Bitcoin achieves this through game theory, not through a central authority.
+When you change the payoffs (increase block rewards, lower mining difficulty, alter consensus rules), you change which strategies win.
+Honest nodes dominate when honesty is rewarded. Attackers emerge when attacks are underpriced.
+<br><br>
+This is why governance matters. The community must actively maintain the game structure that makes Bitcoin work.
+</p>
 
 <!-- - - - - - - - - - - - - - - - - -->
 <!-- - - - - CONCLUSION! - - - - - - -->
+<!-- - - - - - - - - - - - - - - - - -->
+
+<p id="conclusion_top">
+<b>So here's what we learned:</b>
+</p>
+
+<p id="conclusion_1">
+Single transactions create a prisoner's dilemma: rational actors cheat.
+</p>
+
+<p id="conclusion_2">
+Repeated games change everything: honest strategies win because players face each other forever.
+</p>
+
+<p id="conclusion_3">
+Tournament evolution shows: even when cheaters start strong, honesty dominates long-term.
+</p>
+
+<p id="conclusion_4">
+Changing the game (adding delays, noise, attacks) can make trust collapse...
+</p>
+
+<p id="conclusion_5">
+...but stronger consensus rules, transparency, &amp; verification can restore it.
+</p>
+
+<p id="conclusion_6">
+Bitcoin applies these principles:<br>
+• <b>Global consensus rules:</b> Every node validates the same way (the game is always the same)<br>
+• <b>Transparent validation:</b> All transactions are public (everyone sees if you cheat)<br>
+• <b>Automatic punishment:</b> Invalid blocks are rejected by the entire network (attackers can't win)<br>
+• <b>Infinite repetition:</b> Bitcoin runs forever (so attacking today destroys tomorrow's profits)<br>
+• <b>Decentralized participation:</b> Thousands of independent nodes (no single authority to bribe)
+</p>
+
+<p id="conclusion_7">
+The result: a system where millions of strangers maintain a shared ledger <i>without trusting a central authority.</i>
+<br><br>
+It works not because everyone is honest – but because <b>honesty is the only profitable strategy.</b>
+An attacker might gain short-term advantage, but the network punishes them, reputation spreads, and honest nodes dominate long-term.
+This is why Bitcoin survived 15+ years without being hacked or requiring central control.
+</p>
+
+<p id="conclusion_end">
+That's the evolution of trust.
+<br><br>
+And now, using Charms protocol, we can make these game moves verifiable on-chain—turning reputation into programmable governance power on Bitcoin itself.
+</p>
+
+<p id="conclusion_button">
+Learn more about how this works on Bitcoin &rarr;
+</p>
+
+<p id="governance_intro">
+Now comes the powerful part: your game history proves your trustworthiness.
+</p>
+
+<p id="governance_intro_text">
+You cooperated [COOPERATION_RATE]% across [TOTAL_MOVES] moves. That consistency earned you <span class="[TIER_CLASS]">[TIER_LABEL]</span> status.<br><br>
+
+In Bitcoin, nodes that validate honestly don't just earn block rewards – they earn the right to shape the network's future. 
+Miners with strong track records propose protocol changes. Nodes with consistent uptime vote on consensus rules.
+Your reputation is their voting power.<br><br>
+
+With <b>[VOTING_POWER] votes</b>, you now have real influence. This is how Bitcoin actually evolves: 
+not through a central committee, but through participants who've proven they keep the network healthy.<br><br>
+
+<b>Cast your votes.</b> Your choices shape how the next generation of Bitcoin nodes will play.
+</p>
+
+<p id="governance_intro_btn">
+Cast your votes →
+</p>
+
+<p id="governance_voting_header">
+<b>Community Governance</b><br>
+Your reputation gives you voting power. How should Bitcoin's rules evolve?
+</p>
+
+<p id="governance_summary_btn">
+Continue →
+</p>
+
+<p id="governance_explain">
+Your votes just changed Bitcoin's game rules. That might sound hypothetical, but it's how real Bitcoin governance works.
+</p>
+
+<p id="governance_example">
+Bitcoin's history is full of proposals: Segregated Witness (faster transactions), Taproot (more privacy), Fee markets (different block sizes).
+Each time, the network had to answer: should we change the rules?
+<br><br>
+Miners voted with their hash power. Nodes voted by choosing which software to run.
+Exchanges voted by which transactions they'd accept. The winners? Proposals backed by participants who maintained network security.
+<br><br>
+The proposal that passed this round will be encoded into the blockchain itself.
+Future players will inherit these rules—shaped by participants like you who cooperated and earned voting power.
+</p>
+
+<p id="governance_vision">
+This is how Bitcoin actually works: decentralized governance where influence flows to participants with proven track records.
+Not "one coin, one vote" – but "one reputation, one vote."
+The math ensures that attackers can't control voting power, because attacking destroys the reputation required to propose changes.
+</p>
+
+<p id="reputation_what_it_means">
+Your reputation on Bitcoin means something real. It's not just a score – it's a measure of how consistently you've validated transactions honestly.
+<br><br>
+That consistency gives you voting power. Nodes with proven track records can propose protocol changes, and other nodes weight their votes by reputation.
+This ensures that attackers – who damage their reputation through cheating – can't control the future of Bitcoin.
+</p>
+
+<!-- - - - - - - - - - - - - - - - - -->
+<!-- - - - - GAME THEORY LESSONS - - -->
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="conclusion_0">
@@ -920,13 +1124,178 @@ a game where it's at least possible that <i>both</i> players can be better off -
 If the level of miscommunication is <i>too</i> high, trust breaks down.
 But when there's a little bit of miscommunication, it pays to be <i>more</i> forgiving.
 </p>
-<p id="conclusion_4">
-Of course, real-world trust is affected by much more than this.
-There's reputation, shared values, contracts, cultural markers, blah blah blah.
-And let's not forget...
-</p>
 <p id="conclusion_btn">
 ...the <i>biggest</i> lesson. &rarr;
+</p>
+
+<p id="distrust_2_end">
+once you're done playing around, click:
+</p>
+<p id="distrust_3_btn">
+and oh, it gets worse... &rarr;
+</p>
+<p id="distrust_4">
+There's <i>another</i> way to breed distrust.
+Here are the "payoffs" for the trust game:
+</p>
+<p id="distrust_4_2">
+With the normal payoffs, <span class="tft">Copycat</span> wins.
+But now, <b>change the "both cooperate" reward from +2 to +1</b>,
+then click <b>START</b>.
+Even though +1 is still <i>more</i> than the punishment for both cheating (0)...
+what happens?
+</p>
+<p id="distrust_4_note">
+feel free to play around with different payoffs!
+once you're done, click:
+</p>
+<p id="distrust_4_note_2">
+(simulating: 10 rounds per match)
+</p>
+<p id="distrust_5_btn">
+<s>Misteaks</s> Mistakes. &rarr;
+</p>
+
+<p id="evo_autoplay">
+start the evolution process!
+</p>
+<p id="evo_1">
+Say we start with the following population of players:
+<span class="all_c">15 Always Cooperates</span>,
+<span class="all_d">5 Always Cheats</span>, and
+<span class="tft">5 Copycats</span>.
+(We'll ignore <span class="grudge">Grudger</span> &amp; <span class="prober">Detective</span> for now)
+<br><br>
+We're going to do the tournament-eliminate-reproduce dance a dozen times or so.
+Let's make another bet! Who do you think will win the <i>first</i> tournament?
+<b>PLACE YOUR BETS, AGAIN:</b>
+</p>
+<p id="evo_9_btn">
+(oh, and by the way...)
+</p>
+<p id="evo_10_btn">
+...there's a problem: &rarr;
+</p>
+<p id="evo_10_followup">
+(Note: sometimes, a few <span class="grudge">Grudgers</span> may stick around,
+because when all players except <span class="grudge">Grudger</span> &amp; <span class="tft">Copycat</span>
+are eliminated, the two tie.)
+<br><br>
+So, it seems the math of game theory is telling us something:
+that <span class="tft">Copycat's</span> philosophy,
+"Do unto others as you would have them do unto you", may be not just a
+<i>moral</i> truth, but also a <i>mathematical</i> truth.
+However...
+</p>
+<p id="evo_11_btn">
+...the evolution of <i>distrust?</i>
+</p>
+
+<p id="evolution_intro">
+Now, let's let our population of players <i>evolve over time</i>. It's a 3-step dance:
+</p>
+<p id="evolution_intro_1">
+<b>1. PLAY A TOURNAMENT</b><br>
+Let them all play against each other, and tally up their scores.
+</p>
+<p id="evolution_intro_2">
+<b>2. ELIMINATE LOSERS</b><br>
+Get rid of the 5 worst players. (if there's a tie, pick randomly between them)
+</p>
+<p id="evolution_intro_3">
+<b>3. REPRODUCE WINNERS</b><br>
+Clone the 5 best players. (if there's a tie, pick randomly between them)
+</p>
+<p id="evolution_intro_button">
+...let's see this in action. &rarr;
+</p>
+<p id="evolution_intro_footer">
+...and REPEAT, for as long as you'd like.
+Note: you don't have to wait for people to literally die &amp; reproduce for culture to evolve --
+all that's needed is that "unsuccessful" behaviors go away, and "successful" behaviors are imitated.
+So now...
+</p>
+
+<p id="forgot_whos_who">
+(forgot who's who? hover buttons to see descriptions of each character!)
+</p>
+
+<p id="label_cheat">
+cheat
+</p>
+<p id="label_continue">
+continue
+</p>
+<p id="label_cooperate">
+cooperate
+</p>
+<p id="label_reset">
+reset
+</p>
+<p id="label_start">
+START
+</p>
+<p id="label_step">
+step
+</p>
+
+<p id="noise_1">
+As cool as <span class="tft">Copycat</span> is, it has a huge, fatal weakness I haven't mentioned yet.
+To understand the problem, let's say two <span class="tft">Copycats</span> are playing against each other:
+</p>
+<p id="noise_1_end">
+Being "nice" players, both their first moves will be:
+</p>
+<p id="noise_5_btn">
+...deal with mistakes? &rarr;
+</p>
+<p id="noise_characters">
+Let's meet some new faces! (or, new hats, anyway)
+</p>
+<p id="noise_characters_btn">
+...play in a tournament &rarr;
+</p>
+<p id="noise_evo_1">
+Let's start with a dozen
+<span class="all_c">Always Cooperates</span>,
+versus our old winner, the fair <span class="tft">Copycat</span>,
+and our three new characters:
+the forgiving <span class="tf2t">Copykitten</span>,
+the dull <span class="pavlov">Simpleton</span>, and
+the silly <span class="random">Random</span>.
+<br><br>
+In each round of a match, players have a small chance of making a mistake. (let's say, 5%)
+Who do you think will come out on top?
+<b>Think carefully, then PLACE YOUR BETS:</b>
+</p>
+<p id="noise_evo_2_2_btn">
+Now let's try...
+</p>
+<p id="noise_evo_4_2_btn">
+...of miscommunication?
+</p>
+<p id="noise_evo_5_continue">
+When you're done playing around, click:
+</p>
+<p id="noise_evo_6">
+The results turn out something like this:<br>
+<b>At 0%,</b> the fair <span class="tft">Copycat</span> wins!
+<b>At 1% to 9%,</b> the forgiving <span class="tf2t">Copykitten</span> wins!
+<b>At 10% to 49%:</b> the unfair, unforgiving <span class="all_d">Always Cheat</span> wins.
+<b>At 50%,</b> <i>nobody wins ever.</i>
+<br><br>
+This is why "miscommunication" is such an interesting barrier to trust:
+a <i>little</i> bit of it leads to forgiveness,
+but <i>too much</i> and it leads to widespread distrust!
+I think our modern media technology,
+as much as it's helped us increase communication...
+has increased our <i>miscommunication</i> much more.
+<br><br>
+At last, let's experiment with <i>all</i> the numbers, the knobs and sliders.
+Let's play...
+</p>
+<p id="noise_evo_6_btn">
+...in the Sandbox Mode!
 </p>
 
 <p id="outro_1">
@@ -947,29 +1316,28 @@ Build relationships. Find win-wins. Communicate clearly.
 Maybe then, we can stop firing at each other, get out of our own trenches,
 cross No Man's Land to come together...
 </p>
-
 <p id="outro_1_btn">
 and all learn...
 </p>
-
 <p id="outro_2">
 ...to live and let live.
 </p>
-
+<p id="outro_2_btn">
+&lt;3
+</p>
 <p id="outro_2_credits">
 "A Christmas Truce between Opposing Trenches"
 Illustrated by AC Michael.
 Published in <i>The Illustrated London News</i>, January 9, 1915.
 </p>
 
-<p id="outro_2_btn">
-&lt;3
+<p id="sandbox_end_btn">
+what we learnt today! &rarr;
 </p>
 
-<!-- - - - - - - - - - - - - - - - - -->
-<!-- - - - - - CHARMS EXPLANATION - - -->
-<!-- - - - - - - - - - - - - - - - - -->
-
+<p id="charms_button">
+Ready to understand how this works? →
+</p>
 <p id="charms_intro">
 <b>What you just experienced is the future of Bitcoin.</b>
 <br><br>
@@ -977,7 +1345,6 @@ Bitcoin is secure, but it can't do smart contracts on UTXOs—until now.
 <br><br>
 You just used <b>Charms Protocol</b>, which uses zero-knowledge proofs to make Bitcoin programmable. Your reputation was proven on-chain. Your votes shaped the network rules. No central authority needed.
 </p>
-
 <p id="charms_what">
 <b>This changes what's possible:</b>
 <br><br>
@@ -989,12 +1356,8 @@ You just used <b>Charms Protocol</b>, which uses zero-knowledge proofs to make B
 <b>This application shows you exactly how.</b>
 </p>
 
-<p id="charms_button">
-Ready to understand how this works? →
-</p>
-
 <!-- - - - - - - - - - - - - - - - - -->
-<!-- - - - - - CREDITS! - - - - - - -->
+<!-- - - - - - CREDITS - - - - - - -->
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="credits">
@@ -1025,223 +1388,39 @@ lots of love and thanks to<br>
 <span class="divider"></span>
 
 p.s: want more learning-by-playing?<br>
-check out 
+check out
 <a href="http://explorabl.es/" target="_blank">explorable explanations</a>!
 
 </span>
 </p>
 
-<!-- - - - - - - - - - - - - - - - - -->
-<!-- - - - - THE PLAYERS - - - - - - -->
-<!-- - - - - - - - - - - - - - - - - -->
-
-<p id="label_tft">Copycat</p>
-<p id="label_short_tft">
-copycat
-</p>
-<p id="icon_tft">
-<span class="tft">
-	<span class="icon"></span>
-	<span class="icon_label">Copycat</span>
-</span>
+<p id="credits_header">
+Credits
 </p>
 
-<p id="label_all_d">Always Cheat</p>
-<p id="label_short_all_d">
-cheater
-</p>
-<p id="icon_all_d">
-<span class="all_d">
-	<span class="icon"></span>
-	<span class="icon_label">All Cheat</span>
-</span>
+<p id="credits_original">
+<b>Original "Evolution of Trust"</b> by Nicky Case | 2017
+<br>
+This interactive teaches game theory &amp; repeated games visually.
+(<a href="http://ncase.me/trust/" target="_blank">Play the original</a>)
 </p>
 
-<p id="label_all_c">Always Cooperate</p>
-<p id="label_short_all_c">
-cooperator
-</p>
-<p id="icon_all_c">
-<span class="all_c">
-	<span class="icon"></span>
-	<span class="icon_label">All Cooperate</span>
-</span>
+<p id="credits_bitcoin">
+<b>Bitcoin Adaptation</b> for Enchanting UTXO Hackathon
+<br>
+Concept mapping: Game theory principles applied to Bitcoin consensus &amp; decentralization
+<br>
+Charms integration: Cryptographic verification of game moves on-chain
 </p>
 
-<p id="label_grudge">Grudger</p>
-<p id="label_short_grudge">
-grudger
-</p>
-<p id="icon_grudge">
-<span class="grudge">
-	<span class="icon"></span>
-	<span class="icon_label">Grudger</span>
-</span>
-</p>
-
-<p id="label_prober">Detective</p>
-<p id="label_short_prober">
-detective
-</p>
-<p id="icon_prober">
-<span class="prober">
-	<span class="icon"></span>
-	<span class="icon_label">Detective</span>
-</span>
-</p>
-
-<p id="label_tf2t">Copykitten</p>
-<p id="label_short_tf2t">
-copykitten
-</p>
-<p id="icon_tf2t">
-<span class="tf2t">
-	<span class="icon"></span>
-	<span class="icon_label">Copykitten</span>
-</span>
-</p>
-
-<p id="label_pavlov">Simpleton</p>
-<p id="label_short_pavlov">
-simpleton
-</p>
-<p id="icon_pavlov">
-<span class="pavlov">
-	<span class="icon"></span>
-	<span class="icon_label">Simpleton</span>
-</span>
-</p>
-
-<p id="label_random">Random</p>
-<p id="label_short_random">
-random
-</p>
-<p id="icon_random">
-<span class="random">
-	<span class="icon"></span>
-	<span class="icon_label">Random</span>
-</span>
-</p>
-
-<p id="forgot_whos_who">
-(forgot who's who? hover buttons to see descriptions of each character!)
-</p>
-<p id="who_tft">
-Starts with Cooperate. Then, it simply repeats whatever YOU did in the last round.
-</p>
-<p id="who_all_d">
-Always cheats.
-</p>
-<p id="who_all_c">
-Always cooperates.
-</p>
-<p id="who_grudge">
-Starts with Cooperate, and keeps cooperating until you cheat it even once.
-Afterwards, it always plays Cheat.
-</p>
-<p id="who_prober">
-Starts with: Cooperate, Cheat, Cooperate, Cooperate.
-Afterwards, if you ever retaliate with a Cheat, it plays like a Copycat.
-Otherwise, it plays like an Always Cheat.
-</p>
-<p id="who_tf2t">
-Starts with Cooperate.
-Only retaliates with a Cheat if you cheated it TWICE in a row.
-</p>
-<p id="who_pavlov">
-Starts with Cooperate.
-Then, if you cooperated in last round, it repeats its last move (even if it was an accident).
-But if you cheated in last round, it switches its last move (even if it was an accident).
-</p>
-<p id="who_random">
-Randomly cheats or cooperates with 50-50 chance
-</p>
-
-
-<!-- - - - - - - - - - - - - - - - - -->
-<!-- - - - - SMALL LABELS! - - - - - -->
-<!-- - - - - - - - - - - - - - - - - -->
-
-<p id="label_cooperate">
-cooperate
-</p>
-
-<p id="label_cheat">
-cheat
-</p>
-
-<p id="label_play">
-play
-</p>
-
-<p id="label_start">
-START
-</p>
-
-<p id="label_stop">
-STOP
-</p>
-
-<p id="label_step">
-step
-</p>
-
-<p id="label_reset">
-reset
-</p>
-
-<p id="label_population">
-population
-</p>
-
-<p id="label_payoffs">
-payoffs
-</p>
-
-<p id="label_rules">
-rules
-</p>
-
-<p id="label_next">
-next &rarr;
-</p>
-
-<p id="label_continue">
-continue
-</p>
-
-
-<!-- - - - - - - - - - - - - - - - - -->
-<!-- - - - NAVIGATING CHAPTERS - - - -->
-<!-- - - - - - - - - - - - - - - - - -->
-
-<p id="chapter_intro">
-0. Introduction
-</p>
-<p id="chapter_oneoff">
-1. One Game
-</p>
-<p id="chapter_iterated">
-2. Repeated Game
-</p>
-<p id="chapter_tournament">
-3. One Tournament
-</p>
-<p id="chapter_evolution">
-4. Repeated Tournament
-</p>
-<p id="chapter_distrust">
-5. The Evolution of Distrust
-</p>
-<p id="chapter_noise">
-6. Making Mistaeks
-</p>
-<p id="chapter_sandbox">
-7. Sandbox Mode
-</p>
-<p id="chapter_conclusion">
-8. Conclusion
-</p>
-<p id="chapter_credits">
-9. Credits
+<p id="credits_thanks">
+Thanks to:
+<br>
+Bitcoin developers &amp; researchers
+<br>
+Charms / Bitcoin OS team
+<br>
+Game theory pioneers (Axelrod, Nash, Rapoport)
+<br>
+And everyone building decentralized systems
 </p>

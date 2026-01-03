@@ -131,9 +131,14 @@ function Iterated(config){
 	///////////////////////////////////////////////
 
 	self.chooseOpponent = function(id){
-		var LogicClass = window["Logic_"+id];
+		// If Bitcoin mode, convert to Bitcoin strategy name (e.g., "tft" → "HonestNode")
+		var strategyName = (typeof getBitcoinStrategyName !== 'undefined') 
+			? getBitcoinStrategyName(id) 
+			: id;
+		
+		var LogicClass = window["Logic_"+strategyName];
 		self.opponentLogic = new LogicClass();
-		self.playerB.chooseHat(id);
+		self.playerB.chooseHat(id); // Keep original ID for hat visuals
 	};
 
 	self.playOneRound = function(yourMove){
