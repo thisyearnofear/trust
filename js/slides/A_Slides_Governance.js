@@ -182,90 +182,203 @@ SLIDES.push({
 
 // Summary of votes cast
 SLIDES.push({
-    id: "governance_summary",
-    onstart: function(self){
-        
-        var o = self.objects;
-        var governance = getGameGovernance();
-        var reputation = getGameReputation();
-        
-        // Tally votes for all proposals first
-        var proposals = governance.getActiveProposals();
-        proposals.forEach(p => {
-            if (p.is_voting_open) {
-                governance.tallyVotes(p.id);
-            }
-        });
-        
-        // Show vote results
-        var summaryText = "<b>Your Governance Vote is Complete!</b><br><br>";
-        summaryText += "Your reputation gave you <b>" + reputation.getVotingPower() + " votes</b> in this round.<br><br>";
-        
-        // Show which proposals passed (after tallying)
-        var passed = proposals.filter(p => p.has_passed && !p.is_voting_open);
-        var failed = proposals.filter(p => !p.has_passed && p.is_voting_open === false);
-        
-        if (passed.length > 0) {
-            summaryText += "<span style='color:#4caf50;'><b>✓ Proposals Passed:</b></span><br>";
-            passed.forEach(p => {
-                summaryText += "  • " + p.title + "<br>";
-            });
-            summaryText += "<br>";
-        }
-        
-        summaryText += "<i>Your vote will be recorded on Bitcoin.</i>";
-        
-        self.add({
-            id:"text", type:"TextBox",
-            x:50, y:80, width:860,
-            text: summaryText,
-            size:13, color:"#333"
-        });
-        
-        // Execute proposals (update payoff matrix for next game)
-        if (window.GovernanceIntegration && window.GovernanceIntegration.executePassedProposals) {
-            window.GovernanceIntegration.executePassedProposals();
-        }
-        
-        // Submit votes to Charms (mock)
-        if (window.publish) {
-            publish("governance/summary", [{
-                votes: proposals.length,
-                passed: passed.length
-            }]);
-        }
-        
-        // Show pending transaction (will be replaced by actual txid)
-        var txidText = "<span style='color:#888; font-size:12px;'>Submitting to Bitcoin...</span>";
-        
-        self.add({
-            id:"txid_status", type:"TextBox",
-            x:50, y:330, width:860,
-            text: txidText,
-            size:12, color:"#666"
-        });
-        
-        // Listen for Charms submission event
-        var self_ref = self;
-        if (window.subscribe) {
-            listen(self, "governance/submitted", function(data) {
-                if (data && data[0] && data[0].txid) {
-                    var statusText = "<span style='color:#4089DD; font-weight: bold;'>✓ Bitcoin Txid: " + data[0].txid.substr(0, 16) + "...</span>";
-                    o.txid_status.setText(statusText);
-                }
-            });
-        }
-        
-        // Button to continue
-        self.add({
-            id:"button", type:"Button",
-            x:605, y:450, size:"long",
-            text_id:"governance_summary_btn",
-            message: "slideshow/next"
-        });
-        
-    },
-    onend: function(self){
-        self.clear();
-    }
+	id: "governance_summary",
+	onstart: function(self){
+		
+		var o = self.objects;
+		var governance = getGameGovernance();
+		var reputation = getGameReputation();
+		
+		// Tally votes for all proposals first
+		var proposals = governance.getActiveProposals();
+		proposals.forEach(p => {
+			if (p.is_voting_open) {
+				governance.tallyVotes(p.id);
+			}
+		});
+		
+		// Show vote results
+		var summaryText = "<b>Your Governance Vote is Complete!</b><br><br>";
+		summaryText += "Your reputation gave you <b>" + reputation.getVotingPower() + " votes</b> in this round.<br><br>";
+		
+		// Show which proposals passed (after tallying)
+		var passed = proposals.filter(p => p.has_passed && !p.is_voting_open);
+		var failed = proposals.filter(p => !p.has_passed && p.is_voting_open === false);
+		
+		if (passed.length > 0) {
+			summaryText += "<span style='color:#4caf50;'><b>✓ Proposals Passed:</b></span><br>";
+			passed.forEach(p => {
+				summaryText += "  • " + p.title + "<br>";
+			});
+			summaryText += "<br>";
+		}
+		
+		summaryText += "<i>Your vote will be recorded on Bitcoin.</i>";
+		
+		self.add({
+			id:"text", type:"TextBox",
+			x:50, y:80, width:860,
+			text: summaryText,
+			size:13, color:"#333"
+		});
+		
+		// Execute proposals (update payoff matrix for next game)
+		if (window.GovernanceIntegration && window.GovernanceIntegration.executePassedProposals) {
+			window.GovernanceIntegration.executePassedProposals();
+		}
+		
+		// Submit votes to Charms (mock)
+		if (window.publish) {
+			publish("governance/summary", [{
+				votes: proposals.length,
+				passed: passed.length
+			}]);
+		}
+		
+		// Show pending transaction (will be replaced by actual txid)
+		var txidText = "<span style='color:#888; font-size:12px;'>Submitting to Bitcoin...</span>";
+		
+		self.add({
+			id:"txid_status", type:"TextBox",
+			x:50, y:330, width:860,
+			text: txidText,
+			size:12, color:"#666"
+		});
+		
+		// Listen for Charms submission event
+		var self_ref = self;
+		if (window.subscribe) {
+			listen(self, "governance/submitted", function(data) {
+				if (data && data[0] && data[0].txid) {
+					var statusText = "<span style='color:#4089DD; font-weight: bold;'>✓ Bitcoin Txid: " + data[0].txid.substr(0, 16) + "...</span>";
+					o.txid_status.setText(statusText);
+				}
+			});
+		}
+		
+		// Button to continue
+		self.add({
+			id:"button", type:"Button",
+			x:605, y:450, size:"long",
+			text_id:"governance_summary_btn",
+			message: "slideshow/next"
+		});
+		
+	},
+	onend: function(self){
+		self.clear();
+	}
+});
+
+// Voting confirmation: Show the loop closed (reputation→votes→rules changed)
+SLIDES.push({
+	id: "governance_confirmation",
+	onstart: function(self){
+		
+		var o = self.objects;
+		const reputation = getGameReputation();
+		const governance = getGameGovernance();
+		const tier = reputation.getReputationTier();
+		
+		// Splash
+		self.add({ id:"splash", type:"Splash" });
+		
+		// Build confirmation text showing the full loop
+		var confirmText = `
+			<b>THE LOOP IS CLOSED.</b><br><br>
+			You played the game. Your <b>${reputation.cooperativeMoves} cooperative moves</b> earned you a <span style="color: ${tier.label === 'Trusted' ? '#4089DD' : (tier.label === 'Neutral' ? '#efc701' : '#FF5E5E')}">${tier.label}</span> reputation.<br><br>
+			That reputation gave you <b>${reputation.getVotingPower()} governance votes.</b><br><br>
+			Those votes <b>changed the rules</b> that future players will face.<br><br>
+			<i>Your behavior shaped Bitcoin's future.</i>
+		`;
+		
+		self.add({
+			id:"text", type:"TextBox",
+			x:130, y:60, width:700, height:350, align:"center",
+			text: confirmText,
+			size:14
+		});
+		
+		// Button
+		self.add({
+			id:"button", type:"Button", x:304, y:466, size:"long",
+			text: "How does this work?",
+			message:"slideshow/next"
+		});
+		
+		_hide(o.text); _fadeIn(o.text, 200);
+		_hide(o.button); _fadeIn(o.button, 700);
+		
+	},
+	onend: function(self){
+		self.clear();
+	}
+});
+
+// Charms Explanation Slide 1: What you just experienced (moved from early position)
+SLIDES.push({
+	id: "charms_intro",
+	onstart: function(self){
+
+		var o = self.objects;
+
+		// Splash in background
+		self.add({ id:"splash", type:"Splash" });
+
+		// Charms explanation text
+		self.add({
+			id:"charms_text", type:"TextBox",
+			x:130, y:60, width:700, height:350, align:"center",
+			text_id:"charms_intro"
+		});
+
+		// Button
+		self.add({
+			id:"charms_button", type:"Button", x:304, y:466, size:"long",
+			text_id:"charms_button",
+			message:"slideshow/scratch"
+		});
+
+		_hide(o.charms_text); _fadeIn(o.charms_text, 200);
+		_hide(o.charms_button); _fadeIn(o.charms_button, 700);
+
+	},
+	onend: function(self){
+		self.clear();
+	}
+
+});
+
+// Charms Explanation Slide 2: The broader possibilities
+SLIDES.push({
+	id: "charms_what",
+	onstart: function(self){
+
+		var o = self.objects;
+
+		// Splash in background
+		self.add({ id:"splash", type:"Splash", blush:true });
+
+		// Explanation of mechanics
+		self.add({
+			id:"what_text", type:"TextBox",
+			x:130, y:60, width:700, height:350, align:"center",
+			text_id:"charms_what"
+		});
+
+		// Button to continue to credits
+		self.add({
+			id:"what_button", type:"Button", x:304, y:466, size:"long",
+			text_id:"charms_what_btn",
+			message:"slideshow/scratch"
+		});
+
+		_hide(o.what_text); _fadeIn(o.what_text, 200);
+		_hide(o.what_button); _fadeIn(o.what_button, 700);
+
+	},
+	onend: function(self){
+		self.clear();
+	}
+
 });

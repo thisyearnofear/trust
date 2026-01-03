@@ -181,11 +181,11 @@ Too idealistic – they just robbed you while you played fair!
 </p>
 
 <p id="oneoff_1_top">
-If you cooperate &amp; they cheat, you lose: they accept invalid transactions and benefit unfairly (+3) while your honest block gets rejected (-1).
-However, if you both cheat, the network breaks. Neither of you can trust it anymore. (both 0)
-<b>Therefore: it seems logical to CHEAT.</b>
+If you cooperate &amp; they cheat, you lose: they accept invalid transactions and benefit unfairly (+3 blocks mined) while your honest block gets rejected (-1 lost reward).
+However, if you both cheat, the network breaks—double-spending becomes possible, the chain loses validity, and neither attacker keeps their stolen coins. (both 0)
+<b>Therefore: in isolation, it seems logical to CHEAT.</b>
 <br><br>
-But this is a single transaction. Bitcoin isn't a single transaction. It's eternal repetition.
+But this is a single block. Bitcoin isn't a single block. It's eternal repetition, where attackers face each other forever.
 </p>
 
 <p id="oneoff_1_btm">
@@ -202,9 +202,9 @@ Noble! Sure, seems right... <b>OR IS IT??</b>
 </p>
 
 <p id="oneoff_2_top">
-Because if you both cooperate, the network works perfectly &amp; you both benefit from valid transactions. (score: +2 vs +2)
-But if you cheat &amp; they follow rules, you might succeed in a double-spend they won't catch. (score: +3 vs -1)
-<b>Therefore: you "should" still CHEAT.</b>
+Because if you both cooperate, the network works perfectly—honest blocks build a secure chain that no one can attack. You both earn steady rewards. (score: +2 vs +2)
+But if you attack while they validate honestly, you might succeed in a double-spend they won't immediately detect, stealing their coins. (score: +3 vs -1)
+<b>Therefore: game theory says you "should" still CHEAT.</b>
 </p>
 
 <p id="oneoff_2_btm">
@@ -646,7 +646,7 @@ This hidden mining (selfish mining) can be profitable if you have enough hash po
 <p id="distrust_4b_a">
 If a node knows others will see its blocks with delay,
 it can <i>exploit</i> that delay by mining in secret.
-Suddenly, <span class="all_d">Always Cheat</span> becomes profitable even against <span class="tft">Copycat</span>!
+Suddenly, <span class="all_d">51% Attacker</span> becomes profitable even against <span class="tft">Honest Node</span>!
 </p>
 
 <p id="distrust_4b_b">
@@ -1078,7 +1078,7 @@ There's <i>another</i> way to breed distrust.
 Here are the "payoffs" for the trust game:
 </p>
 <p id="distrust_4_2">
-With the normal payoffs, <span class="tft">Copycat</span> wins.
+With the normal payoffs, <span class="tft">Honest Node</span> wins.
 But now, <b>change the "both cooperate" reward from +2 to +1</b>,
 then click <b>START</b>.
 Even though +1 is still <i>more</i> than the punishment for both cheating (0)...
@@ -1099,14 +1099,14 @@ once you're done, click:
 start the evolution process!
 </p>
 <p id="evo_1">
-Say we start with the following population of players:
-<span class="all_c">15 Always Cooperates</span>,
-<span class="all_d">5 Always Cheats</span>, and
-<span class="tft">5 Copycats</span>.
-(We'll ignore <span class="grudge">Grudger</span> &amp; <span class="prober">Detective</span> for now)
+Say we start with the following network composition:
+<span class="all_c">15 Full Nodes</span>,
+<span class="all_d">5 51% Attackers</span>, and
+<span class="tft">5 Honest Nodes</span>.
+(We'll ignore <span class="grudge">Chain Validators</span> &amp; <span class="prober">Adaptive Nodes</span> for now)
 <br><br>
-We're going to do the tournament-eliminate-reproduce dance a dozen times or so.
-Let's make another bet! Who do you think will win the <i>first</i> tournament?
+We're going to run a tournament, then eliminate unsuccessful strategies and let successful ones spread—a dozen times or so.
+Let's make another bet! Which strategy do you think will dominate after the <i>first</i> tournament?
 <b>PLACE YOUR BETS, AGAIN:</b>
 </p>
 <p id="evo_9_btn">
@@ -1116,14 +1116,14 @@ Let's make another bet! Who do you think will win the <i>first</i> tournament?
 ...there's a problem: &rarr;
 </p>
 <p id="evo_10_followup">
-(Note: sometimes, a few <span class="grudge">Grudgers</span> may stick around,
-because when all players except <span class="grudge">Grudger</span> &amp; <span class="tft">Copycat</span>
+(Note: sometimes, a few <span class="grudge">Chain Validators</span> may persist in the network,
+because when all strategies except <span class="grudge">Chain Validator</span> &amp; <span class="tft">Honest Node</span>
 are eliminated, the two tie.)
 <br><br>
 So, it seems the math of game theory is telling us something:
-that <span class="tft">Copycat's</span> philosophy,
-"Do unto others as you would have them do unto you", may be not just a
-<i>moral</i> truth, but also a <i>mathematical</i> truth.
+that <span class="tft">Honest Node's</span> philosophy,
+"validate what is valid, and respond proportionally to attacks", may be not just a
+<i>moral</i> truth, but also a <i>mathematical</i> truth for Bitcoin's survival.
 However...
 </p>
 <p id="evo_11_btn">
@@ -1150,8 +1150,8 @@ Clone the 5 best players. (if there's a tie, pick randomly between them)
 </p>
 <p id="evolution_intro_footer">
 ...and REPEAT, for as long as you'd like.
-Note: you don't have to wait for people to literally die &amp; reproduce for culture to evolve --
-all that's needed is that "unsuccessful" behaviors go away, and "successful" behaviors are imitated.
+Note: you don't have to wait for nodes to literally disappear from the network for strategies to evolve --
+all that's needed is that unsuccessful node strategies fade away from the network, and successful ones spread through adoption and imitation.
 So now...
 </p>
 
@@ -1179,11 +1179,11 @@ step
 </p>
 
 <p id="noise_1">
-As cool as <span class="tft">Copycat</span> is, it has a huge, fatal weakness I haven't mentioned yet.
-To understand the problem, let's say two <span class="tft">Copycats</span> are playing against each other:
+As cool as <span class="tft">Honest Node</span> is, it has a huge, fatal weakness I haven't mentioned yet.
+To understand the problem, let's say two <span class="tft">Honest Nodes</span> are validating each other:
 </p>
 <p id="noise_1_end">
-Being "nice" players, both their first moves will be:
+Being responsive validators, both their first moves will be:
 </p>
 <p id="noise_5_btn">
 ...deal with mistakes? &rarr;
@@ -1196,15 +1196,15 @@ Let's meet some new faces! (or, new hats, anyway)
 </p>
 <p id="noise_evo_1">
 Let's start with a dozen
-<span class="all_c">Always Cooperates</span>,
-versus our old winner, the fair <span class="tft">Copycat</span>,
-and our three new characters:
-the forgiving <span class="tf2t">Copykitten</span>,
-the dull <span class="pavlov">Simpleton</span>, and
-the silly <span class="random">Random</span>.
+<span class="all_c">Full Nodes</span>,
+versus our old winner, the fair <span class="tft">Honest Node</span>,
+and our three new node strategies:
+the forgiving <span class="tf2t">Forgiving Node</span>,
+the rigid <span class="pavlov">Reactive Node</span>, and
+the unpredictable <span class="random">Random Node</span>.
 <br><br>
-In each round of a match, players have a small chance of making a mistake. (let's say, 5%)
-Who do you think will come out on top?
+In each round of a match, nodes have a small chance of making a validation mistake. (let's say, 5% due to network latency or consensus bugs)
+Which strategy dominates?
 <b>Think carefully, then PLACE YOUR BETS:</b>
 </p>
 <p id="noise_evo_2_2_btn">
@@ -1218,9 +1218,9 @@ When you're done playing around, click:
 </p>
 <p id="noise_evo_6">
 The results turn out something like this:<br>
-<b>At 0%,</b> the fair <span class="tft">Copycat</span> wins!
-<b>At 1% to 9%,</b> the forgiving <span class="tf2t">Copykitten</span> wins!
-<b>At 10% to 49%:</b> the unfair, unforgiving <span class="all_d">Always Cheat</span> wins.
+<b>At 0% error rate,</b> the fair <span class="tft">Honest Node</span> wins!
+<b>At 1% to 9% error rate,</b> the forgiving <span class="tf2t">Forgiving Node</span> wins!
+<b>At 10% to 49% error rate:</b> the aggressive <span class="all_d">51% Attacker</span> wins.
 <b>At 50%,</b> <i>nobody wins ever.</i>
 <br><br>
 This is why "miscommunication" is such an interesting barrier to trust:
@@ -1278,11 +1278,11 @@ what we learnt today! &rarr;
 Ready to understand how this works? →
 </p>
 <p id="charms_intro">
-<b>Now, let's make this real on Bitcoin.</b>
+<b>What you just did was real on Bitcoin.</b>
 <br><br>
-What you're about to play uses <b>Charms Protocol:</b> zero-knowledge proofs that let Bitcoin track reputation and execute governance without a central authority.
+Your game moves, reputation score, and governance votes were tracked using <b>Charms Protocol:</b> zero-knowledge proofs that let Bitcoin verify your behavior and count your governance votes—all without a central authority.
 <br><br>
-Play the game below. Your cooperation will be proven on-chain. Your votes will shape actual rules.
+Your cooperation was proven on-chain. Your votes shaped the actual rules of the next game round.
 </p>
 <p id="charms_what">
 <b>This changes what's possible:</b>
