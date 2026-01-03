@@ -44,10 +44,10 @@ SLIDES.push({
 
 		// Buttons
 		self.add({
-			id:"buttonCheat", type:"Button", x:275, y:470, uppercase:true,
-			text_id:"label_cheat",
+			id:"buttonAttack", type:"Button", x:275, y:470, uppercase:true,
+			text_id:"label_attack",
 			onclick:function(){
-				_.answer = "CHEAT";
+				_.answer = "ATTACK";
 				publish("slideshow/next");
 			}
 		});
@@ -63,7 +63,7 @@ SLIDES.push({
 		// Hide & fade
 		_hide(o.topWords); _fadeIn(o.topWords, 150+10);
 		_hide(o.btmWords); _fadeIn(o.btmWords, 150+600);
-		_hide(o.buttonCheat); _fadeIn(o.buttonCheat, 150+1200);
+		_hide(o.buttonAttack); _fadeIn(o.buttonAttack, 150+1200);
 		_hide(o.buttonCooperate); _fadeIn(o.buttonCooperate, 150+1200);
 
 	},
@@ -86,19 +86,19 @@ SLIDES.push({
 		if(_.answer=="COOPERATE"){
 			publish("iterated/cooperate");
 		}else{
-			publish("iterated/cheat");
+			publish("iterated/attack");
 		}
 
 		//////////////////////////
 
 		// CHANGE THE BUTTONS
 		setTimeout(function(){
-			o.buttonCheat.config.onclick = null;
-			o.buttonCheat.config.message = "iterated/cheat";
+			o.buttonAttack.config.onclick = null;
+			o.buttonAttack.config.message = "iterated/attack";
 			o.buttonCooperate.config.onclick = null;
 			o.buttonCooperate.config.message = "iterated/cooperate";
 
-			publish("buttonCheat/deactivate");
+			publish("buttonAttack/deactivate");
 			publish("buttonCooperate/deactivate");
 		},1);
 
@@ -146,7 +146,7 @@ SLIDES.push({
 		ROUND_NUM = 0;
 
 		listen(self, "iterated/round/start", function(){
-			publish("buttonCheat/deactivate");
+			publish("buttonAttack/deactivate");
 			publish("buttonCooperate/deactivate");
 		});
 		listen(self, "iterated/round/end", function(payoffA, payoffB){
@@ -181,14 +181,14 @@ SLIDES.push({
 						self.objects.scoreboard.reset();
 						_showInfo();
 					},function(){
-						publish("buttonCheat/activate");
+						publish("buttonAttack/activate");
 						publish("buttonCooperate/activate");
 					});
 
 				}
 
 			}else{
-				publish("buttonCheat/activate");
+				publish("buttonAttack/activate");
 				publish("buttonCooperate/activate");
 			}
 			

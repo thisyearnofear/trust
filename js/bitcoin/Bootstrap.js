@@ -60,6 +60,17 @@ var NARRATIVE_MODE = "bitcoin";
       R: getBitcoinPayoff('R'),
       T: getBitcoinPayoff('T')
     };
+    
+    // Also update the default payoff values to match Bitcoin economics
+    window.PD.PAYOFFS_DEFAULT = {
+      P: 0, // punishment: neither of you get anything
+      S: -1, // sucker: you put in coin, other didn't.
+      R: 2, // reward: you both put 1 coin in, both got 3 back
+      T: 3 // temptation: you put no coin, got 3 coins anyway
+    };
+    
+    // Apply Bitcoin payoff values
+    window.PD.PAYOFFS = JSON.parse(JSON.stringify(window.PD.PAYOFFS_DEFAULT));
   }
   
   // Helper to conditionally use Bitcoin or original text
@@ -73,6 +84,9 @@ var NARRATIVE_MODE = "bitcoin";
   console.log("[Bitcoin Mode] Narrative mode: " + NARRATIVE_MODE);
   console.log("[Bitcoin Mode] Asset mapping loaded");
   console.log("[Bitcoin Mode] Strategy wrapping ready");
+  
+  // Apply Bitcoin payoff labels immediately
+  updateBitcoinPayoffLabels();
   
 })();
 
@@ -112,9 +126,86 @@ function updateBitcoinPayoffLabels() {
       if (BITCOIN_PAYOFFS.hasOwnProperty(key)) {
         window.PD.PAYOFFS_DESCRIPTION = window.PD.PAYOFFS_DESCRIPTION || {};
         window.PD.PAYOFFS_DESCRIPTION[key] = BITCOIN_PAYOFFS[key];
+        
+        // Also update the Words.text for UI labels if available
+        if (window.Words && window.Words.text) {
+          var labelId = 'label_' + key.toLowerCase();
+          if (window.Words.text[labelId]) {
+            window.Words.text[labelId] = BITCOIN_PAYOFFS[key].label;
+          }
+        }
       }
     }
   }
+  
+  // Update the cooperate/attack labels to Bitcoin terminology
+  if (window.Words && window.Words.text) {
+    if (window.Words.text['label_cooperate']) {
+      window.Words.text['label_cooperate'] = 'Validate & Relay';
+    }
+    if (window.Words.text['label_attack']) {
+      window.Words.text['label_attack'] = 'Attack Network';
+    }
+    if (window.Words.text['label_cheat']) {
+      window.Words.text['label_cheat'] = 'Attack Network';
+    }
+  }
+  
+  // Add tooltips to payoff labels in the UI
+  addBitcoinPayoffTooltips();
+  
+  // Add consensus rules explanations
+  addBitcoinConsensusExplanations();
+}
+
+/**
+ * Add consensus rules explanations to the UI
+ */
+function addBitcoinConsensusExplanations() {
+  if (!BITCOIN_LABELS || !document.body) {
+    console.warn("[Bitcoin Mode] BITCOIN_LABELS or DOM not ready for consensus explanations");
+    return;
+  }
+  
+  // Update any elements that might contain consensus-related text
+  var textElements = document.querySelectorAll('*');
+  textElements.forEach(function(element) {
+    if (element.textContent && element.textContent.includes('consensus')) {
+      element.setAttribute('data-bitcoin-tooltip', BITCOIN_LABELS.consensus_rules);
+      element.classList.add('bitcoin-consensus-explanation');
+    }
+  });
+  
+  console.log("[Bitcoin Mode] Consensus rules explanations added");
+}
+
+/**
+ * Add tooltip elements to payoff labels for Bitcoin explanations
+ */
+function addBitcoinPayoffTooltips() {
+  if (!BITCOIN_PAYOFFS || !document.body) {
+    console.warn("[Bitcoin Mode] BITCOIN_PAYOFFS or DOM not ready for tooltips");
+    return;
+  }
+  
+  // Find all payoff label elements and add tooltips using CSS
+  var payoffKeys = ['R', 'S', 'T', 'P'];
+  payoffKeys.forEach(function(key) {
+    var payoffData = BITCOIN_PAYOFFS[key];
+    if (payoffData && payoffData.tooltip) {
+      // Find elements that might contain this payoff label
+      var textElements = document.querySelectorAll('*');
+      textElements.forEach(function(element) {
+        if (element.textContent && element.textContent.includes(payoffData.label)) {
+          element.setAttribute('data-bitcoin-tooltip', payoffData.tooltip);
+          element.setAttribute('data-payoff-key', key);
+          element.classList.add('bitcoin-payoff-label');
+        }
+      });
+    }
+  });
+  
+  console.log("[Bitcoin Mode] Tooltips added to payoff labels");
 }
 
 /**
@@ -138,6 +229,12 @@ function updateBitcoinStrategyLabels() {
         var boldTag = charDiv.querySelector("b");
         if (boldTag) {
           boldTag.textContent = agent.label.toUpperCase();
+        }
+        
+        // Update the description if available
+        var descElements = charDiv.querySelectorAll(".desc");
+        if (descElements.length > 0 && agent.bitcoin_explanation) {
+          descElements[0].textContent = agent.bitcoin_explanation;
         }
       }
     }

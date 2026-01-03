@@ -38,9 +38,9 @@ function Iterated(config){
 	self.dom.appendChild(_l1);
 	var _l2 = _makeLabel("label_you_cooperate", {x:272, y:35, rotation:-45, align:"center", color:"#333333", size:15, width:70, lineHeight:1});
 	self.dom.appendChild(_l2);
-	var _l3 = _makeLabel("label_they_cheat", {x:406, y:86, rotation:45, align:"center", color:"#333333", size:15, width:70, lineHeight:1});
+	var _l3 = _makeLabel("label_they_attack", {x:406, y:86, rotation:45, align:"center", color:"#333333", size:15, width:70, lineHeight:1});
 	self.dom.appendChild(_l3);
-	var _l4 = _makeLabel("label_you_cheat", {x:224, y:83, rotation:-45, align:"center", color:"#333333", size:15, width:70, lineHeight:1});
+	var _l4 = _makeLabel("label_you_attack", {x:224, y:83, rotation:-45, align:"center", color:"#333333", size:15, width:70, lineHeight:1});
 	self.dom.appendChild(_l4);
 
 	///////////////////////////////////////////////
@@ -145,7 +145,7 @@ function Iterated(config){
 
 		// Make your moves!
 		var A = yourMove;
-		if(yourMove=="TRIP") A=PD.CHEAT;
+		if(yourMove=="TRIP") A=PD.ATTACK;
 		var B = self.opponentLogic.play();
 
 		// Get payoffs
@@ -182,9 +182,9 @@ function Iterated(config){
 		self.playOneRound(PD.COOPERATE);
 	});
 
-	listen(self, "iterated/cheat", function(){
+	listen(self, "iterated/attack", function(){
 		publish("iterated/round/start");
-		self.playOneRound(PD.CHEAT);
+		self.playOneRound(PD.ATTACK);
 	});
 
 	listen(self, "iterated/TRIP", function(){

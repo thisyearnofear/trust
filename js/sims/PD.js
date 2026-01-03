@@ -11,7 +11,7 @@ var PEEP_METADATA = {
 
 var PD = {};
 PD.COOPERATE = "COOPERATE";
-PD.CHEAT = "CHEAT";
+PD.ATTACK = "ATTACK";
 
 PD.PAYOFFS_DEFAULT = {
 	P: 0, // punishment: neither of you get anything
@@ -47,10 +47,47 @@ subscribe("rules/noise",function(value){
 
 PD.getPayoffs = function(move1, move2){
 	var payoffs = PD.PAYOFFS;
-	if(move1==PD.CHEAT && move2==PD.CHEAT) return [payoffs.P, payoffs.P]; // both punished
-	if(move1==PD.COOPERATE && move2==PD.CHEAT) return [payoffs.S, payoffs.T]; // sucker - temptation
-	if(move1==PD.CHEAT && move2==PD.COOPERATE) return [payoffs.T, payoffs.S]; // temptation - sucker
+	if(move1==PD.ATTACK && move2==PD.ATTACK) return [payoffs.P, payoffs.P]; // both punished
+	if(move1==PD.COOPERATE && move2==PD.ATTACK) return [payoffs.S, payoffs.T]; // sucker - temptation
+	if(move1==PD.ATTACK && move2==PD.COOPERATE) return [payoffs.T, payoffs.S]; // temptation - sucker
 	if(move1==PD.COOPERATE && move2==PD.COOPERATE) return [payoffs.R, payoffs.R]; // both rewarded
+};
+
+// Bitcoin fork choice rule: longest valid chain wins
+PD.applyForkChoiceRule = function(playerA, playerB, scores) {
+	// In Bitcoin, nodes choose the longest valid chain
+	// If you attack (create invalid blocks), other nodes won't extend your chain
+	
+	var aCooperated = playerA.lastMove === PD.COOPERATE;
+	var bCooperated = playerB.lastMove === PD.COOPERATE;
+	
+	// If both cooperated, both get full rewards (longest chain)
+	if (aCooperated && bCooperated) {
+		return scores; // No change needed
+	}
+	
+	// If one attacked and one cooperated, the attacker's blocks get orphaned
+	if (!aCooperated && bCooperated) {
+		// Player A attacked, so their invalid blocks don't get extended
+		// Player B gets full reward for honest mining
+		scores[0] = Math.max(0, scores[0] * 0.3); // Attacker gets only 30% of reward (orphaned blocks)
+		scores[1] = scores[1] * 1.2; // Honest miner gets 20% bonus (more blocks accepted)
+	}
+	
+	if (aCooperated && !bCooperated) {
+		// Player B attacked, so their invalid blocks don't get extended
+		// Player A gets full reward for honest mining
+		scores[0] = scores[0] * 1.2; // Honest miner gets 20% bonus
+		scores[1] = Math.max(0, scores[1] * 0.3); // Attacker gets only 30% of reward
+	}
+	
+	// If both attacked, network breaks down - both lose significantly
+	if (!aCooperated && !bCooperated) {
+		scores[0] = Math.max(0, scores[0] * 0.1); // Both get only 10% of reward
+		scores[1] = Math.max(0, scores[1] * 0.1);
+	}
+	
+	return scores;
 };
 
 PD.playOneGame = function(playerA, playerB){
@@ -60,8 +97,8 @@ PD.playOneGame = function(playerA, playerB){
 	var B = playerB.play();
 
 	// Noise: random mistakes, flip around!
-	if(Math.random()<PD.NOISE) A = ((A==PD.COOPERATE) ? PD.CHEAT : PD.COOPERATE);
-	if(Math.random()<PD.NOISE) B = ((B==PD.COOPERATE) ? PD.CHEAT : PD.COOPERATE);
+	if(Math.random()<PD.NOISE) A = ((A==PD.COOPERATE) ? PD.ATTACK : PD.COOPERATE);
+	if(Math.random()<PD.NOISE) B = ((B==PD.COOPERATE) ? PD.ATTACK : PD.COOPERATE);
 	
 	// Get payoffs
 	var payoffs = PD.getPayoffs(A,B);
@@ -69,6 +106,11 @@ PD.playOneGame = function(playerA, playerB){
 	// Remember own & other's moves (or mistakes)
 	playerA.remember(A, B);
 	playerB.remember(B, A);
+
+	// Apply Bitcoin fork choice rule (longest chain wins)
+	if (window.BITCOIN_MODE) {
+		payoffs = PD.applyForkChoiceRule(playerA, playerB, payoffs);
+	}
 
 	// Add to scores (only in tournament?)
 	playerA.addPayoff(payoffs[0]);
@@ -138,39 +180,39 @@ function Logic_tft(){
 
 function Logic_tf2t(){
 	var self = this;
-	var howManyTimesCheated = 0;
+	var howManyTimesAttacked = 0;
 	self.play = function(){
-		if(howManyTimesCheated>=2){
-			return PD.CHEAT; // retaliate ONLY after two betrayals
+		if(howManyTimesAttacked>=2){
+			return PD.ATTACK; // retaliate ONLY after two betrayals
 		}else{
 			return PD.COOPERATE;
 		}
 	};
 	self.remember = function(own, other){
-		if(other==PD.CHEAT){
-			howManyTimesCheated++;
+		if(other==PD.ATTACK){
+			howManyTimesAttacked++;
 		}else{
-			howManyTimesCheated = 0;
+			howManyTimesAttacked = 0;
 		}
 	};
 }
 
 function Logic_grudge(){
 	var self = this;
-	var everCheatedMe = false;
+	var everAttackedMe = false;
 	self.play = function(){
-		if(everCheatedMe) return PD.CHEAT;
+		if(everAttackedMe) return PD.ATTACK;
 		return PD.COOPERATE;
 	};
 	self.remember = function(own, other){
-		if(other==PD.CHEAT) everCheatedMe=true;
+		if(other==PD.ATTACK) everAttackedMe=true;
 	};
 }
 
 function Logic_all_d(){
 	var self = this;
 	self.play = function(){
-		return PD.CHEAT;
+		return PD.ATTACK;
 	};
 	self.remember = function(own, other){
 		// nah
@@ -190,7 +232,7 @@ function Logic_all_c(){
 function Logic_random(){
 	var self = this;
 	self.play = function(){
-		return (Math.random()>0.5 ? PD.COOPERATE : PD.CHEAT);
+		return (Math.random()>0.5 ? PD.COOPERATE : PD.ATTACK);
 	};
 	self.remember = function(own, other){
 		// nah
@@ -207,19 +249,19 @@ function Logic_pavlov(){
 	};
 	self.remember = function(own, other){
 		myLastMove = own; // remember MISTAKEN move
-		if(other==PD.CHEAT) myLastMove = ((myLastMove==PD.COOPERATE) ? PD.CHEAT : PD.COOPERATE); // switch!
+		if(other==PD.ATTACK) myLastMove = ((myLastMove==PD.COOPERATE) ? PD.ATTACK : PD.COOPERATE); // switch!
 	};
 }
 
-// TEST by Cooperate | Cheat | Cooperate | Cooperate
+// TEST by Cooperate | Attack | Cooperate | Cooperate
 // If EVER retaliates, keep playing TFT
 // If NEVER retaliates, switch to ALWAYS DEFECT
 function Logic_prober(){
 
 	var self = this;
 
-	var moves = [PD.COOPERATE, PD.CHEAT, PD.COOPERATE, PD.COOPERATE];
-	var everCheatedMe = false;
+	var moves = [PD.COOPERATE, PD.ATTACK, PD.COOPERATE, PD.COOPERATE];
+	var everAttackedMe = false;
 
 	var otherMove = PD.COOPERATE;
 	self.play = function(){
@@ -228,16 +270,16 @@ function Logic_prober(){
 			var move = moves.shift();
 			return move;
 		}else{
-			if(everCheatedMe){
+			if(everAttackedMe){
 				return otherMove; // TFT
 			}else{
-				return PD.CHEAT; // Always Cheat
+				return PD.ATTACK; // Always Attack
 			}
 		}
 	};
 	self.remember = function(own, other){
 		if(moves.length>0){
-			if(other==PD.CHEAT) everCheatedMe=true; // Testing phase: ever retaliated?
+			if(other==PD.ATTACK) everAttackedMe=true; // Testing phase: ever retaliated?
 		}
 		otherMove = other; // for TFT
 	};

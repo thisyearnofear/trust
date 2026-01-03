@@ -140,7 +140,7 @@ So let's play the game Bitcoin nodes play every day. &rarr;
 you<br>follow consensus
 </p>
 
-<p id="label_you_cheat">
+<p id="label_you_attack">
 you<br>attack network
 </p>
 
@@ -148,8 +148,24 @@ you<br>attack network
 they<br>follow consensus
 </p>
 
+<p id="label_they_attack">
+they<br>attack network
+</p>
+
+<p id="label_you_cheat">
+you<br>attack network
+</p>
+
 <p id="label_they_cheat">
 they<br>attack network
+</p>
+
+<p id="label_cheat">
+attack
+</p>
+
+<p id="label_attack">
+attack
 </p>
 
 <p id="label_you">
@@ -164,15 +180,111 @@ other participant<br>↘
 <b>A SINGLE BLOCK</b>
 <br>
 You're a miner. <b>COOPERATE:</b> Follow consensus rules, earn fair reward.
-<br><b>CHEAT:</b> Break rules, quick profit, but network rejects you.
+<br><b>ATTACK:</b> Break rules, quick profit, but network rejects you.
 </p>
 
 <p id="oneoff_0_btm">
-<b>The other miner cheats.</b><br>
-Do you cooperate or cheat back?
+<b>The other miner attacks.</b><br>
+Do you cooperate or attack back?
 </p>
 
-<p id="oneoff_1_cheated">
+<p id="oneoff_game_to_bitcoin">
+<b>FROM GAME THEORY TO BITCOIN</b><br>
+<br>
+This isn't just an abstract game. These exact dynamics play out every day in Bitcoin mining:
+<br>
+• <b>Cooperate</b> = Follow Bitcoin's consensus rules
+• <b>Attack</b> = Try to double-spend or withhold blocks
+• <b>Payoffs</b> = Real BTC rewards and losses
+• <b>Strategies</b> = Different mining approaches
+<br>
+Let's see how Bitcoin's economics make honesty the winning strategy...
+</p>
+
+<p id="oneoff_bitcoin_economics">
+<b>BITCOIN BLOCK ECONOMICS</b><br>
+<br>
+These payoffs reflect real Bitcoin mining economics:
+<br>
+• <span data-bitcoin-tooltip="When both nodes follow consensus rules, the network remains secure and both miners earn the full block reward (currently 6.25 BTC) plus transaction fees. This is the optimal outcome for network health.">Valid Block Accepted (R=2)</span>: Both miners earn 6.25 BTC + fees
+<br>
+• <span data-bitcoin-tooltip="When you follow consensus rules but the other node attacks (e.g., withholds blocks or double-spends), your honestly mined block may get orphaned. You lose the block reward and transaction fees, resulting in a net loss.">Block Orphaned (S=-1)</span>: You lose mining reward to attacker
+<br>
+• <span data-bitcoin-tooltip="When you attack the network (e.g., attempt a double-spend or withhold blocks) while the other node validates honestly, you may temporarily profit. However, this comes with long-term reputation damage and risk of being banned from the network.">Double-Spend Success (T=3)</span>: Short-term profit, long-term risk
+<br>
+• <span data-bitcoin-tooltip="When both nodes attack the network (e.g., both attempt to double-spend or withhold blocks), the network becomes unstable. No blocks get confirmed, no rewards are earned, and the entire system suffers.">Mutual Attack (P=0)</span>: Network breaks, nobody earns
+<br>
+<br>
+The R=2 vs T=3 gap explains why attacks seem rational in isolation, but T only works once before reputation damage makes future cooperation impossible.
+</p>
+
+<p id="oneoff_bitcoin_difficulty">
+<b>LONG-TERM INCENTIVES & DIFFICULTY</b><br>
+<br>
+Bitcoin's genius isn't that miners are altruistic. It's that Bitcoin makes attacking more expensive than earning:
+<br>
+• <b>Difficulty Adjustment</b>: Every 2016 blocks (~2 weeks), Bitcoin automatically adjusts mining difficulty. Attacking becomes progressively more expensive.
+<br>
+• <b>Cost to Attack</b>: A 51% attack costs ~$15B/year in electricity at current difficulty levels.
+<br>
+• <b>Reputation System</b>: Honest miners build reputation over time. Attackers get permanently banned from mempool access.
+<br>
+• <b>Compound Rewards</b>: After 780,000 blocks, honest miners have earned ~10 million BTC. Attackers have earned 0.
+<br>
+<br>
+The math is undeniable: <b>honesty dominates</b> in the long run.
+</p>
+
+<p id="oneoff_fork_choice">
+<b>FORK CHOICE RULE: LONGEST CHAIN WINS</b><br>
+<br>
+This game now implements Bitcoin's actual fork choice rule:
+<br>
+• <b>Honest Mining (Both Cooperate)</b>: Both miners' blocks get accepted. Network grows securely.
+<br>
+• <b>Attack Attempt (One Attacks)</b>: Attacker's invalid blocks get orphaned (only 30% reward). Honest miner gets bonus (120% reward).
+<br>
+• <b>Mutual Attack (Both Attack)</b>: Network breaks down. Both get only 10% reward due to instability.
+<br>
+<br>
+This creates the <b>emergent dominant strategy</b>: honesty pays better than attacking, because the network always chooses the longest <b>valid</b> chain.
+</p>
+
+<p id="oneoff_reputation">
+<b>NETWORK EFFECTS & REPUTATION</b><br>
+<br>
+In Bitcoin, reputation isn't just a game score – it has real consequences:
+<br>
+• <b>Trusted Nodes</b>: Nodes with good reputation get prioritized block relay, reducing orphan rates.
+<br>
+• <b>Suspicious Nodes</b>: Nodes that attack get banned from mempool access, reducing their profitability.
+<br>
+• <b>Permanent Blacklists</b>: Once banned, nodes must change IP addresses to rejoin the network.
+<br>
+• <b>Economic Incentives</b>: Honest miners earn compounding rewards. Attackers face increasing costs.
+<br>
+<br>
+This is why <span class="tft">Honest Node</span> dominates in the long run – it's not just about one block, but about building a sustainable mining business.
+</p>
+
+<p id="oneoff_bitcoin_history">
+<b>REAL BITCOIN HISTORY LESSONS</b><br>
+<br>
+These game mechanics reflect actual Bitcoin events:
+<br>
+• <b>2010 Integer Overflow</b>: A bug allowed creation of 184 billion BTC. Honest nodes rejected the invalid blocks.
+<br>
+• <b>2013 Mt. Gox Failure</b>: Centralized exchange collapse showed risks of not following consensus.
+<br>
+• <b>2017 Bitcoin Cash Fork</b>: Consensus rule divergence created two separate networks.
+<br>
+• <b>2021 China Mining Migration</b>: Difficulty adjustment proved resilient when 50%+ hashrate went offline.
+<br>
+<br>
+Each crisis proved that <b>honest validation</b> is the only sustainable strategy.
+</p>
+
+<p id="oneoff_1_attacked">
 Right! Don't let them double-spend you while you play by the rules.
 </p>
 
@@ -181,9 +293,9 @@ Too idealistic – they just robbed you while you played fair!
 </p>
 
 <p id="oneoff_1_top">
-If you cooperate &amp; they cheat, you lose: they accept invalid transactions and benefit unfairly (+3 blocks mined) while your honest block gets rejected (-1 lost reward).
-However, if you both cheat, the network breaks—double-spending becomes possible, the chain loses validity, and neither attacker keeps their stolen coins. (both 0)
-<b>Therefore: in isolation, it seems logical to CHEAT.</b>
+If you cooperate &amp; they attack, you lose: they accept invalid transactions and benefit unfairly (+3 blocks mined) while your honest block gets rejected (-1 lost reward).
+However, if you both attack, the network breaks—double-spending becomes possible, the chain loses validity, and neither attacker keeps their stolen coins. (both 0)
+<b>Therefore: in isolation, it seems logical to ATTACK.</b>
 <br><br>
 But this is a single block. Bitcoin isn't a single block. It's eternal repetition, where attackers face each other forever.
 </p>
@@ -193,7 +305,7 @@ But this is a single block. Bitcoin isn't a single block. It's eternal repetitio
 What should you do now?
 </p>
 
-<p id="oneoff_2_cheated">
+<p id="oneoff_2_attacked">
 Harsh... but yes, if you can get away with breaking the rules, you might gain short-term advantage.
 </p>
 
@@ -204,7 +316,7 @@ Noble! Sure, seems right... <b>OR IS IT??</b>
 <p id="oneoff_2_top">
 Because if you both cooperate, the network works perfectly—honest blocks build a secure chain that no one can attack. You both earn steady rewards. (score: +2 vs +2)
 But if you attack while they validate honestly, you might succeed in a double-spend they won't immediately detect, stealing their coins. (score: +3 vs -1)
-<b>Therefore: game theory says you "should" still CHEAT.</b>
+<b>Therefore: game theory says you "should" still ATTACK.</b>
 </p>
 
 <p id="oneoff_2_btm">
@@ -952,19 +1064,37 @@ Changing the game (adding delays, noise, attacks) can make trust collapse...
 
 <p id="conclusion_6">
 Bitcoin applies these principles:<br>
-• <b>Global consensus rules:</b> Every node validates the same way (the game is always the same)<br>
+• <b>Global consensus rules:</b> Every node validates the same way (Nakamoto consensus: longest valid chain wins)<br>
 • <b>Transparent validation:</b> All transactions are public (everyone sees if you cheat)<br>
 • <b>Automatic punishment:</b> Invalid blocks are rejected by the entire network (attackers can't win)<br>
 • <b>Infinite repetition:</b> Bitcoin runs forever (so attacking today destroys tomorrow's profits)<br>
-• <b>Decentralized participation:</b> Thousands of independent nodes (no single authority to bribe)
+• <b>Decentralized participation:</b> Thousands of independent nodes (no single authority to bribe)<br>
+• <b>Economic alignment:</b> Honest miners earn 6.25 BTC + fees per block. Attackers spend $15B/year just to try.
 </p>
 
 <p id="conclusion_7">
 The result: a system where millions of strangers maintain a shared ledger <i>without trusting a central authority.</i>
 <br><br>
-It works not because everyone is honest – but because <b>honesty is the only profitable strategy.</b>
-An attacker might gain short-term advantage, but the network punishes them, reputation spreads, and honest nodes dominate long-term.
-This is why Bitcoin survived 15+ years without being hacked or requiring central control.
+It works not because everyone is altruistic – but because <b>Bitcoin makes stealing more expensive than earning.</b>
+<br><br>
+After 780,000 blocks:
+• Honest nodes have earned ~10 million BTC in cumulative rewards
+• Attack strategies have earned 0 BTC
+• The math is undeniable: <b>honesty dominates</b>
+<br><br>
+This is why Bitcoin survived 15+ years without being hacked or requiring central control. The incentives are aligned: what's good for you is good for the network.
+</p>
+
+<p id="conclusion_bitcoin_final">
+<b>BITCOIN'S GENIUS: INCENTIVE ALIGNMENT</b><br>
+<br>
+• Short-term temptation (T=3) seems rational in isolation
+• But long-term honesty (R=2) compounds infinitely
+• Attacking costs $15B/year while honest mining earns $15B/year
+• The network always chooses the longest <b>valid</b> chain
+• Reputation persists: attackers get permanently blacklisted
+<br><br>
+Bitcoin doesn't require trust. It <b>engineers trust</b> through game theory and economics.
 </p>
 
 <p id="conclusion_end">
@@ -1159,8 +1289,8 @@ So now...
 (forgot who's who? hover buttons to see descriptions of each character!)
 </p>
 
-<p id="label_cheat">
-cheat
+<p id="label_attack">
+attack
 </p>
 <p id="label_continue">
 continue

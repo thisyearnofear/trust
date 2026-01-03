@@ -29,7 +29,7 @@ SLIDES.push({
 			{button:"cooperate", message:"cooperate"},
 			{button:"cooperate", message:"TRIP"},
 			{button:"cooperate", message:"cooperate"},
-			{button:"cheat", message:"cheat"}
+			{button:"attack", message:"attack"}
 		];
 		var STAGE_INDEX = 0;
 
@@ -53,13 +53,13 @@ SLIDES.push({
 
 		// Re-activate...
 		var _foreverWar = false;
-		var _foreverMove = "cheat";
+		var _foreverMove = "attack";
 		listen(self, "iterated/round/end", function(){
 
 			if(_foreverWar){
 				publish("iterated/"+_foreverMove);
-				if(_foreverMove=="cheat") _foreverMove="cooperate";
-				else if(_foreverMove=="cooperate") _foreverMove="cheat";
+				if(_foreverMove=="attack") _foreverMove="cooperate";
+				else if(_foreverMove=="cooperate") _foreverMove="attack";
 			}else{
 
 				STAGE_INDEX++;

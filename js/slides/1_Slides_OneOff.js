@@ -36,9 +36,9 @@ SLIDES.push({
 
 		// Buttons
 		self.add({
-			id:"btnCheat", type:"Button", x:275, y:470, text_id:"label_cheat", uppercase:true,
+			id:"btnAttack", type:"Button", x:275, y:470, text_id:"label_attack", uppercase:true,
 			onclick:function(){
-				_.answer = "CHEAT";
+				_.answer = "ATTACK";
 				publish("slideshow/next");
 			}
 		});
@@ -71,14 +71,14 @@ SLIDES.push({
 		if(_.answer=="COOPERATE"){
 			t.setText(Words.get("oneoff_1_cooperated")+"<br>"+Words.get("oneoff_1_top"));
 		}else{
-			t.setText(Words.get("oneoff_1_cheated")+"<br>"+Words.get("oneoff_1_top"));
+			t.setText(Words.get("oneoff_1_attacked")+"<br>"+Words.get("oneoff_1_top"));
 		}
 		b.setTextID("oneoff_1_btm");
 
 		// Hide & fade
 		_hide(o.topWords); _fadeIn(o.topWords, 150+10);
 		_hide(o.btmWords); _fadeIn(o.btmWords, 150+600);
-		_hide(o.btnCheat); _fadeIn(o.btnCheat, 150+1200);
+		_hide(o.btnAttack); _fadeIn(o.btnAttack, 150+1200);
 		_hide(o.btnCooperate); _fadeIn(o.btnCooperate, 150+1200);
 
 	},
@@ -100,7 +100,7 @@ SLIDES.push({
 		if(_.answer=="COOPERATE"){
 			t.setText(Words.get("oneoff_2_cooperated")+"<br>"+Words.get("oneoff_2_top"));
 		}else{
-			t.setText(Words.get("oneoff_2_cheated")+"<br>"+Words.get("oneoff_2_top"));
+			t.setText(Words.get("oneoff_2_attacked")+"<br>"+Words.get("oneoff_2_top"));
 		}
 		self.add({
 			id:"btmWords", type:"TextBox", text_id:"oneoff_2_btm",
@@ -108,7 +108,7 @@ SLIDES.push({
 		});
 
 		// Replace button
-		self.remove("btnCheat");
+		self.remove("btnAttack");
 		self.remove("btnCooperate");
 		self.add({
 			id:"btnNext", type:"Button", x:304, y:481, size:"long",

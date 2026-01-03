@@ -50,6 +50,67 @@ s{
 	text-decoration: line-through;
 }
 
+/* Bitcoin Tooltip Styles */
+#bitcoin-tooltips {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 300px;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    line-height: 1.4;
+    display: none;
+    font-family: 'FuturaHandwritten', sans-serif;
+}
+
+[data-bitcoin-tooltip] {
+    cursor: help;
+    position: relative;
+}
+
+[data-bitcoin-tooltip]:hover::after {
+    content: attr(data-bitcoin-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 10px;
+    padding: 8px 12px;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: normal;
+    z-index: 1000;
+    max-width: 300px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: opacity 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+[data-bitcoin-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 768px) {
+    [data-bitcoin-tooltip]:hover::after {
+        left: auto;
+        right: 100%;
+        margin-right: 10px;
+        margin-left: 0;
+        max-width: 250px;
+    }
+}
+}
+
 #translations{
 	margin: 10px auto;
     font-size: 10px;
