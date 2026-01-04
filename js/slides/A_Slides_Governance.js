@@ -94,6 +94,24 @@ SLIDES.push({
             size:18, color:"#333"
         });
         
+        // Wallet status (if OnChainUI initialized)
+        var walletStatus = "";
+        if (window.OnChainUI && window.OnChainUI.getSlideStatus) {
+            var status = OnChainUI.getSlideStatus();
+            if (status.connected) {
+                walletStatus = `Connected: <span class="wallet-address">${status.address.substring(0, 12)}...${status.address.substring(status.address.length - 6)}</span>`;
+            } else {
+                walletStatus = "<span style='color:#FF5E5E;'>⚠ Wallet not connected</span>";
+            }
+        }
+        
+        self.add({
+            id:"wallet_status", type:"TextBox",
+            x:50, y:50, width:860,
+            text: walletStatus,
+            size:11, color:"#666"
+        });
+        
         // Proposal description
         var proposalText = `<b>Proposal #${proposal.id}: ${proposal.title}</b><br><br>`;
         proposalText += proposal.description + "<br><br>";
@@ -101,7 +119,7 @@ SLIDES.push({
         
         self.add({
             id:"proposal", type:"TextBox",
-            x:50, y:80, width:860,
+            x:50, y:95, width:860,
             text: proposalText,
             size:14, color:"#333"
         });
@@ -109,68 +127,243 @@ SLIDES.push({
         // Voting power display
         self.add({
             id:"power", type:"TextBox",
-            x:50, y:240, width:860,
+            x:50, y:250, width:860,
             text: `Your voting power: <b>${reputation.getVotingPower()} votes</b> (${tier.label})`,
             size:13, color:"#666"
         });
         
-        // Vote buttons
+        // Vote buttons - show preview modal before submission
         var handleVote = function(voteChoice) {
             return function() {
-                // Cast vote
+                // Show transaction preview modal
+                _showVotePreviewModal(voteChoice, proposal, reputation, tier, self, o);
+            };
+        };
+        
+        // Helper: Show vote preview modal before submission
+        var _showVotePreviewModal = function(voteChoice, proposal, reputation, tier, self, o) {
+            // Create overlay
+            var overlay = document.createElement("div");
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            // Create modal panel
+            var modal = document.createElement("div");
+            modal.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 30px;
+                width: 90%;
+                max-width: 550px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                font-family: 'FuturaHandwritten', sans-serif;
+            `;
+            
+            // Build preview content
+            var voteLabel = voteChoice === 'yes' ? '✓ YES' : (voteChoice === 'no' ? '✗ NO' : '— ABSTAIN');
+            var voteColor = voteChoice === 'yes' ? '#4caf50' : (voteChoice === 'no' ? '#f44336' : '#ffc107');
+            
+            var previewHtml = `
+                <h2 style="margin-top:0; color:#333; text-align:center;">Review Your Vote</h2>
+                
+                <div style="background:#f5f5f5; padding:15px; border-radius:4px; margin:20px 0;">
+                    <p style="margin:0 0 10px 0; color:#666; font-size:13px;">PROPOSAL</p>
+                    <p style="margin:0; color:#333; font-weight:bold;">Proposal #${proposal.id}: ${proposal.title}</p>
+                </div>
+                
+                <div style="background:#f5f5f5; padding:15px; border-radius:4px; margin:20px 0;">
+                    <p style="margin:0 0 10px 0; color:#666; font-size:13px;">YOUR VOTE</p>
+                    <p style="margin:0; color:${voteColor}; font-weight:bold; font-size:16px;">${voteLabel}</p>
+                </div>
+                
+                <div style="background:#f5f5f5; padding:15px; border-radius:4px; margin:20px 0;">
+                    <p style="margin:0 0 10px 0; color:#666; font-size:13px;">YOUR REPUTATION</p>
+                    <p style="margin:0; color:#333;"><b>${reputation.cooperativeMoves}</b> cooperative moves out of <b>${reputation.totalMoves}</b></p>
+                    <p style="margin:8px 0 0 0; color:#666; font-size:12px;">Tier: <span style="color:${tier.label === 'Trusted' ? '#4caf50' : (tier.label === 'Neutral' ? '#ffc107' : '#f44336')}; font-weight:bold;">${tier.label}</span></p>
+                </div>
+                
+                <div style="background:#f5f5f5; padding:15px; border-radius:4px; margin:20px 0;">
+                    <p style="margin:0 0 10px 0; color:#666; font-size:13px;">VOTING POWER</p>
+                    <p style="margin:0; color:#333; font-weight:bold;">${reputation.getVotingPower()} votes</p>
+                </div>
+                
+                <p style="color:#888; font-size:12px; margin:20px 0; text-align:center;">
+                    This vote will be recorded on Bitcoin via Charms protocol.
+                </p>
+            `;
+            
+            modal.innerHTML = previewHtml;
+            
+            // Create button container
+            var buttonContainer = document.createElement("div");
+            buttonContainer.style.cssText = `
+                display: flex;
+                gap: 10px;
+                margin-top: 25px;
+            `;
+            
+            // Confirm button
+            var confirmBtn = document.createElement("button");
+            confirmBtn.textContent = "Review & Sign";
+            confirmBtn.style.cssText = `
+                flex: 1;
+                padding: 12px 20px;
+                background: #4089DD;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-family: 'FuturaHandwritten', sans-serif;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            `;
+            confirmBtn.onmouseover = function() { this.style.background = '#5099EE'; };
+            confirmBtn.onmouseout = function() { this.style.background = '#4089DD'; };
+            
+            confirmBtn.onclick = function() {
+                // Remove overlay
+                document.body.removeChild(overlay);
+                
+                // Proceed with vote submission
+                _submitVoteAfterPreview(voteChoice, proposal, reputation, self, o);
+            };
+            
+            // Cancel button
+            var cancelBtn = document.createElement("button");
+            cancelBtn.textContent = "Cancel";
+            cancelBtn.style.cssText = `
+                flex: 1;
+                padding: 12px 20px;
+                background: #ddd;
+                color: #333;
+                border: none;
+                border-radius: 6px;
+                font-family: 'FuturaHandwritten', sans-serif;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            `;
+            cancelBtn.onmouseover = function() { this.style.background = '#ccc'; };
+            cancelBtn.onmouseout = function() { this.style.background = '#ddd'; };
+            
+            cancelBtn.onclick = function() {
+                document.body.removeChild(overlay);
+            };
+            
+            buttonContainer.appendChild(confirmBtn);
+            buttonContainer.appendChild(cancelBtn);
+            modal.appendChild(buttonContainer);
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+        };
+        
+        // Helper: Submit vote after preview confirmation
+        var _submitVoteAfterPreview = function(voteChoice, proposal, reputation, self, o) {
+            // Disable buttons immediately
+            o.button_yes.dom.style.opacity = 0.4;
+            o.button_no.dom.style.opacity = 0.4;
+            o.button_abstain.dom.style.opacity = 0.4;
+            o.button_yes.dom.style.pointerEvents = "none";
+            o.button_no.dom.style.pointerEvents = "none";
+            o.button_abstain.dom.style.pointerEvents = "none";
+            
+            // Show submitting status
+            o.voted_status.setText("⟳ Submitting vote...");
+            _show(o.voted_status);
+            _fadeIn(o.voted_status, 100);
+            
+            // Prepare vote data
+            var voteData = {
+                proposalId: proposal.id,
+                vote: voteChoice
+            };
+            
+            // Try to submit via OnChainUI (real wallet) if available
+            if (window.OnChainUI && window.OnChainUI.submitGovernanceVote) {
+                OnChainUI.submitGovernanceVote(voteData)
+                    .then(function(spellTxid) {
+                        // Success - show txid
+                        var confirmText = voteChoice === 'abstain' ? 
+                            "✓ You abstained" : 
+                            ("✓ You voted " + voteChoice.toUpperCase());
+                        confirmText += `<br><span style="color:#4089DD; font-size:12px;">On-chain: ${spellTxid.substring(0, 16)}...</span>`;
+                        o.voted_status.setText(confirmText);
+                        
+                        // Move to next slide after delay
+                        setTimeout(function() {
+                            publish("slideshow/next");
+                        }, 1500);
+                    })
+                    .catch(function(err) {
+                        // Error - show message and retry option
+                        o.voted_status.setText(`✗ ${err.message}<br><span style="font-size:12px;">Please connect wallet or try again</span>`);
+                        o.voted_status.dom.style.color = "#FF5E5E";
+                        
+                        // Re-enable buttons
+                        setTimeout(function() {
+                            o.button_yes.dom.style.opacity = 1;
+                            o.button_no.dom.style.opacity = 1;
+                            o.button_abstain.dom.style.opacity = 1;
+                            o.button_yes.dom.style.pointerEvents = "auto";
+                            o.button_no.dom.style.pointerEvents = "auto";
+                            o.button_abstain.dom.style.pointerEvents = "auto";
+                        }, 2000);
+                    });
+            } else {
+                // Fallback: cast vote locally without wallet
                 var playerId = reputation.address || 'player_' + Math.random().toString(36).substr(2, 9);
                 governance.castVote(proposal.id, playerId, voteChoice, reputation.getVotingPower());
-                
-                // Disable buttons
-                o.button_yes.dom.style.opacity = 0.4;
-                o.button_no.dom.style.opacity = 0.4;
-                o.button_abstain.dom.style.opacity = 0.4;
-                o.button_yes.dom.style.pointerEvents = "none";
-                o.button_no.dom.style.pointerEvents = "none";
-                o.button_abstain.dom.style.pointerEvents = "none";
                 
                 // Show confirmation
                 var confirmText = voteChoice === 'abstain' ? 
                     "✓ You abstained" : 
                     ("✓ You voted " + voteChoice.toUpperCase());
                 o.voted_status.setText(confirmText);
-                _show(o.voted_status);
-                _fadeIn(o.voted_status, 100);
+                o.voted_status.dom.style.color = "#4caf50";
                 
                 // Move to next slide after delay
                 setTimeout(function() {
                     publish("slideshow/next");
                 }, 1200);
-            };
+            }
         };
         
         self.add({
             id:"button_yes", type:"Button",
-            x:50, y:300, size:"short",
+            x:50, y:310, size:"short",
             text: "Vote YES",
             onclick: handleVote('yes')
         });
         
         self.add({
             id:"button_no", type:"Button",
-            x:350, y:300, size:"short",
+            x:350, y:310, size:"short",
             text: "Vote NO",
             onclick: handleVote('no')
         });
         
         self.add({
             id:"button_abstain", type:"Button",
-            x:650, y:300, size:"short",
+            x:650, y:310, size:"short",
             text: "Abstain",
             onclick: handleVote('abstain')
         });
         
-        // Confirmation message (hidden initially)
+        // Confirmation/status message (hidden initially)
         self.add({
             id:"voted_status", type:"TextBox",
-            x:50, y:360, width:860,
+            x:50, y:370, width:860,
             text: "",
-            size:16, color:"#4caf50"
+            size:14, color:"#4caf50"
         });
         _hide(o.voted_status);
         
@@ -227,7 +420,7 @@ SLIDES.push({
 			window.GovernanceIntegration.executePassedProposals();
 		}
 		
-		// Submit votes to Charms (mock)
+		// Submit votes to Charms
 		if (window.publish) {
 			publish("governance/summary", [{
 				votes: proposals.length,
@@ -235,7 +428,7 @@ SLIDES.push({
 			}]);
 		}
 		
-		// Show pending transaction (will be replaced by actual txid)
+		// Show transaction status (will be updated by governance/submitted event)
 		var txidText = "<span style='color:#888; font-size:12px;'>Submitting to Bitcoin...</span>";
 		
 		self.add({
@@ -245,12 +438,15 @@ SLIDES.push({
 			size:12, color:"#666"
 		});
 		
-		// Listen for Charms submission event
+		// Listen for Charms submission event (from OnChainUI.submitGovernanceVote)
 		var self_ref = self;
 		if (window.subscribe) {
 			listen(self, "governance/submitted", function(data) {
-				if (data && data[0] && data[0].txid) {
-					var statusText = "<span style='color:#4089DD; font-weight: bold;'>✓ Bitcoin Txid: " + data[0].txid.substr(0, 16) + "...</span>";
+				if (data && data[0] && data[0].spellTxid) {
+					var statusText = "<span style='color:#4089DD; font-weight: bold;'>✓ Bitcoin Spell Txid: " + data[0].spellTxid.substr(0, 16) + "...</span>";
+					if (data[0].mode && data[0].mode.includes("real")) {
+						statusText += "<br><span style='color:#16c784; font-size:11px;'>Signed with Unisat wallet ✓</span>";
+					}
 					o.txid_status.setText(statusText);
 				}
 			});

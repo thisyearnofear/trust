@@ -301,15 +301,22 @@ var OnChainUI = {
   },
 
   /**
-   * Handle successful wallet connection
-   * @param {object} walletResult - Result from Unisat wallet (null = demo mode)
-   */
+    * Handle successful wallet connection
+    * @param {object} walletResult - Result from Unisat wallet (null = demo mode)
+    */
   onWalletConnected: function(walletResult) {
     console.log("[OnChainUI] Wallet connected:", this.playerAddress);
 
     this.enabled = true;
     this.wallet = walletResult ? getUnisatWallet() : null;
     this.isDemo = walletResult === null;
+    
+    // Cache wallet data for transaction building
+    this.walletData = {
+      address: this.playerAddress,
+      balance: walletResult?.balance || { total: 0 },
+      utxo: null // Will be fetched on demand
+    };
 
     // Initialize Charms client (with real transactions by default)
     this.charmsClient = new CharmsGameClient(
@@ -339,6 +346,41 @@ var OnChainUI = {
       address: this.playerAddress,
       mode: this.isDemo ? "demo" : "real",
       balance: walletResult?.balance?.total || "unknown"
+    });
+  },
+  
+  /**
+   * Get UTXO from wallet (cached)
+   * @returns {Promise<object>} UTXO { txid, vout, amount }
+   */
+  _getWalletUtxo: function() {
+    const self = this;
+    return new Promise(function(resolve) {
+      // Return cached UTXO if available
+      if (self.walletData && self.walletData.utxo) {
+        resolve(self.walletData.utxo);
+        return;
+      }
+      
+      // For demo/fallback: use mock UTXO
+      const mockUtxo = {
+        txid: "0000000000000000000000000000000000000000000000000000000000000000",
+        vout: 0,
+        amount: 10000
+      };
+      
+      // TODO: Fetch real UTXO from wallet in production
+      // const wallet = getUnisatWallet();
+      // if (wallet && wallet.balance) {
+      //   const utxos = await wallet.getUtxos(); // Would need to implement
+      //   return utxos[0];
+      // }
+      
+      if (self.walletData) {
+        self.walletData.utxo = mockUtxo;
+      }
+      
+      resolve(mockUtxo);
     });
   },
 
@@ -658,8 +700,170 @@ var OnChainUI = {
   },
 
   /**
-   * Show the wallet UI (append to DOM if not already)
+   * Slide-friendly: Get connection status for inline display
+   * Returns object { connected, address, balance, tier, votingPower }
    */
+  getSlideStatus: function() {
+    if (!this.enabled) {
+      return {
+        connected: false,
+        message: "Connect wallet to anchor your reputation on-chain"
+      };
+    }
+
+    const reputation = getGameReputation ? getGameReputation() : null;
+    const tier = reputation ? reputation.getReputationTier() : null;
+    const votingPower = reputation ? reputation.getVotingPower() : 0;
+
+    return {
+      connected: true,
+      address: this.playerAddress,
+      balance: this.wallet ? this.wallet.balance : { total: "unknown" },
+      tier: tier ? tier.label : "Unknown",
+      votingPower: votingPower,
+      isDemo: this.isDemo
+    };
+  },
+
+  /**
+   * Slide-friendly: Submit reputation + governance vote to blockchain
+   * Used by governance voting slide
+   * @param {object} voteData - { proposalId, vote: 'yes'|'no'|'abstain' }
+   * @returns {Promise<string>} spellTxid on success
+   */
+  submitGovernanceVote: function(voteData) {
+    return new Promise((resolve, reject) => {
+      if (!this.enabled || !this.charmsClient) {
+        reject(new Error("Wallet not connected. Click 'Connect Wallet' first."));
+        return;
+      }
+
+      const reputation = getGameReputation ? getGameReputation() : null;
+      const governance = getGameGovernance ? getGameGovernance() : null;
+
+      if (!reputation || !governance) {
+        reject(new Error("Game state not initialized"));
+        return;
+      }
+
+      try {
+        // Cast vote locally first
+        const playerId = reputation.address || 'player_' + Math.random().toString(36).substr(2, 9);
+        governance.castVote(
+          voteData.proposalId,
+          playerId,
+          voteData.vote,
+          reputation.getVotingPower()
+        );
+
+        // Prepare vote data for Charms submission
+        const votePayload = {
+          proposalId: voteData.proposalId,
+          vote: voteData.vote,
+          votingPower: reputation.getVotingPower()
+        };
+
+        // Submit to Charms with wallet if connected
+        if (this.isDemo) {
+          // Demo mode: just generate mock txid
+          const mockTxid = this._generateMockTxid(JSON.stringify(votePayload));
+          console.log("[OnChainUI] Demo mode vote:", mockTxid);
+          this._publishGovernanceSubmitted({
+            spellTxid: mockTxid,
+            proposalId: voteData.proposalId,
+            vote: voteData.vote,
+            mode: "demo"
+          });
+          resolve(mockTxid);
+        } else {
+          // Real mode: use wallet to sign and broadcast
+          this._submitVoteWithWallet(votePayload, reputation)
+            .then(result => resolve(result.spellTxid))
+            .catch(err => reject(err));
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  /**
+   * Real wallet submission - Sign and broadcast with Unisat
+   * @private
+   */
+  _submitVoteWithWallet: function(votePayload, reputation) {
+    const self = this;
+    return new Promise((resolve, reject) => {
+      const wallet = getUnisatWallet();
+      if (!wallet || !wallet.connected) {
+        reject(new Error("Wallet not connected. Please connect your Bitcoin wallet."));
+        return;
+      }
+
+      console.log("[OnChainUI] Submitting vote with Unisat wallet signing...");
+
+      // Get UTXO for transaction building (async)
+      this._getWalletUtxo()
+        .then(function(utxo) {
+          // Submit vote to CharmsClient with wallet integration
+          return self.charmsClient.submitVote(votePayload, {
+            wallet: wallet,
+            address: wallet.address,
+            utxo: utxo
+          });
+        })
+        .then(result => {
+          console.log("[OnChainUI] Vote submitted to Charms:", result.mode, result.spellTxid.substring(0, 16) + "...");
+          
+          // Publish event for slide listeners
+          this._publishGovernanceSubmitted({
+            spellTxid: result.spellTxid,
+            commitTxid: result.commitTxid || null,
+            proposalId: result.proposalId,
+            vote: result.vote,
+            mode: result.mode
+          });
+          
+          resolve(result);
+        })
+        .catch(err => {
+          console.error("[OnChainUI] Vote submission to Charms failed:", err);
+          reject(err);
+        });
+    });
+  },
+
+  /**
+   * Publish governance submission event for slide listeners
+   * @private
+   */
+  _publishGovernanceSubmitted: function(data) {
+    if (window.publish) {
+      publish("governance/submitted", [data]);
+    }
+  },
+
+  /**
+   * Generate mock txid (for testing)
+   * @private
+   */
+  _generateMockTxid: function(data) {
+    const chars = "0123456789abcdef";
+    let txid = "";
+    let hash = 0;
+    for (let i = 0; i < data.length; i++) {
+      hash = ((hash << 5) - hash) + data.charCodeAt(i);
+      hash = hash & hash;
+    }
+    for (let i = 0; i < 64; i++) {
+      txid += chars[(Math.abs(hash) + i) % 16];
+    }
+    return txid;
+  },
+
+  /**
+    * Show the wallet UI (append to DOM if not already)
+    */
   show: function() {
     if (this.container) {
       // Only append if not already in DOM
@@ -672,15 +876,15 @@ var OnChainUI = {
   },
 
   /**
-   * Hide the wallet UI (remove from DOM)
-   */
+    * Hide the wallet UI (remove from DOM)
+    */
   hide: function() {
     if (this.container && this.container.parentNode) {
       this.container.parentNode.removeChild(this.container);
       console.log("[OnChainUI] Wallet UI hidden");
     }
   }
-};
+  };
 
 // Initialize when Bitcoin mode is enabled
 if (window.BITCOIN_MODE) {

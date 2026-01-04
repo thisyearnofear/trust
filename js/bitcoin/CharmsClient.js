@@ -293,9 +293,122 @@ class CharmsGameClient {
   }
 
   /**
-   * Generate mock txid
-   * @private
+   * Submit a governance vote to Charms
+   * Follows same pattern as reputation anchoring
+   * @param {object} voteData - { proposalId, vote, votingPower }
+   * @param {object} walletConfig - Optional wallet integration { wallet, address }
+   * @returns {Promise<object>} { spellTxid, commitTxid, vote, proposalId, mode }
    */
+  async submitVote(voteData, walletConfig = {}) {
+    try {
+      console.log("[CharmsClient] Submitting governance vote:", voteData, "mode:", walletConfig.wallet ? "real" : "mock");
+
+      // Create spell for vote
+      const spell = {
+        appId: this.appId,
+        type: "governance_vote",
+        player: this.bitcoinAddress,
+        proposal_id: voteData.proposalId,
+        vote: voteData.vote,
+        voting_power: voteData.votingPower,
+        timestamp: Date.now()
+      };
+
+      let result;
+
+      // If wallet provided, build real unsigned txs and send to wallet for signing
+      if (walletConfig.wallet && !this.mockMode) {
+        try {
+          console.log("[CharmsClient] Real mode: Building unsigned transactions for wallet signing");
+          
+          // Need a UTXO to build real transaction
+          const wallet = walletConfig.wallet;
+          const address = walletConfig.address || this.bitcoinAddress;
+          
+          // Use UTXO from walletConfig if provided, otherwise use default
+          let utxo = walletConfig.utxo;
+          if (!utxo) {
+            // Default mock UTXO for hackathon/testing
+            utxo = {
+              txid: "0000000000000000000000000000000000000000000000000000000000000000",
+              vout: 0,
+              amount: 10000
+            };
+          }
+          
+          console.log("[CharmsClient] Building with UTXO:", utxo.txid.substring(0, 16) + "...");
+          
+          // Build 2-tx pattern with real BitcoinTxBuilder
+          const txPattern = this.txBuilder.build2TxPattern(spell, address, utxo);
+          
+          console.log("[CharmsClient] Unsigned txs built, sending to wallet for signing...");
+          
+          // Sign and broadcast via wallet
+          const broadcastResult = await wallet.signAndBroadcast2TxPattern({
+            commitTxHex: txPattern.commitTxHex,
+            spellTxHex: txPattern.spellTxHex
+          });
+          
+          result = {
+            type: "vote",
+            commitTxid: broadcastResult.commitTxid,
+            spellTxid: broadcastResult.spellTxid,
+            proposalId: voteData.proposalId,
+            vote: voteData.vote,
+            mode: "real_signet_signed",
+            spell: spell
+          };
+          
+          console.log("[CharmsClient] Vote broadcast to Signet:", {
+            commitTxid: result.commitTxid.substring(0, 16) + "...",
+            spellTxid: result.spellTxid.substring(0, 16) + "..."
+          });
+          
+        } catch (walletError) {
+          console.error("[CharmsClient] Wallet signing failed, falling back to mock:", walletError);
+          
+          // Fallback to mock if wallet fails
+          const mockResult = this._build2TxPattern(spell);
+          result = {
+            type: "vote",
+            spellTxid: mockResult.spellTx.txid,
+            proposalId: voteData.proposalId,
+            vote: voteData.vote,
+            mode: "mock_fallback",
+            error: walletError.message
+          };
+        }
+      } else {
+        // Mock mode: generate txid without signing
+        const mockResult = this._build2TxPattern(spell);
+        result = {
+          type: "vote",
+          spellTxid: mockResult.spellTx.txid,
+          proposalId: voteData.proposalId,
+          vote: voteData.vote,
+          mode: "mock"
+        };
+      }
+
+      this.transactionHistory.push({
+        type: "vote",
+        spell: spell,
+        result: result,
+        timestamp: Date.now()
+      });
+
+      console.log("[CharmsClient] Vote result:", result.mode, result.spellTxid.substring(0, 16) + "...");
+      return result;
+    } catch (error) {
+      console.error("[CharmsClient] Vote submission failed:", error);
+      throw error;
+    }
+  }
+
+  /**
+    * Generate mock txid
+    * @private
+    */
   _generateMockTxid(data) {
     const hash = this._sha256(data + Date.now());
     return hash.substring(0, 64);
