@@ -81,7 +81,7 @@ SLIDES.push({
 		// "First Match" Button
 		self.add({
 			id:"button", type:"Button",
-			x:510, y:180, 
+			x:510, y:230, 
 			text_id:"first_match",
 			message: "slideshow/next"
 		});
