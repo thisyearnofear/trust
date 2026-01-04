@@ -229,7 +229,7 @@ SLIDES.push({
 		var o = self.objects;
 
 		// Words
-		var words = Words.get("noise_evo_2").replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("label_"+_.answer)+"</span>");
+		var words = Words.get("noise_evo_2").replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("icon_"+_.answer)+"</span>");
 		o.text.setText(words);
 		_hide(o.text); _fadeIn(o.text, 100);
 
@@ -388,7 +388,7 @@ SLIDES.push({
 		o.playButton.setText("label_start");
 
 		// Words
-		var words = Words.get("noise_evo_4").replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("label_"+_.answer)+"</span>");
+		var words = Words.get("noise_evo_4").replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("icon_"+_.answer)+"</span>");
 		o.text.setText(words);
 		_hide(o.text); _fadeIn(o.text, 100);
 

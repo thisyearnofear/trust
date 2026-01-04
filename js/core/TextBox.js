@@ -59,7 +59,25 @@ function CharacterTextBox(config){
 	var desc = document.createElement("div");
 	desc.id = "desc";
 	var charText = Words.get("character_"+config.character);
-	desc.innerHTML = charText || "";
+	if(charText){
+		desc.innerHTML = charText;
+	} else {
+		// Words not loaded yet, retry after delay
+		desc.innerHTML = "";
+		var retryCount = 0;
+		var retryLoad = function(){
+			if(retryCount < 20){ // Try up to 20 times
+				var text = Words.get("character_"+config.character);
+				if(text){
+					desc.innerHTML = text;
+				} else {
+					retryCount++;
+					setTimeout(retryLoad, 100);
+				}
+			}
+		};
+		setTimeout(retryLoad, 100);
+	}
 	self.dom.appendChild(desc);
 
 	// Add & Remove

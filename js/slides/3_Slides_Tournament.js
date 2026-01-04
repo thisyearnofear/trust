@@ -74,14 +74,14 @@ SLIDES.push({
 
 		// What was your bet?
 		var tournament_intro = Words.get("tournament_intro");
-		tournament_intro = tournament_intro.replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("label_"+_.answer)+"</span>");
+		tournament_intro = tournament_intro.replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("icon_"+_.answer)+"</span>");
 		o.text.setText(tournament_intro);
 		_hide(o.text); _fadeIn(o.text, 100);
 
 		// "First Match" Button
 		self.add({
 			id:"button", type:"Button",
-			x:510, y:130, 
+			x:510, y:180, 
 			text_id:"first_match",
 			message: "slideshow/next"
 		});
@@ -121,8 +121,10 @@ SLIDES.push({
 			// Match N: [A] versus [B]
 			match_header = Words.get("match_header_1");
 			match_header = match_header.replace(/\[N\]/g, (num+1)+"");
-			match_header = match_header.replace(/\[A\]/g, "<span class='"+charA+"'>"+Words.get("label_"+charA)+"</span>");
-			match_header = match_header.replace(/\[B\]/g, "<span class='"+charB+"'>"+Words.get("label_"+charB)+"</span>");
+			var labelA = Words.get("icon_"+charA) || charA;
+			var labelB = Words.get("icon_"+charB) || charB;
+			match_header = match_header.replace(/\[A\]/g, "<span class='"+charA+"'>"+labelA+"</span>");
+			match_header = match_header.replace(/\[B\]/g, "<span class='"+charB+"'>"+labelB+"</span>");
 			words += match_header+"<br>";
 
 			// The rounds
@@ -137,7 +139,9 @@ SLIDES.push({
 			}
 			words += "<br>";
 
-			// The total scores
+			// The total scores - round to whole numbers for clean display
+			scoreA = Math.round(scoreA);
+			scoreB = Math.round(scoreB);
 			if(scoreA>0) scoreA="+"+scoreA;
 			if(scoreB>0) scoreB="+"+scoreB;
 			match_header = Words.get("match_header_3");
@@ -204,7 +208,7 @@ SLIDES.push({
 		if(_.answer=="tft"){
 			words += Words.get("tournament_winner_2_yay");
 		}else{
-			words += Words.get("tournament_winner_2_nay").replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("label_"+_.answer)+"</span>");
+			words += Words.get("tournament_winner_2_nay").replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("icon_"+_.answer)+"</span>");
 		}
 		words += "<br><br>";
 		words += Words.get("tournament_winner_3");

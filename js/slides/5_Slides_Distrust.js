@@ -110,8 +110,8 @@ SLIDES.push({
 		});
 		_.misc = {};
 		var _updateLabel = function(value){
-			var words = (value==1) ? Words.get("sandbox_rules_1_single") : Words.get("sandbox_rules_1"); // plural?
-			words = words.replace(/\[N\]/g, value+""); // replace [N] with the number value
+			var words = (value==1) ? (Words.get("sandbox_rules_1_single") || "") : (Words.get("sandbox_rules_1") || ""); // plural?
+			if(words) words = words.replace(/\[N\]/g, value+""); // replace [N] with the number value
 			o.roundsLabel.setText("<b>"+words+"</b>");
 		};
 		listen(_.misc, "rules/turns", function(value){

@@ -137,19 +137,19 @@ So let's play the game Bitcoin nodes play every day. &rarr;
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="label_you_cooperate">
-you<br>follow consensus
+you<br>cooperate
 </p>
 
 <p id="label_you_attack">
-you<br>attack network
+you<br>attack
 </p>
 
 <p id="label_they_cooperate">
-they<br>follow consensus
+they<br>cooperate
 </p>
 
 <p id="label_they_attack">
-they<br>attack network
+they<br>attack
 </p>
 
 <p id="label_you_cheat">
@@ -293,11 +293,13 @@ Too idealistic – they just robbed you while you played fair!
 </p>
 
 <p id="oneoff_1_top">
-If you cooperate &amp; they attack, you lose: they accept invalid transactions and benefit unfairly (+3 blocks mined) while your honest block gets rejected (-1 lost reward).
-However, if you both attack, the network breaks—double-spending becomes possible, the chain loses validity, and neither attacker keeps their stolen coins. (both 0)
-<b>Therefore: in isolation, it seems logical to ATTACK.</b>
+<b>First, here's the threat:</b> If you cooperate but they attack, you lose everything. They steal your reward (+3), you get nothing (-1).
 <br><br>
-But this is a single block. Bitcoin isn't a single block. It's eternal repetition, where attackers face each other forever.
+<b>This is why attacking seems rational.</b> Your choice:
+<br>• Cooperate = risk losing to an attacker
+<br>• Attack = guarantee gain, even if they do too
+<br><br>
+But this is just one block. Bitcoin isn't one block. It's eternal repetition, where nodes face each other forever.
 </p>
 
 <p id="oneoff_1_btm">
@@ -314,9 +316,13 @@ Noble! Sure, seems right... <b>OR IS IT??</b>
 </p>
 
 <p id="oneoff_2_top">
-Because if you both cooperate, the network works perfectly—honest blocks build a secure chain that no one can attack. You both earn steady rewards. (score: +2 vs +2)
-But if you attack while they validate honestly, you might succeed in a double-spend they won't immediately detect, stealing their coins. (score: +3 vs -1)
-<b>Therefore: game theory says you "should" still ATTACK.</b>
+<b>Now here's the reality of mutual cooperation:</b>
+<br><br>
+If you both cooperate: you both earn steady, reliable rewards (+2 each). The network is secure. No one steals anything.
+<br><br>
+But look at the incentive: if you attack while they cooperate, you get +3 while they get -1. You win bigger in the short term.
+<br><br>
+<b>Game theory's paradox:</b> Individually, attacking pays more (+3 vs +2). But only if you're the one attacking while they're honest. So game theory says: ATTACK is the "rational" choice... even though mutual cooperation (+2 each) beats mutual attack (0 each).
 </p>
 
 <p id="oneoff_2_btm">

@@ -26,7 +26,8 @@ function Button(config){
 		self.dom.style.height = 55;
 		self.dom.style.position = "absolute";
 		self.dom.setAttribute("data-balloon-length", "large");
-		self.dom.setAttribute("data-balloon", Words.get(config.tooltip));
+		var tooltipText = Words.get(config.tooltip) || "";
+		self.dom.setAttribute("data-balloon", tooltipText);
 		self.dom.setAttribute("data-balloon-pos", "left");
 	}
 
@@ -45,8 +46,8 @@ function Button(config){
 	button.style.left = config.x+"px";
 	button.style.top = config.y+"px";
 	self.setText = function(text_id){
-		var words = Words.get(text_id);
-		if(config.uppercase) words = words.toUpperCase();
+		var words = Words.get(text_id) || text_id || "";
+		if(words && config.uppercase) words = words.toUpperCase();
 		self.setText2(words);
 	};
 	self.setText2 = function(words){

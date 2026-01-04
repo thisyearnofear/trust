@@ -34,7 +34,7 @@ var _makeLabel = function(wordID, config){
 	var dom = document.createElement("div");
 	dom.className = "label";
 
-	dom.innerHTML = Words.get(wordID);
+	dom.innerHTML = Words.get(wordID) || wordID || "";
 	config = config || {};
 	
 	_configText(config, dom);

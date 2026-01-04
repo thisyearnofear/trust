@@ -119,7 +119,7 @@ SLIDES.push({
 		var _showInfo = function(){
 			var infoWords = Words.get("iterated_info_1");
 			infoWords += "<br>";
-			infoWords += Words.get("iterated_info_2")+_.yourTotalScore;
+			infoWords += Words.get("iterated_info_2")+Math.round(_.yourTotalScore);
 			infoWords = infoWords.replace(/\[X\]/g, (ROUND_INDEX+1)+"");
 			infoWords = infoWords.replace(/\[Y\]/g, (ROUNDS.length)+"");
 			self.objects.info.setText(infoWords);
@@ -205,7 +205,7 @@ SLIDES.push({
 
 });
 
-// Show your SCORE: and the characters!
+// Show your SCORE
 SLIDES.push({
 
 	onstart: function(self){
@@ -232,47 +232,15 @@ SLIDES.push({
 		self.add({
 			id:"score2", type:"TextBox",
 			x:114, y:44, width:151, height:132, align:"right", size:123,
-			text: _.yourTotalScore+""
+			text: Math.round(_.yourTotalScore)+""
 		});
 
-		// Score text part 2
+		// Score text part 2 (just the evaluation, no character intro)
 		self.add({
 			id:"score3", type:"TextBox",
-			x:290, y:62, width:639, height:123,
-			text: Words.get(scoreTextID)+" "+Words.get("iterated_score_end")+"<br><br>"+Words.get("who_were")
+			x:290, y:62, width:639, height:180,
+			text: Words.get(scoreTextID)+" "+Words.get("iterated_score_end")
 		});
-
-		//////////////////////////////
-		//////////////////////////////
-
-		self.add({
-			id:"char_tft", type:"CharacterTextBox",
-			x:39, y:208, width:470, height:114,
-			character: "tft"
-		});
-		self.add({
-			id:"char_all_d", type:"CharacterTextBox",
-			x:511, y:208, width:190, height:114,
-			character: "all_d"
-		});
-		self.add({
-			id:"char_all_c", type:"CharacterTextBox",
-			x:731, y:208, width:200, height:114,
-			character: "all_c"
-		});
-		self.add({
-			id:"char_grudge", type:"CharacterTextBox",
-			x:39, y:333, width:380, height:114,
-			character: "grudge"
-		});
-		self.add({
-			id:"char_prober", type:"CharacterTextBox",
-			x:431, y:333, width:500, height:114,
-			character: "prober"
-		});
-
-		//////////////////////////////
-		//////////////////////////////
 
 		// Next...
 		self.add({
@@ -284,6 +252,64 @@ SLIDES.push({
 		// Next Button!
 		self.add({
 			id:"next_button", type:"Button", x:544, y:471, size:"long",
+			text_id:"characters_button",
+			message:"slideshow/next"
+		});
+
+	},
+	onend: function(self){
+		self.clear();
+	}
+
+});
+
+// Introduce the characters!
+SLIDES.push({
+
+	onstart: function(self){
+
+		// Character intro
+		self.add({
+			id:"intro", type:"TextBox",
+			x:130, y:20, width:700, height:80,
+			text_id:"who_were"
+		});
+
+		//////////////////////////////
+		//////////////////////////////
+
+		self.add({
+			id:"char_tft", type:"CharacterTextBox",
+			x:39, y:130, width:470, height:114,
+			character: "tft"
+		});
+		self.add({
+			id:"char_all_d", type:"CharacterTextBox",
+			x:511, y:130, width:190, height:114,
+			character: "all_d"
+		});
+		self.add({
+			id:"char_all_c", type:"CharacterTextBox",
+			x:731, y:130, width:200, height:114,
+			character: "all_c"
+		});
+		self.add({
+			id:"char_grudge", type:"CharacterTextBox",
+			x:39, y:265, width:380, height:114,
+			character: "grudge"
+		});
+		self.add({
+			id:"char_prober", type:"CharacterTextBox",
+			x:431, y:265, width:500, height:114,
+			character: "prober"
+		});
+
+		//////////////////////////////
+		//////////////////////////////
+
+		// Next Button!
+		self.add({
+			id:"next_button", type:"Button", x:304, y:495, size:"long",
 			text_id:"characters_button",
 			message:"slideshow/scratch"
 		});

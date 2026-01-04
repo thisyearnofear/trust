@@ -67,9 +67,9 @@ function SandboxUI(config){
 		})(pageIndex);
 
 	};
-	_makeHitbox(Words.get("label_population"), 30, 100, 0);
-	_makeHitbox(Words.get("label_payoffs"), 220, 100, 1);
-	_makeHitbox(Words.get("label_rules"), 366, 100, 2);
+	_makeHitbox(Words.get("label_population") || "Population", 30, 100, 0);
+	_makeHitbox(Words.get("label_payoffs") || "Payoffs", 220, 100, 1);
+	_makeHitbox(Words.get("label_rules") || "Rules", 366, 100, 2);
 
 	// Pages
 	var pages = [];
@@ -126,7 +126,8 @@ function SandboxUI(config){
 		// Label: Name
 		var popName = document.createElement("div");
 		popName.className = "sandbox_pop_label";
-		popName.innerHTML = Words.get("label_short_"+peepID).toUpperCase();
+		var shortLabel = Words.get("label_short_"+peepID) || Words.get("icon_"+peepID) || peepID.toUpperCase();
+		popName.innerHTML = shortLabel.toUpperCase();
 		popName.style.color = PEEP_METADATA[peepID].color;
 		popDOM.appendChild(popName);
 
@@ -342,8 +343,8 @@ function SandboxUI(config){
 	sliders.push(slider_turns);
 	slider_turns.slideshow = self.slideshow;
 	listen(self, "rules/turns",function(value){
-		var words = (value==1) ? Words.get("sandbox_rules_1_single") : Words.get("sandbox_rules_1"); // plural?
-		words = words.replace(/\[N\]/g, value+""); // replace [N] with the number value
+		var words = (value==1) ? (Words.get("sandbox_rules_1_single") || "") : (Words.get("sandbox_rules_1") || ""); // plural?
+		if(words) words = words.replace(/\[N\]/g, value+""); // replace [N] with the number value
 		rule_turns.innerHTML = words;
 	});
 	page.appendChild(rule_turns);
@@ -359,8 +360,8 @@ function SandboxUI(config){
 	sliders.push(slider_evolution);
 	slider_evolution.slideshow = self.slideshow;
 	listen(self, "rules/evolution",function(value){
-		var words = (value==1) ? Words.get("sandbox_rules_2_single") : Words.get("sandbox_rules_2"); // plural?
-		words = words.replace(/\[N\]/g, value+""); // replace [N] with the number value
+		var words = (value==1) ? (Words.get("sandbox_rules_2_single") || "") : (Words.get("sandbox_rules_2") || ""); // plural?
+		if(words) words = words.replace(/\[N\]/g, value+""); // replace [N] with the number value
 		rule_evolution.innerHTML = words;
 	});
 	page.appendChild(rule_evolution);
@@ -377,8 +378,8 @@ function SandboxUI(config){
 	slider_noise.slideshow = self.slideshow;
 	listen(self, "rules/noise",function(value){
 		value = Math.round(value*100);
-		var words = Words.get("sandbox_rules_3");
-		words = words.replace(/\[N\]/g, value+""); // replace [N] with the number value
+		var words = Words.get("sandbox_rules_3") || "";
+		if(words) words = words.replace(/\[N\]/g, value+""); // replace [N] with the number value
 		rule_noise.innerHTML = words;
 	});
 	page.appendChild(rule_noise);

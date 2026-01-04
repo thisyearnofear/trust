@@ -17,7 +17,7 @@ SLIDES.push({
 		});
 		self.add({
 			id:"btmWords", type:"TextBox", text_id:"oneoff_0_btm",
-			x:130, y:408, width:700, height:50, align:"center"
+			x:130, y:400, width:700, height:65, align:"center"
 		});
 
 		// Labels
@@ -36,14 +36,14 @@ SLIDES.push({
 
 		// Buttons
 		self.add({
-			id:"btnAttack", type:"Button", x:275, y:470, text_id:"label_attack", uppercase:true,
+			id:"btnAttack", type:"Button", x:275, y:485, text_id:"label_attack", uppercase:true,
 			onclick:function(){
 				_.answer = "ATTACK";
 				publish("slideshow/next");
 			}
 		});
 		self.add({
-			id:"btnCooperate", type:"Button", x:495, y:470, text_id:"label_cooperate", uppercase:true,
+			id:"btnCooperate", type:"Button", x:495, y:485, text_id:"label_cooperate", uppercase:true,
 			onclick:function(){
 				_.answer = "COOPERATE";
 				publish("slideshow/next");
@@ -104,14 +104,14 @@ SLIDES.push({
 		}
 		self.add({
 			id:"btmWords", type:"TextBox", text_id:"oneoff_2_btm",
-			x:130, y:392, width:700, height:100, align:"center"
+			x:130, y:385, width:700, height:90, align:"center"
 		});
 
 		// Replace button
 		self.remove("btnAttack");
 		self.remove("btnCooperate");
 		self.add({
-			id:"btnNext", type:"Button", x:304, y:481, size:"long",
+			id:"btnNext", type:"Button", x:304, y:495, size:"long",
 			text_id:"oneoff_button_next", 
 			message:"slideshow/next"
 		});

@@ -33,7 +33,8 @@ function SlideSelectDot(slide){
 	// DOM
 	self.dom = document.createElement("div");
 	self.dom.className = "dot";
-	self.dom.setAttribute("data-balloon", Words.get("chapter_"+slide.id));
+	var chapterLabel = Words.get("chapter_"+slide.id) || slide.id;
+	self.dom.setAttribute("data-balloon", chapterLabel);
 	self.dom.setAttribute("data-balloon-pos", "up");
 	
 	// On Click

@@ -251,8 +251,8 @@ function IteratedScoreboard(config){
 		self.showScore();
 	};
 	self.showScore = function(){
-		left.innerHTML = self.score[0];
-		right.innerHTML = self.score[1];
+		left.innerHTML = Math.round(self.score[0]);
+		right.innerHTML = Math.round(self.score[1]);
 	};
 	self.reset();
 
