@@ -33,7 +33,7 @@ SLIDES.push({
 				self.add({
 					id:"bet_"+character, type:"Button", x:x, y:y, 
 					text_id: "icon_"+character,
-					tooltip: "who_"+character,
+					tooltip: "character_"+character,
 					onclick:function(){
 						_.answer = character;
 						publish("slideshow/next");
