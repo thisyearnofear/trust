@@ -172,6 +172,15 @@ SLIDES.push({
 			{strategy:"tft", count:3},
 			{strategy:"all_c", count:13}
 		];
+		
+		// Store the bet answer using the bitcoin name if in bitcoin mode
+		if(window.BITCOIN_MODE && typeof getBitcoinStrategyName !== 'undefined'){
+			_.answerOriginal = _.answer; // Keep original for word lookups
+			_.answer = getBitcoinStrategyName(_.answer);
+		} else {
+			_.answerOriginal = _.answer;
+		}
+		
 		PD.NOISE = 0.05;
 		self.add({id:"tournament", type:"Tournament", x:-20, y:20});
 
@@ -278,7 +287,7 @@ SLIDES.push({
 				if(reproduceSteps==6){
 					
 					// WORDS
-					var words = (_.answer=="pavlov") ? Words.get("noise_evo_2_2_correct") : Words.get("noise_evo_2_2_incorrect");
+					var words = (_.answerOriginal=="pavlov") ? Words.get("noise_evo_2_2_correct") : Words.get("noise_evo_2_2_incorrect");
 					words += " ";
 					words += Words.get("noise_evo_2_2");
 					self.add({
@@ -327,6 +336,15 @@ SLIDES.push({
 			{strategy:"tft", count:3},
 			{strategy:"all_d", count:13}
 		];
+		
+		// Store the bet answer using the bitcoin name if in bitcoin mode
+		if(window.BITCOIN_MODE && typeof getBitcoinStrategyName !== 'undefined'){
+			_.answerOriginal = _.answer; // Keep original for word lookups
+			_.answer = getBitcoinStrategyName(_.answer);
+		} else {
+			_.answerOriginal = _.answer;
+		}
+		
 		PD.NOISE = 0.05;
 		o.tournament.reset();
 
@@ -404,7 +422,7 @@ SLIDES.push({
 				if(reproduceSteps==8){
 
 					// WORDS
-					var words = (_.answer=="tf2t") ? Words.get("noise_evo_4_2_correct") : Words.get("noise_evo_4_2_incorrect");
+					var words = (_.answerOriginal=="tf2t") ? Words.get("noise_evo_4_2_correct") : Words.get("noise_evo_4_2_incorrect");
 					words += " ";
 					words += Words.get("noise_evo_4_2");
 					self.add({

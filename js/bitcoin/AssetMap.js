@@ -12,37 +12,37 @@ var BITCOIN_AGENTS = {
   tft: {
     frame: 0,
     color: "#4089DD",
-    label: "Honest Node",
-    description: "Validates honestly, responds fairly to attacks",
-    bitcoin_explanation: "Follows Nakamoto consensus: validates blocks, relays transactions, and extends the longest valid chain. Responds to attacks by rejecting invalid blocks."
+    label: "Consensus Follower",
+    description: "Follows the network consensus, responds to others",
+    bitcoin_explanation: "Builds on the longest valid chain that other miners support. If others attempt a fork, responds by building on the majority chain. This is the strategy that Bitcoin's Nakamoto consensus rewards."
   },
   all_d: {
     frame: 1,
     color: "#52537F",
-    label: "51% Attacker",
-    description: "Always tries to attack the network",
-    bitcoin_explanation: "Attempts double-spending attacks by creating secret chain forks. Requires controlling >50% of network hashrate to succeed long-term."
+    label: "Fork Insister",
+    description: "Always builds on own fork regardless of consensus",
+    bitcoin_explanation: "Refuses to follow the majority consensus chain and instead mines on a minority fork (like BCH vs BTC disputes). Their blocks receive less network support, reducing profitability. Can succeed only if they gain significant hashrate majority."
   },
   all_c: {
     frame: 2,
     color: "#FF75FF",
-    label: "Full Node",
-    description: "Always follows consensus rules",
-    bitcoin_explanation: "Strictly validates all blocks and transactions against consensus rules. Never creates invalid blocks or accepts rule violations."
+    label: "Rule Validator",
+    description: "Always strictly follows consensus rules",
+    bitcoin_explanation: "Validates every block against Bitcoin's consensus rules without exception. Never participates in forks or rule changes. Represents the 'full node' that enforces consensus layer discipline."
   },
   grudge: {
     frame: 3,
     color: "#efc701",
-    label: "Chain Validator",
-    description: "Validates fairly, but permanently rejects attackers",
-    bitcoin_explanation: "Validates blocks normally but permanently bans nodes that send invalid blocks. Maintains a blacklist of malicious peers."
+    label: "Memory Keeper",
+    description: "Follows consensus but remembers rule breakers",
+    bitcoin_explanation: "Normally follows consensus, but if another miner breaks consensus rules, permanently treats them as an adversary. Models how nodes might coordinate to punish persistent rule violators by ignoring their blocks."
   },
   prober: {
     frame: 4,
     color: "#f6b24c",
-    label: "Adaptive Node",
-    description: "Tests if others follow rules, adapts strategy",
-    bitcoin_explanation: "Tests network compliance by occasionally sending invalid transactions. If peers reject them (good), continues honest validation. If peers accept them (bad), switches to attack mode."
+    label: "Rule Tester",
+    description: "Tests consensus commitment, then commits",
+    bitcoin_explanation: "Initially tests whether other miners will respect consensus rules by sending a small challenge. If others maintain consensus (reject invalid blocks), commits to consensus. If others exploit rules, switches to fork strategy."
   },
   tf2t: {
     frame: 5,
@@ -71,27 +71,27 @@ var BITCOIN_AGENTS = {
 var BITCOIN_PAYOFFS = {
   R: {
     value: 2,
-    label: "Valid Block Accepted",
-    description: "Both nodes validate honestly – network secure, miners earn 6.25 BTC block reward + fees",
-    tooltip: "When both nodes follow consensus rules, the network remains secure and both miners earn the full block reward (currently 6.25 BTC) plus transaction fees. This is the optimal outcome for network health."
+    label: "Both Follow Consensus",
+    description: "Both miners build on the same chain – network secure, both earn full rewards",
+    tooltip: "When both miners follow the consensus chain, their blocks are accepted by the entire network. Both earn the full block reward (currently 6.25 BTC) plus transaction fees. This coordination is what makes Bitcoin work."
   },
   S: {
     value: -1,
-    label: "Block Orphaned",
-    description: "You validate honestly but attacker's invalid block gets accepted – you lose mining reward",
-    tooltip: "When you follow consensus rules but the other node attacks (e.g., withholds blocks or double-spends), your honestly mined block may get orphaned. You lose the block reward and transaction fees, resulting in a net loss."
+    label: "Minority Fork Orphaned",
+    description: "You follow consensus, other builds minority fork – your blocks accepted, theirs orphaned",
+    tooltip: "When you follow the consensus chain but another miner builds on a minority fork, the network rejects their blocks. You earn full rewards, they earn reduced rewards. This incentivizes consensus."
   },
   T: {
     value: 3,
-    label: "Double-Spend Success",
-    description: "You attack while other validates – short-term profit, but reputation damage",
-    tooltip: "When you attack the network (e.g., attempt a double-spend or withhold blocks) while the other node validates honestly, you may temporarily profit. However, this comes with long-term reputation damage and risk of being banned from the network."
+    label: "Minority Fork Profit",
+    description: "You build minority fork, other follows consensus – short-term profit but reduced acceptance",
+    tooltip: "When you build a minority fork while others follow consensus, some nodes might follow you, but most follow the majority chain. Your blocks have reduced acceptance rate and lower long-term profitability than consensus."
   },
   P: {
     value: 0,
-    label: "Mutual Attack",
-    description: "Both nodes attack – network breaks down, nobody earns rewards",
-    tooltip: "When both nodes attack the network (e.g., both attempt to double-spend or withhold blocks), the network becomes unstable. No blocks get confirmed, no rewards are earned, and the entire system suffers."
+    label: "Network Split",
+    description: "Both miners build different forks – network splits, both chains weaker, low rewards",
+    tooltip: "When miners split into different consensus chains, the network divides its hashrate and validation power. Both forks become weaker, less secure, and less profitable. This is the worst outcome for everyone."
   }
 };
 

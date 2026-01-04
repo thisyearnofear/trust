@@ -47,7 +47,7 @@ SLIDES.push({
 			id:"buttonAttack", type:"Button", x:275, y:470, uppercase:true,
 			text_id:"label_attack",
 			onclick:function(){
-				_.answer = "ATTACK";
+				_.answer = "FORK";
 				publish("slideshow/next");
 			}
 		});
@@ -55,7 +55,7 @@ SLIDES.push({
 			id:"buttonCooperate", type:"Button", x:495, y:470, uppercase:true,
 			text_id:"label_cooperate",
 			onclick:function(){
-				_.answer = "COOPERATE";
+				_.answer = "CONSENSUS";
 				publish("slideshow/next");
 			}
 		});
@@ -83,7 +83,7 @@ SLIDES.push({
 		var o = self.objects;
 
 		// PUBLISH IT
-		if(_.answer=="COOPERATE"){
+		if(_.answer=="CONSENSUS"){
 			publish("iterated/cooperate");
 		}else{
 			publish("iterated/attack");

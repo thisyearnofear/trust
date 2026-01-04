@@ -17,6 +17,11 @@ SLIDES.push({
 			{strategy:"grudge", count:1},
 			{strategy:"prober", count:1}
 		];
+		
+		// Store the bet answer using the bitcoin name if in bitcoin mode
+		if(window.BITCOIN_MODE && typeof getBitcoinStrategyName !== 'undefined'){
+			_.answer = getBitcoinStrategyName(_.answer);
+		}
 		Tournament.FLOWER_CONNECTIONS = true;
 		self.add({id:"tournament", type:"Tournament", x:-20, y:20});
 
@@ -102,7 +107,7 @@ SLIDES.push({
 		// Words to the side
 		self.add({
 			id:"text_extra", type:"TextBox",
-			x:510, y:230, width:450, height:500
+			x:510, y:270, width:450, height:460
 		});
 
 		var showTournament = function(num){
@@ -202,13 +207,33 @@ SLIDES.push({
 		var o = self.objects;
 		o.tournament.dehighlightAllConnections();
 
+		// CALCULATE THE ACTUAL WINNER
+		// Note: Keep strategy names in their original form (tft, all_d, etc.)
+		// for word lookups, but convert for comparison with user's bet
+		var agents = o.tournament.agents;
+		var strategyCoinTotals = {};
+		for(var i=0; i<agents.length; i++){
+			var strategy = agents[i].strategyName;
+			if(!strategyCoinTotals[strategy]) strategyCoinTotals[strategy] = 0;
+			strategyCoinTotals[strategy] += agents[i].coins;
+		}
+		var winnerStrategyOriginal = Object.keys(strategyCoinTotals).reduce(function(a,b){
+			return strategyCoinTotals[a] > strategyCoinTotals[b] ? a : b;
+		});
+		
+		// Convert to Bitcoin name for comparison with user's bet
+		var winnerStrategy = winnerStrategyOriginal;
+		if(window.BITCOIN_MODE && typeof getBitcoinStrategyName !== 'undefined'){
+			winnerStrategy = getBitcoinStrategyName(winnerStrategyOriginal);
+		}
+
 		// WORDS
 		var words = "";
 		words += Words.get("tournament_winner_1");
-		if(_.answer=="tft"){
+		if(_.answer==winnerStrategy){
 			words += Words.get("tournament_winner_2_yay");
 		}else{
-			words += Words.get("tournament_winner_2_nay").replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("icon_"+_.answer)+"</span>");
+			words += Words.get("tournament_winner_2_nay").replace(/\[CHAR\]/g, "<span class='"+winnerStrategyOriginal+"'>"+Words.get("icon_"+winnerStrategyOriginal)+"</span>");
 		}
 		words += "<br><br>";
 		words += Words.get("tournament_winner_3");

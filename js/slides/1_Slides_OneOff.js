@@ -38,14 +38,14 @@ SLIDES.push({
 		self.add({
 			id:"btnAttack", type:"Button", x:275, y:485, text_id:"label_attack", uppercase:true,
 			onclick:function(){
-				_.answer = "ATTACK";
+				_.answer = "FORK";
 				publish("slideshow/next");
 			}
 		});
 		self.add({
 			id:"btnCooperate", type:"Button", x:495, y:485, text_id:"label_cooperate", uppercase:true,
 			onclick:function(){
-				_.answer = "COOPERATE";
+				_.answer = "CONSENSUS";
 				publish("slideshow/next");
 			}
 		});
@@ -68,7 +68,7 @@ SLIDES.push({
 		// Text
 		var t = o.topWords;
 		var b = o.btmWords;
-		if(_.answer=="COOPERATE"){
+		if(_.answer=="CONSENSUS"){
 			t.setText(Words.get("oneoff_1_cooperated")+"<br>"+Words.get("oneoff_1_top"));
 		}else{
 			t.setText(Words.get("oneoff_1_attacked")+"<br>"+Words.get("oneoff_1_top"));
@@ -97,7 +97,7 @@ SLIDES.push({
 
 		// Text
 		var t = o.topWords;
-		if(_.answer=="COOPERATE"){
+		if(_.answer=="CONSENSUS"){
 			t.setText(Words.get("oneoff_2_cooperated")+"<br>"+Words.get("oneoff_2_top"));
 		}else{
 			t.setText(Words.get("oneoff_2_attacked")+"<br>"+Words.get("oneoff_2_top"));

@@ -44,7 +44,7 @@ SLIDES.push({
 
 		// Button
 		self.add({
-			id:"button", type:"Button", x:615, y:466, 
+			id:"button", type:"Button", x:615, y:485, 
 			text_id:"evolution_intro_button", size:"long",
 			message:"slideshow/scratch"
 		});

@@ -94,13 +94,13 @@ function Iterated(config){
 	self.oneoffHighlight1 = function(yourAnswer){
 		self.dehighlightPayoff();
 		self.payoffs.gotoAndStop(1);
-		var your = yourAnswer=="COOPERATE" ? _l2 : _l4;
+		var your = yourAnswer=="CONSENSUS" ? _l2 : _l4;
 		your.style.color = _l3.style.color = "#FFE663";
 	};
 	self.oneoffHighlight2 = function(yourAnswer){
 		self.dehighlightPayoff();
 		self.payoffs.gotoAndStop(2);
-		var your = yourAnswer=="COOPERATE" ? _l2 : _l4;
+		var your = yourAnswer=="CONSENSUS" ? _l2 : _l4;
 		your.style.color = _l1.style.color = "#FFE663";
 	};
 
@@ -145,7 +145,7 @@ function Iterated(config){
 
 		// Make your moves!
 		var A = yourMove;
-		if(yourMove=="TRIP") A=PD.ATTACK;
+		if(yourMove=="TRIP") A=PD.FORK;
 		var B = self.opponentLogic.play();
 
 		// Get payoffs
@@ -179,12 +179,12 @@ function Iterated(config){
 
 	listen(self, "iterated/cooperate", function(){
 		publish("iterated/round/start");
-		self.playOneRound(PD.COOPERATE);
+		self.playOneRound(PD.COOPERATE); // CONSENSUS
 	});
 
 	listen(self, "iterated/attack", function(){
 		publish("iterated/round/start");
-		self.playOneRound(PD.ATTACK);
+		self.playOneRound(PD.ATTACK); // FORK
 	});
 
 	listen(self, "iterated/TRIP", function(){

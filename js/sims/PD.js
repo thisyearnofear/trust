@@ -10,8 +10,8 @@ var PEEP_METADATA = {
 };
 
 var PD = {};
-PD.COOPERATE = "COOPERATE";
-PD.ATTACK = "ATTACK";
+PD.COOPERATE = "CONSENSUS"; // Build on consensus chain
+PD.ATTACK = "FORK";         // Build own minority fork
 
 PD.PAYOFFS_DEFAULT = {
 	P: 0, // punishment: neither of you get anything
@@ -47,44 +47,44 @@ subscribe("rules/noise",function(value){
 
 PD.getPayoffs = function(move1, move2){
 	var payoffs = PD.PAYOFFS;
-	if(move1==PD.ATTACK && move2==PD.ATTACK) return [payoffs.P, payoffs.P]; // both punished
-	if(move1==PD.COOPERATE && move2==PD.ATTACK) return [payoffs.S, payoffs.T]; // sucker - temptation
-	if(move1==PD.ATTACK && move2==PD.COOPERATE) return [payoffs.T, payoffs.S]; // temptation - sucker
-	if(move1==PD.COOPERATE && move2==PD.COOPERATE) return [payoffs.R, payoffs.R]; // both rewarded
+	if(move1==PD.ATTACK && move2==PD.ATTACK) return [payoffs.P, payoffs.P]; // both build forks - network split
+	if(move1==PD.COOPERATE && move2==PD.ATTACK) return [payoffs.S, payoffs.T]; // one consensus, one fork
+	if(move1==PD.ATTACK && move2==PD.COOPERATE) return [payoffs.T, payoffs.S]; // one fork, one consensus
+	if(move1==PD.COOPERATE && move2==PD.COOPERATE) return [payoffs.R, payoffs.R]; // both follow consensus
 };
 
-// Bitcoin fork choice rule: longest valid chain wins
+// Bitcoin consensus rule: miners who follow the longest chain are rewarded
 PD.applyForkChoiceRule = function(playerA, playerB, scores) {
-	// In Bitcoin, nodes choose the longest valid chain
-	// If you attack (create invalid blocks), other nodes won't extend your chain
+	// In Bitcoin, the network follows the longest valid chain (Nakamoto consensus)
+	// Miners who build on the consensus chain get full rewards
+	// Miners who build on minority forks get reduced rewards (fewer nodes validate their blocks)
 	
 	var aCooperated = playerA.lastMove === PD.COOPERATE;
 	var bCooperated = playerB.lastMove === PD.COOPERATE;
 	
-	// If both cooperated, both get full rewards (longest chain)
+	// Both follow consensus chain - both earn full rewards
 	if (aCooperated && bCooperated) {
 		return scores; // No change needed
 	}
 	
-	// If one attacked and one cooperated, the attacker's blocks get orphaned
+	// One builds on minority fork, one follows consensus
 	if (!aCooperated && bCooperated) {
-		// Player A attacked, so their invalid blocks don't get extended
-		// Player B gets full reward for honest mining
-		scores[0] = Math.max(0, scores[0] * 0.3); // Attacker gets only 30% of reward (orphaned blocks)
-		scores[1] = scores[1] * 1.2; // Honest miner gets 20% bonus (more blocks accepted)
+		// Player A chose minority fork - fewer nodes accept their blocks
+		// Player B follows consensus - full network support
+		scores[0] = Math.max(0, scores[0] * 0.5); // Minority fork gets 50% acceptance
+		scores[1] = scores[1] * 1.0; // Consensus chain gets normal reward
 	}
 	
 	if (aCooperated && !bCooperated) {
-		// Player B attacked, so their invalid blocks don't get extended
-		// Player A gets full reward for honest mining
-		scores[0] = scores[0] * 1.2; // Honest miner gets 20% bonus
-		scores[1] = Math.max(0, scores[1] * 0.3); // Attacker gets only 30% of reward
+		// Player B chose minority fork, Player A follows consensus
+		scores[0] = scores[0] * 1.0; // Consensus chain gets normal reward
+		scores[1] = Math.max(0, scores[1] * 0.5); // Minority fork gets 50% acceptance
 	}
 	
-	// If both attacked, network breaks down - both lose significantly
+	// Both build on different forks - network splits, both chains are weaker
 	if (!aCooperated && !bCooperated) {
-		scores[0] = Math.max(0, scores[0] * 0.1); // Both get only 10% of reward
-		scores[1] = Math.max(0, scores[1] * 0.1);
+		scores[0] = Math.max(0, scores[0] * 0.5); // Split network means less validation
+		scores[1] = Math.max(0, scores[1] * 0.5);
 	}
 	
 	return scores;

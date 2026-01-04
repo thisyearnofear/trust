@@ -137,35 +137,35 @@ So let's play the game Bitcoin nodes play every day. &rarr;
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="label_you_cooperate">
-you<br>cooperate
+you<br>follow consensus
 </p>
 
 <p id="label_you_attack">
-you<br>attack
+you<br>build fork
 </p>
 
 <p id="label_they_cooperate">
-they<br>cooperate
+they<br>follow consensus
 </p>
 
 <p id="label_they_attack">
-they<br>attack
+they<br>build fork
 </p>
 
 <p id="label_you_cheat">
-you<br>attack network
+you<br>build fork
 </p>
 
 <p id="label_they_cheat">
-they<br>attack network
+they<br>build fork
 </p>
 
 <p id="label_cheat">
-attack
+build fork
 </p>
 
 <p id="label_attack">
-attack
+build fork
 </p>
 
 <p id="label_you">
@@ -179,13 +179,13 @@ other participant<br>↘
 
 <b>A SINGLE BLOCK</b>
 <br>
-You're a miner. <b>COOPERATE:</b> Follow consensus rules, earn fair reward.
-<br><b>ATTACK:</b> Break rules, quick profit, but network rejects you.
+You're a miner. <b>COOPERATE:</b> Build on the consensus chain, earn full reward.
+<br><b>ATTACK:</b> Build on your own fork, but network follows the longest chain.
 </p>
 
 <p id="oneoff_0_btm">
-<b>The other miner attacks.</b><br>
-Do you cooperate or attack back?
+<b>The other miner builds on a different fork.</b><br>
+Do you follow consensus or build your own chain?
 </p>
 
 <p id="oneoff_game_to_bitcoin">
@@ -193,29 +193,29 @@ Do you cooperate or attack back?
 <br>
 This isn't just an abstract game. These exact dynamics play out every day in Bitcoin mining:
 <br>
-• <b>Cooperate</b> = Follow Bitcoin's consensus rules
-• <b>Attack</b> = Try to double-spend or withhold blocks
-• <b>Payoffs</b> = Real BTC rewards and losses
-• <b>Strategies</b> = Different mining approaches
+• <b>Cooperate</b> = Build on the consensus chain (longest valid chain)
+• <b>Attack</b> = Build on a minority fork (disagreeing with majority)
+• <b>Payoffs</b> = Real BTC rewards reduced if your fork is rejected
+• <b>Strategies</b> = Different mining approaches (tit-for-tat, always follow consensus, etc.)
 <br>
-Let's see how Bitcoin's economics make honesty the winning strategy...
+Bitcoin's genius: the network always follows the longest chain, so consensus is the most profitable strategy.
 </p>
 
 <p id="oneoff_bitcoin_economics">
 <b>BITCOIN BLOCK ECONOMICS</b><br>
 <br>
-These payoffs reflect real Bitcoin mining economics:
+These payoffs reflect real Bitcoin mining economics based on fork consensus:
 <br>
-• <span data-bitcoin-tooltip="When both nodes follow consensus rules, the network remains secure and both miners earn the full block reward (currently 6.25 BTC) plus transaction fees. This is the optimal outcome for network health.">Valid Block Accepted (R=2)</span>: Both miners earn 6.25 BTC + fees
+• <span data-bitcoin-tooltip="When both miners build on the consensus chain, the entire network validates both blocks. Both miners earn the full block reward (currently 6.25 BTC) plus transaction fees.">Both Follow Consensus (R=2)</span>: Both miners earn 6.25 BTC + fees (full reward)
 <br>
-• <span data-bitcoin-tooltip="When you follow consensus rules but the other node attacks (e.g., withholds blocks or double-spends), your honestly mined block may get orphaned. You lose the block reward and transaction fees, resulting in a net loss.">Block Orphaned (S=-1)</span>: You lose mining reward to attacker
+• <span data-bitcoin-tooltip="When you follow the consensus chain but another miner builds on a minority fork, the network rejects their fork. Your blocks get full network validation, theirs get reduced acceptance.">You Follow Consensus (S=-1)</span>: You earn full reward, other miner's fork rejected
 <br>
-• <span data-bitcoin-tooltip="When you attack the network (e.g., attempt a double-spend or withhold blocks) while the other node validates honestly, you may temporarily profit. However, this comes with long-term reputation damage and risk of being banned from the network.">Double-Spend Success (T=3)</span>: Short-term profit, long-term risk
+• <span data-bitcoin-tooltip="When you build a minority fork while others follow consensus, some nodes might follow you initially, but the network coordinates around the majority chain. Your blocks earn reduced rewards as the majority chain becomes more secure.">You Build Minority Fork (T=3)</span>: Short-term reward from minority followers, but long-term loss as consensus chain grows
 <br>
-• <span data-bitcoin-tooltip="When both nodes attack the network (e.g., both attempt to double-spend or withhold blocks), the network becomes unstable. No blocks get confirmed, no rewards are earned, and the entire system suffers.">Mutual Attack (P=0)</span>: Network breaks, nobody earns
+• <span data-bitcoin-tooltip="When both miners build different forks, the network splits. Both chains become weaker, less validated, and less secure. Neither fork attracts strong support.">Both Build Different Forks (P=0)</span>: Network splits, both chains earn reduced rewards
 <br>
 <br>
-The R=2 vs T=3 gap explains why attacks seem rational in isolation, but T only works once before reputation damage makes future cooperation impossible.
+The key: Bitcoin's consensus mechanism (longest chain wins) makes following the majority consensus the most profitable strategy over time.
 </p>
 
 <p id="oneoff_bitcoin_difficulty">
@@ -285,25 +285,25 @@ Each crisis proved that <b>honest validation</b> is the only sustainable strateg
 </p>
 
 <p id="oneoff_1_attacked">
-Right! Don't let them double-spend you while you play by the rules.
+Right! Building your own fork gives you a temporary advantage, but the network follows the consensus chain.
 </p>
 
 <p id="oneoff_1_cooperated">
-Too idealistic – they just robbed you while you played fair!
+Following consensus is safer, but you're vulnerable if others build forks and gain network support.
 </p>
 
 <p id="oneoff_1_top">
-<b>First, here's the threat:</b> If you cooperate but they attack, you lose everything. They steal your reward (+3), you get nothing (-1).
+<b>First, here's the incentive:</b> If you follow consensus but they build a fork, their minority chain gets less network support. You earn full reward (+2), they earn reduced reward (0.5).
 <br><br>
-<b>This is why attacking seems rational.</b> Your choice:
-<br>• Cooperate = risk losing to an attacker
-<br>• Attack = guarantee gain, even if they do too
+<b>This is why forking seems rational.</b> Your choice:
+<br>• Follow Consensus = secure and profitable, but subject to majority
+<br>• Build Fork = potential short-term gain, but reduced long-term acceptance
 <br><br>
-But this is just one block. Bitcoin isn't one block. It's eternal repetition, where nodes face each other forever.
+But this is just one block. Bitcoin isn't one block. It's eternal repetition, where miners face each other forever.
 </p>
 
 <p id="oneoff_1_btm">
-<b>But let's say the other participant cooperates, validating transactions honestly.</b><br>
+<b>But let's say the other miner follows the consensus chain.</b><br>
 What should you do now?
 </p>
 
@@ -1296,13 +1296,13 @@ So now...
 </p>
 
 <p id="label_attack">
-attack
+build fork
 </p>
 <p id="label_continue">
 continue
 </p>
 <p id="label_cooperate">
-cooperate
+follow consensus
 </p>
 <p id="label_reset">
 reset
