@@ -416,18 +416,81 @@ var OnChainUI = {
   /**
    * Submit a move to Bitcoin blockchain
    */
-  submitMove: function(move) {
+  /**
+   * Submit game move to Bitcoin with full flow
+   * 1. Generate ZK proof
+   * 2. Sign both transactions
+   * 3. Broadcast atomically
+   */
+  submitMove: async function(gameData, utxoData, changeAddress) {
+    if (!this.enabled || !this.charmsClient || !this.wallet) {
+      this.showError("Wallet not connected");
+      return;
+    }
+
+    try {
+      console.log("[OnChainUI] Submitting move to Bitcoin (full flow)");
+      this.showStatus("Generating proof (this may take ~5 minutes)...");
+
+      // Full flow with wallet integration
+      const result = await this.charmsClient.submitMove(
+        gameData,
+        utxoData,
+        changeAddress,
+        this.wallet  // Pass wallet for automatic signing + broadcast
+      );
+
+      // Track transaction
+      this.addTransaction(result);
+      
+      // Show success
+      if (result.status === "broadcast") {
+        this.showSuccess(
+          `Move anchored to Bitcoin!\n` +
+          `Commit: ${result.commitTxid.substring(0, 16)}...\n` +
+          `Spell: ${result.spellTxid.substring(0, 16)}...\n` +
+          `Mode: ${result.broadcastMode}`
+        );
+      } else {
+        this.showStatus(
+          `Proof generated (unsigned).\n` +
+          `Commit: ${result.commitTxid.substring(0, 16)}...\n` +
+          `Spell: ${result.spellTxid.substring(0, 16)}...\n` +
+          `Ready for manual signing.`
+        );
+      }
+
+      return result;
+    } catch (error) {
+      console.error("[OnChainUI] Move submission failed:", error);
+      this.showError("Failed: " + error.message);
+      throw error;
+    }
+  },
+
+  /**
+   * Submit game move (legacy - simple mode)
+   * For basic move submission without full Charms flow
+   */
+  submitSimpleMove: function(move) {
     if (!this.enabled || !this.charmsClient) {
       this.showError("Wallet not connected");
       return;
     }
 
-    console.log("[OnChainUI] Submitting move to Bitcoin:", move);
+    console.log("[OnChainUI] Submitting simple move:", move);
 
-    this.charmsClient.submitMove(move)
-      .then(txid => {
-        this.addTransaction(move, txid);
-        this.showSuccess("Move submitted! Txid: " + txid.substring(0, 16) + "...");
+    this.charmsClient.submitMove({
+      player_address: this.playerAddress,
+      moves: [move === "COOPERATE" ? 0 : 1]
+    })
+      .then(result => {
+        this.addTransaction(result);
+        this.showSuccess(
+          "Move submitted!\n" +
+          "Commit: " + result.commitTxid.substring(0, 16) + "...\n" +
+          "Spell: " + result.spellTxid.substring(0, 16) + "..."
+        );
       })
       .catch(err => {
         console.error("[OnChainUI] Move submission failed:", err);
@@ -438,10 +501,13 @@ var OnChainUI = {
   /**
    * Add transaction to history display
    */
-  addTransaction: function(move, txid) {
+  addTransaction: function(result) {
     this.recentTransactions.unshift({
-      move: move,
-      txid: txid,
+      type: result.type || "move",
+      commitTxid: result.commitTxid,
+      spellTxid: result.spellTxid,
+      status: result.status || "unknown",
+      broadcastMode: result.broadcastMode,
       timestamp: new Date().toLocaleTimeString()
     });
 
@@ -461,7 +527,7 @@ var OnChainUI = {
     if (!listEl) return;
 
     if (this.recentTransactions.length === 0) {
-      listEl.innerHTML = '<div style="color: #888;">No moves submitted yet</div>';
+      listEl.innerHTML = '<div style="color: #888;">No transactions yet</div>';
       return;
     }
 
@@ -469,14 +535,23 @@ var OnChainUI = {
       <div class="onchain-tx-item">
         <div style="margin-bottom: 5px;">
           <span style="color: #16c784;">●</span>
-          <strong>${tx.move}</strong>
+          <strong>${tx.type}</strong>
+          <span style="color: #888; font-size: 10px; margin: 0 5px;">${tx.status}</span>
           <span style="color: #888; float: right; font-size: 10px;">${tx.timestamp}</span>
         </div>
-        <div style="word-break: break-all; color: #00aa00;">
-          <a class="onchain-link" href="https://blockstream.info/testnet/tx/${tx.txid}" target="_blank">
-            ${tx.txid.substring(0, 32)}...
+        <div style="font-size: 11px; color: #00aa00; margin-bottom: 5px;">
+          Commit:
+          <a class="onchain-link" href="https://blockstream.info/signet/tx/${tx.commitTxid}" target="_blank">
+            ${tx.commitTxid.substring(0, 20)}...
           </a>
         </div>
+        <div style="font-size: 11px; color: #00aa00;">
+          Spell:
+          <a class="onchain-link" href="https://blockstream.info/signet/tx/${tx.spellTxid}" target="_blank">
+            ${tx.spellTxid.substring(0, 20)}...
+          </a>
+        </div>
+        ${tx.broadcastMode ? `<div style="font-size: 10px; color: #888; margin-top: 3px;">Mode: ${tx.broadcastMode}</div>` : ""}
       </div>
     `).join("");
   },
@@ -531,23 +606,34 @@ var OnChainUI = {
   },
 
   /**
+   * Show status/progress message
+   */
+  showStatus: function(message) {
+    console.log("[OnChainUI] ⏳", message);
+    this.showMessage(message, "status");
+  },
+
+  /**
    * Show temporary message
    */
   showMessage: function(message, type = "info") {
     // Create toast-like message
     const toast = document.createElement("div");
+    const bgColor = type === "error" ? "#ff6b6b" : type === "status" ? "#ffa500" : "#16c784";
     toast.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
       padding: 12px 20px;
-      background: ${type === "error" ? "#ff6b6b" : "#16c784"};
+      background: ${bgColor};
       color: #000;
       border-radius: 4px;
       font-family: monospace;
       font-size: 12px;
       z-index: 10000;
       animation: slideIn 0.3s ease;
+      white-space: pre-wrap;
+      max-width: 400px;
     `;
     toast.textContent = message;
 
