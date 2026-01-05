@@ -96,7 +96,11 @@ SLIDES.push({
 
         var o = self.objects;
 
-        // Use Splash character
+        // Use Iterated component for central framing animation
+        self.add({id:"iterated", type:"Iterated", x:130, y:133});
+        o.iterated.dehighlightPayoff();
+        
+        // Add Splash character in background
         self.add({ id: "splash", type: "Splash", x: 0, y: 50 });
 
         // Get player reputation data
@@ -107,10 +111,10 @@ SLIDES.push({
 
         self.add({
             id: "tier_display", type: "TextBox",
-            x: 350, y: 30, width: 450,
+            x: 200, y: 150, width: 400,
             align: "center",
             text: `Your Reputation: <span class="${tier.cssClass}">${tier.label}</span>`,
-            size: 20, color: "#333"
+            size: 16, color: "#333"
         });
 
         // Intro text with dynamic substitution
@@ -125,16 +129,16 @@ SLIDES.push({
 
         self.add({
             id: "text", type: "TextBox",
-            x: 100, y: 120, width: 760, height: 300,
+            x: 200, y: 180, width: 400, height: 200,
             text: governanceText,
             align: "center",
-            size: 13
+            size: 11
         });
 
         // Continue button
         self.add({
             id: "button", type: "Button",
-            x: 605, y: 485, size: "long",
+            x: 350, y: 400, size: "short",
             text_id: "governance_intro_btn",
             message: "slideshow/next"
         });
@@ -617,19 +621,24 @@ SLIDES.push({
 
         var o = self.objects;
 
+        // Add Iterated component for central framing animation
+        self.add({id:"iterated", type:"Iterated", x:130, y:133});
+        o.iterated.dehighlightPayoff();
+        
         // Splash in background
         self.add({ id: "splash", type: "Splash", blush: true });
 
         // Explanation of mechanics
         self.add({
             id: "what_text", type: "TextBox",
-            x: 130, y: 60, width: 700, height: 350, align: "center",
-            text_id: "charms_what"
+            x: 200, y: 160, width: 400, height: 200, align: "center",
+            text_id: "charms_what",
+            size: 12
         });
 
         // Button to continue to credits
         self.add({
-            id: "what_button", type: "Button", x: 304, y: 466, size: "long",
+            id: "what_button", type: "Button", x: 350, y: 380, size: "short",
             text_id: "charms_what_btn",
             message: "slideshow/scratch"
         });

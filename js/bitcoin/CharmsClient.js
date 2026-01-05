@@ -27,6 +27,7 @@ class CharmsGameClient {
 
     this.charmsAppBin = config.charmsAppBin;
     this.charmsProver = config.charmsProver || null;
+    this.serverUrl = config.serverUrl || null; // Backend API endpoint
     this.txBuilder = config.txBuilder || getBitcoinTxBuilder();
     this.gameHistory = [];
     this.transactionHistory = [];
@@ -34,7 +35,7 @@ class CharmsGameClient {
     console.log("[CharmsClient] Initialized (PRODUCTION MODE - REAL SIGNET)", {
       appId: appId.substring(0, 16) + "...",
       address: bitcoinAddress,
-      charmsAppBin: config.charmsAppBin ? "set" : "not set"
+      mode: this.serverUrl ? "server API" : this.charmsAppBin ? "local CLI" : "none"
     });
   }
 
@@ -202,25 +203,70 @@ class CharmsGameClient {
   }
 
   /**
-   * Generate zero-knowledge proof via Charms CLI
-   * Calls actual charms spell prove to generate real ZK proofs
+   * Generate zero-knowledge proof via Charms CLI or Backend Server
+   * Supports two modes:
+   * 1. Server mode (serverUrl set) - Browser calls /api/charms/prove
+   * 2. Local mode (charmsAppBin set) - Node.js spawns charms CLI directly
    * @private
    */
   async _generateProofViaCharms(gameData, utxoData, changeAddress) {
-    // Initialize prover if not already done
-    if (!this.charmsProver && this.charmsAppBin) {
-      const { initCharmsCLIProver } = require('./CharmsCLIProver.js');
-      this.charmsProver = initCharmsCLIProver({
-        charmsAppBin: this.charmsAppBin
+    // Mode 1: Call backend server API
+    if (this.serverUrl) {
+      console.log("[CharmsClient] Using server mode:", this.serverUrl);
+      return await this._callServerAPI(gameData, utxoData, changeAddress);
+    }
+
+    // Mode 2: Local CLI (Node.js only, not browser)
+    if (this.charmsAppBin) {
+      console.log("[CharmsClient] Using local CLI mode");
+      
+      if (!this.charmsProver) {
+        const { initCharmsCLIProver } = require('./CharmsCLIProver.js');
+        this.charmsProver = initCharmsCLIProver({
+          charmsAppBin: this.charmsAppBin
+        });
+      }
+
+      return await this.charmsProver.generateProof(gameData, utxoData, changeAddress);
+    }
+
+    throw new Error(
+      "No proof generation configured. Provide either:\n" +
+      "  - serverUrl: 'http://localhost:3000' (for browser)\n" +
+      "  - charmsAppBin: '/path/to/trust-game' (for Node.js)"
+    );
+  }
+
+  /**
+   * Call backend API for proof generation
+   * @private
+   */
+  async _callServerAPI(gameData, utxoData, changeAddress) {
+    try {
+      const response = await fetch(`${this.serverUrl}/api/charms/prove`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          gameData,
+          utxoData,
+          changeAddress,
+          charmsAppBin: this.charmsAppBin
+        })
       });
-    }
 
-    if (!this.charmsProver) {
-      throw new Error("Charms prover not initialized. Provide charmsAppBin in config.");
-    }
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || `Server error: ${response.statusText}`);
+      }
 
-    // Call real charms spell prove
-    return await this.charmsProver.generateProof(gameData, utxoData, changeAddress);
+      const result = await response.json();
+      console.log("[CharmsClient] Proof received from server");
+      return result;
+    } catch (error) {
+      throw new Error(`Server API error: ${error.message}`);
+    }
   }
 
   /**

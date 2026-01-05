@@ -321,7 +321,15 @@ function initOnChainReputation() {
       // - Uses 2-tx pattern (commit + spell)
       // - Generates REAL Bitcoin transactions on Signet
       // - Ready for Unisat wallet signing + broadcast
+      // Supports two modes:
+      //   1. serverUrl - calls backend /api/charms/prove (browser)
+      //   2. charmsAppBin - calls CLI directly (Node.js only)
       var charmsConfig = {
+        // Option 1: If backend server is running, use it
+        serverUrl: typeof window !== 'undefined' && window.location.hostname === 'localhost'
+          ? "http://localhost:3000"
+          : null,
+        // Option 2: Fallback to local CLI (for Node.js environments)
         charmsAppBin: "/Users/udingethe/Dev/covenant/charm-apps/trust-game/target/release/trust-game"
       };
       

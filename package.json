@@ -1,0 +1,27 @@
+{
+  "name": "covenant",
+  "version": "1.0.0",
+  "description": "Bitcoin Governance Through Game Theory",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "bitcoin",
+    "charms",
+    "zero-knowledge",
+    "game-theory",
+    "governance"
+  ],
+  "author": "Bitcoin Trust Game Contributors",
+  "license": "CC0-1.0",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
