@@ -274,7 +274,7 @@ var OnChainUI = {
   /**
    * Connect to Bitcoin wallet via Unisat
    */
-  connectWallet: function() {
+  connectWallet: async function() {
     console.log("[OnChainUI] Attempting to connect wallet...");
 
     // Use Unisat wallet integration
@@ -284,16 +284,27 @@ var OnChainUI = {
       // Check for Leather wallet as fallback
       if (typeof window.LeatherProvider !== "undefined") {
         console.log("[OnChainUI] Leather wallet detected, attempting connection...");
-        // For now, use demo mode but indicate Leather is available
-        this.playerAddress = "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx";
-        this.onWalletConnected("leather"); // indicate leather mode
-        return;
+        try {
+          // Request connection to Leather wallet
+          const response = await window.LeatherProvider.request('getAddresses');
+          if (response && response.result && response.result.addresses && response.result.addresses.length > 0) {
+            // Use the first Bitcoin address
+            const btcAddress = response.result.addresses.find(addr => addr.type === 'p2wpkh' || addr.type === 'p2tr');
+            if (btcAddress) {
+              this.playerAddress = btcAddress.address;
+              this.onWalletConnected("leather");
+              return;
+            }
+          }
+        } catch (error) {
+          console.warn("[OnChainUI] Leather connection failed:", error);
+        }
       }
       
-      // Fallback: Use demo address if no wallet installed
-      console.warn("[OnChainUI] No supported wallet detected, using demo mode");
-      this.playerAddress = "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx"; // Signet testnet address
-      this.onWalletConnected(null); // null = demo mode
+      // No wallet available - show error
+      console.error("[OnChainUI] No supported wallet detected or connection failed");
+      alert("Please install Unisat or Leather wallet to continue");
+      throw new Error("No wallet available");
       return;
     }
 
@@ -317,8 +328,7 @@ var OnChainUI = {
     console.log("[OnChainUI] Wallet connected:", this.playerAddress);
 
     this.enabled = true;
-    this.wallet = walletResult ? getUnisatWallet() : null;
-    this.isDemo = walletResult === null;
+    this.wallet = getUnisatWallet();
     
     // Cache wallet data for transaction building
     this.walletData = {
@@ -327,12 +337,12 @@ var OnChainUI = {
       utxo: null // Will be fetched on demand
     };
 
-    // Initialize Charms client (with real transactions by default)
+    // Initialize Charms client with real transactions
     this.charmsClient = new CharmsGameClient(
       "trust-game-v1", // App ID
       this.playerAddress,
       {
-        mockMode: this.isDemo, // Use mock mode if no real wallet
+        mockMode: false, // Always use real transactions
         txBuilder: getBitcoinTxBuilder()
       }
     );
@@ -346,17 +356,13 @@ var OnChainUI = {
     const disconnectWallet = document.getElementById("disconnect-wallet");
     
     if (walletStatus) walletStatus.className = "onchain-status active";
-    if (walletStatusText) walletStatusText.textContent = this.isDemo ? "Demo Mode" : "Connected";
+    if (walletStatusText) walletStatusText.textContent = "Connected";
     if (walletAddress) walletAddress.textContent = this.playerAddress;
     if (walletAddressContainer) walletAddressContainer.style.display = "block";
     if (connectWallet) connectWallet.style.display = "none";
     if (disconnectWallet) disconnectWallet.style.display = "inline-block";
 
-    const message = this.isDemo
-      ? "Demo mode: Transactions will be generated but not signed/broadcast"
-      : "Wallet connected! Reputation can be anchored to Bitcoin.";
-    
-    this.showSuccess(message);
+    this.showSuccess("✓ Wallet connected! Reputation can be anchored to Bitcoin.");
 
     console.log("[OnChainUI]", {
       address: this.playerAddress,
