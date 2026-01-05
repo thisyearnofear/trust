@@ -44,8 +44,10 @@ SLIDES.push({
 
         self.add({
             id: "text", type: "TextBox",
-            x: 350, y: 100, width: 450, height: 300,
-            text: governanceText
+            x: 100, y: 120, width: 760, height: 300,
+            text: governanceText,
+            align: "center",
+            size: 13
         });
 
         // Continue button

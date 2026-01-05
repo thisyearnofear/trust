@@ -143,7 +143,8 @@ SLIDES.push({
             id: "wallet_status_display", type: "TextBox",
             x: 100, y: 320, width: 760,
             text: statusText,
-            size: 12, color: "#666"
+            size: 12, color: "#666",
+            align: "center"
         });
 
         // Connect wallet button
