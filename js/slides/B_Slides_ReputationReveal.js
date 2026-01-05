@@ -25,14 +25,19 @@ SLIDES.push({
         // Get dynamic text
         var revealText = Words.get("reputation_reveal");
 
-        // Substitute player data
-        revealText = revealText.replace("[COOPERATION_COUNT]", reputation.cooperativeMoves);
-        revealText = revealText.replace("[DEFECTION_COUNT]", reputation.totalMoves - reputation.cooperativeMoves);
-        revealText = revealText.replace("[COOPERATION_RATE]", Math.round(reputation.calculateScore()));
-        revealText = revealText.replace("[TIER_CLASS]", tier.cssClass);
-        revealText = revealText.replace(/\[TIER_LABEL\]/g, tier.label); // Replace all instances
-        revealText = revealText.replace("[TIER_DESCRIPTION]", tier.description);
-        revealText = revealText.replace("[VOTING_POWER]", reputation.getVotingPower());
+        // Handle edge case: no games played
+        if (reputation.totalMoves === 0) {
+            revealText = Words.get("reputation_reveal_no_games");
+        } else {
+            // Substitute player data
+            revealText = revealText.replace("[COOPERATION_COUNT]", reputation.cooperativeMoves);
+            revealText = revealText.replace("[DEFECTION_COUNT]", reputation.totalMoves - reputation.cooperativeMoves);
+            revealText = revealText.replace("[COOPERATION_RATE]", Math.round(reputation.calculateScore()));
+            revealText = revealText.replace("[TIER_CLASS]", tier.cssClass);
+            revealText = revealText.replace(/\[TIER_LABEL\]/g, tier.label); // Replace all instances
+            revealText = revealText.replace("[TIER_DESCRIPTION]", tier.description);
+            revealText = revealText.replace("[VOTING_POWER]", reputation.getVotingPower());
+        }
 
         self.add({
             id: "reveal_text", type: "TextBox",
