@@ -65,7 +65,7 @@ SLIDES.push({
 		// Payoff
 		o.iterated.oneoffHighlight1(_.answer);
 
-		// Text
+		// Text - Progressive revelation
 		var t = o.topWords;
 		var b = o.btmWords;
 		if(_.answer=="CONSENSUS"){
@@ -75,9 +75,18 @@ SLIDES.push({
 		}
 		b.setTextID("oneoff_1_btm");
 
-		// Hide & fade
+		// Hide & fade - immediate feedback
 		_hide(o.topWords); _fadeIn(o.topWords, 150+10);
 		_hide(o.btmWords); _fadeIn(o.btmWords, 150+600);
+		
+		// Show detailed explanation after delay
+		setTimeout(function(){
+			if(_.answer=="CONSENSUS"){
+				t.setText(Words.get("oneoff_1_cooperated")+"<br>"+Words.get("oneoff_1_explanation"));
+			}else{
+				t.setText(Words.get("oneoff_1_attacked")+"<br>"+Words.get("oneoff_1_explanation"));
+			}
+		}, 3000);
 		_hide(o.btnAttack); _fadeIn(o.btnAttack, 150+1200);
 		_hide(o.btnCooperate); _fadeIn(o.btnCooperate, 150+1200);
 
@@ -95,7 +104,7 @@ SLIDES.push({
 		// Payoff
 		o.iterated.oneoffHighlight2(_.answer);
 
-		// Text
+		// Text - Progressive revelation
 		var t = o.topWords;
 		if(_.answer=="CONSENSUS"){
 			t.setText(Words.get("oneoff_2_cooperated")+"<br>"+Words.get("oneoff_2_top"));
@@ -106,6 +115,15 @@ SLIDES.push({
 			id:"btmWords", type:"TextBox", text_id:"oneoff_2_btm",
 			x:130, y:385, width:700, height:90, align:"center"
 		});
+		
+		// Show detailed explanation after delay
+		setTimeout(function(){
+			if(_.answer=="CONSENSUS"){
+				t.setText(Words.get("oneoff_2_cooperated")+"<br>"+Words.get("oneoff_2_explanation"));
+			}else{
+				t.setText(Words.get("oneoff_2_attacked")+"<br>"+Words.get("oneoff_2_explanation"));
+			}
+		}, 3000);
 
 		// Replace button
 		self.remove("btnAttack");
