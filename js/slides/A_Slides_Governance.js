@@ -5,8 +5,89 @@
  * changes that affect the NEXT game run.
  * 
  * This creates the feedback loop:
- * Play game → Earn reputation → Vote on rules → Next game uses new rules
+ * Play game → Earn reputation → Connect wallet → Vote on rules → Next game uses new rules
  */
+
+// Wallet connection (required for voting)
+SLIDES.push({
+    id: "wallet_connect",
+    onstart: function (self) {
+
+        var o = self.objects;
+
+        // Splash
+        self.add({ id: "splash", type: "Splash" });
+
+        // Wallet connection prompt
+        var walletText = "<b>Connect Your Bitcoin Wallet</b><br><br>";
+        walletText += "Your governance votes will be recorded on-chain using zero-knowledge proofs.<br><br>";
+        walletText += "Connect your Bitcoin wallet (Unisat or Leather) to participate in voting.";
+
+        self.add({
+            id: "wallet_text", type: "TextBox",
+            x: 100, y: 60, width: 760, height: 250,
+            text: walletText,
+            align: "center",
+            size: 14
+        });
+
+        // Wallet status display
+        var statusText = "Wallet: Disconnected";
+        if (window.OnChainUI && window.OnChainUI.getSlideStatus) {
+            var status = OnChainUI.getSlideStatus();
+            if (status.connected) {
+                statusText = `Wallet: Connected ✓<br><span style="font-size:11px;">${status.address.substring(0, 16)}...${status.address.substring(status.address.length - 6)}</span>`;
+            }
+        }
+
+        self.add({
+            id: "wallet_status_display", type: "TextBox",
+            x: 100, y: 320, width: 760,
+            text: statusText,
+            size: 12, color: "#666",
+            align: "center"
+        });
+
+        // Connect wallet button
+        var handleConnectWallet = function () {
+            if (window.OnChainUI) {
+                // Show connecting status
+                o.wallet_status_display.setText("Wallet: Connecting...");
+
+                // Attempt connection
+                OnChainUI.connectWallet();
+
+                // Check status after a moment
+                setTimeout(function () {
+                    var status = OnChainUI.getSlideStatus();
+                    if (status.connected) {
+                        o.wallet_status_display.setText(`Wallet: Connected ✓<br><span style="font-size:11px;">${status.address.substring(0, 16)}...${status.address.substring(status.address.length - 6)}</span>`);
+                        o.button_continue.setText("Continue to Voting");
+                    } else {
+                        o.wallet_status_display.setText("Wallet: Connection failed. Try installing Unisat or Leather.");
+                    }
+                }, 1500);
+            }
+        };
+
+        self.add({
+            id: "button_connect", type: "Button", x: 225, y: 370, size: "short",
+            text_id: "button_connect_wallet",
+            onclick: handleConnectWallet
+        });
+
+        // Continue button (enabled only after connection)
+        self.add({
+            id: "button_continue", type: "Button", x: 605, y: 370, size: "short",
+            text_id: "button_continue_voting",
+            message: "slideshow/next"
+        });
+
+    },
+    onend: function (self) {
+        self.clear();
+    }
+});
 
 // Governance intro: "Your votes shape Bitcoin"
 SLIDES.push({
@@ -95,23 +176,7 @@ SLIDES.push({
             size: 18, color: "#333"
         });
 
-        // Wallet status (if OnChainUI initialized)
-        var walletStatus = "";
-        if (window.OnChainUI && window.OnChainUI.getSlideStatus) {
-            var status = OnChainUI.getSlideStatus();
-            if (status.connected) {
-                walletStatus = `Connected: <span class="wallet-address">${status.address.substring(0, 12)}...${status.address.substring(status.address.length - 6)}</span>`;
-            } else {
-                walletStatus = "<span style='color:#FF5E5E;'>⚠ Wallet not connected</span>";
-            }
-        }
 
-        self.add({
-            id: "wallet_status", type: "TextBox",
-            x: 50, y: 50, width: 860,
-            text: walletStatus,
-            size: 11, color: "#666"
-        });
 
         // Proposal description
         var proposalText = `<b>Proposal #${proposal.id}: ${proposal.title}</b><br><br>`;
@@ -120,7 +185,7 @@ SLIDES.push({
 
         self.add({
             id: "proposal", type: "TextBox",
-            x: 50, y: 95, width: 860,
+            x: 50, y: 70, width: 860,
             text: proposalText,
             size: 14, color: "#333"
         });
@@ -128,7 +193,7 @@ SLIDES.push({
         // Voting power display
         self.add({
             id: "power", type: "TextBox",
-            x: 50, y: 250, width: 860,
+            x: 50, y: 220, width: 860,
             text: `Your voting power: <b>${reputation.getVotingPower()} votes</b> (${tier.label})`,
             size: 13, color: "#666"
         });

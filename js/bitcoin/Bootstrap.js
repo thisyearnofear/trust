@@ -19,13 +19,12 @@ var NARRATIVE_MODE = "bitcoin";
   // Flag that we're running in Bitcoin mode
   window.BITCOIN_MODE = true;
   
-  // Initialize reputation system
-  window.playerReputation = initGameReputation();
-  console.log("[Bitcoin Mode] Reputation system initialized");
-  
-  // Initialize governance system (Charms disabled initially, enabled after game completion)
-  window.gameGovernance = initGameGovernance("trust_game_v1", false);
-  console.log("[Bitcoin Mode] Governance system initialized (Charms enabled on-demand)");
+  // WalletManager is now the unified state container
+  // It's already initialized as a global singleton in WalletManager.js
+  if (!window.walletManager) {
+    throw new Error("[Bitcoin Mode] WalletManager not initialized. Check script loading order.");
+  }
+  console.log("[Bitcoin Mode] WalletManager initialized as unified state container");
   
   // Initialize on-chain UI (wallet display, transaction history)
   if (typeof OnChainUI !== 'undefined') {
@@ -278,21 +277,21 @@ function initReputationTracking() {
     // Call original game logic
     var result = originalPlayOneGame.call(this, playerA, playerB);
     
-    // Track moves for reputation system
+    // Track moves via WalletManager (unified state)
     // Only track if this is the user's move (playerA)
     // In interactive games, playerA is the user
-    if (window.playerReputation && playerA) {
+    if (window.walletManager && playerA) {
       var moveA = playerA._lastMove;
       if (moveA) {
         var isCooperative = (moveA === window.PD.COOPERATE);
-        window.playerReputation.recordMove(isCooperative);
+        window.walletManager.recordMove(isCooperative);
       }
     }
     
     return result;
   };
   
-  console.log("[Bitcoin Mode] Reputation tracking initialized");
+  console.log("[Bitcoin Mode] Reputation tracking initialized (via WalletManager)");
 }
 
 /**
@@ -307,9 +306,14 @@ function initOnChainReputation() {
   
   // Create global function to submit reputation
   window.submitGameReputationOnChain = function(bitcoinAddress, appId) {
-    if (!window.playerReputation) {
-      console.error("[Bitcoin Mode] Reputation system not initialized");
-      return Promise.reject(new Error("Reputation system not initialized"));
+    if (!window.walletManager) {
+      console.error("[Bitcoin Mode] WalletManager not initialized");
+      return Promise.reject(new Error("WalletManager not initialized"));
+    }
+    
+    if (!bitcoinAddress) {
+      console.error("[Bitcoin Mode] Bitcoin address not provided");
+      return Promise.reject(new Error("Bitcoin address required"));
     }
     
     try {
@@ -318,14 +322,14 @@ function initOnChainReputation() {
       // - Generates REAL Bitcoin transactions on Signet
       // - Ready for Unisat wallet signing + broadcast
       var charmsConfig = {
-        charmsAppBin: "/Users/udingethe/Dev/covenant/charm-apps/trust-game/target/release/trust-game",
-        mockMode: false // REAL SIGNET TRANSACTIONS (removed mock mode)
+        charmsAppBin: "/Users/udingethe/Dev/covenant/charm-apps/trust-game/target/release/trust-game"
       };
       
       var charmsClient = new CharmsGameClient(appId || "trust_game_v1", bitcoinAddress, charmsConfig);
       
-      // Get current reputation summary
-      var reputationData = window.playerReputation.getSummary();
+      // Get current reputation summary from unified state
+      var reputationData = window.walletManager.reputation;
+      var tier = window.walletManager.reputation.tier;
       
       // Build game history for proof
       var gameHistory = reputationData.history.map(function(entry) {
@@ -350,23 +354,26 @@ function initOnChainReputation() {
       return proofPromise.then(function(proof) {
         return charmsClient.submitReputationOnChain(gameHistory, {
           score: reputationData.score,
-          tier: reputationData.tier.label,
-          votingPower: reputationData.votingPower,
+          tier: tier ? tier.label : "Neutral",
+          votingPower: window.walletManager.getVotingPower(),
           proof: proof.proofHex
         });
       }).then(function(txid) {
         console.log("[Bitcoin Mode] Reputation anchored to Bitcoin:", txid);
         
-        // Store Bitcoin address and transaction ID
-        window.playerReputation.address = bitcoinAddress;
-        window.playerReputation._lastReputationTxid = txid;
+        // Record transaction in unified state
+        window.walletManager.address = bitcoinAddress;
+        window.walletManager.recordTransaction(txid, "reputation");
+        
+        // Enable governance after reputation submission
+        window.walletManager.enableGovernance();
         
         // Trigger UI update
         if (window.publish) {
           publish("reputation/anchored", [{
             address: bitcoinAddress,
             score: reputationData.score,
-            tier: reputationData.tier.label,
+            tier: tier ? tier.label : "Neutral",
             txid: txid
           }]);
         }
@@ -403,8 +410,9 @@ function initOnChainReputation() {
       originalPublishGameResults.apply(this, arguments);
       
       // After game results published, offer to save reputation on-chain
-      if (window.playerReputation) {
-        var rep = window.playerReputation.getSummary();
+      if (window.walletManager) {
+        var rep = window.walletManager.reputation;
+        var tier = rep.tier || { label: "Neutral" };
         
         // Only offer if player has Bitcoin address
         if (window.PLAYER_BITCOIN_ADDRESS) {
@@ -414,8 +422,8 @@ function initOnChainReputation() {
           if (window.publish) {
             publish("game/complete", [{
               reputation: rep.score,
-              tier: rep.tier.label,
-              votingPower: rep.votingPower,
+              tier: tier.label,
+              votingPower: window.walletManager.getVotingPower(),
               totalMoves: rep.totalMoves,
               cooperativeMoves: rep.cooperativeMoves
             }]);
@@ -455,6 +463,7 @@ if (typeof module !== 'undefined' && module.exports) {
     updateBitcoinStrategyLabels,
     initReputationTracking,
     initOnChainReputation,
-    submitGameReputationOnChain: window.submitGameReputationOnChain
+    submitGameReputationOnChain: window.submitGameReputationOnChain,
+    getWalletManager: function() { return window.walletManager; }
   };
 }

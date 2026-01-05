@@ -17,12 +17,11 @@ class CharmsRPC {
    */
   constructor(config = {}) {
     this.config = {
-      network: config.network || "testnet",
+      network: config.network || "signet",
       rpcUrl: config.rpcUrl || "http://localhost:18332", // Bitcoin RPC
       charmsRpcUrl: config.charmsRpcUrl || "http://localhost:9000", // Charms daemon
       charmsProverUrl: config.charmsProverUrl || "http://localhost:9001", // Charms prover
       timeout: config.timeout || 30000,
-      mockMode: config.mockMode || false, // For testing without daemon
       verbose: config.verbose || false,
       ...config
     };
@@ -31,10 +30,9 @@ class CharmsRPC {
     this.cache = new Map();
     this.cacheTTL = 5 * 60 * 1000; // 5 minutes
 
-    console.log("[CharmsRPC] Initialized", {
+    console.log("[CharmsRPC] Initialized (PRODUCTION MODE)", {
       network: this.config.network,
-      charmsRpcUrl: this.config.charmsRpcUrl,
-      mockMode: this.config.mockMode
+      charmsRpcUrl: this.config.charmsRpcUrl
     });
   }
 
@@ -77,12 +75,7 @@ class CharmsRPC {
       }
     }
 
-    // Mock mode
-    if (this.config.mockMode) {
-      return this._mockCall(method, params);
-    }
-
-    // Real RPC call
+    // Real RPC call only (no mock mode)
     try {
       this._log(`Calling ${method}(${JSON.stringify(params).substring(0, 50)}...)`);
 
@@ -101,7 +94,7 @@ class CharmsRPC {
         }),
         new Promise((_, reject) =>
           setTimeout(
-            () => reject(new Error("RPC timeout")),
+            () => reject(new Error("RPC timeout after " + timeout + "ms")),
             timeout
           )
         )
@@ -324,73 +317,6 @@ class CharmsRPC {
         app_id: appId
       }
     ]);
-  }
-
-  /**
-   * Mock RPC call for testing without daemon
-   */
-  async _mockCall(method, params) {
-    this._log(`[MOCK] ${method}`);
-
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 100));
-
-    // Return mock data based on method
-    if (method.includes("prove")) {
-      return {
-        proofType: "mock",
-        timestamp: Date.now(),
-        verified: true
-      };
-    }
-
-    if (method.includes("submit")) {
-      return "0x" + Math.random().toString(16).substring(2, 66).padEnd(64, "0");
-    }
-
-    if (method.includes("reputation")) {
-      return {
-        address: params[0]?.address || "tb1q...",
-        reputation_score: 75,
-        tier: "Neutral",
-        voting_power: 75,
-        total_moves: 10,
-        cooperative_moves: 8
-      };
-    }
-
-    if (method.includes("proposal")) {
-      return {
-        id: params[0]?.proposal_id || 1,
-        title: "Mock Proposal",
-        description: "Mock proposal for testing",
-        yes_voting_power: 100,
-        no_voting_power: 50,
-        abstain_voting_power: 30,
-        has_passed: true,
-        is_voting_open: false
-      };
-    }
-
-    if (method.includes("vote")) {
-      return {
-        proposal_id: params[0]?.proposal_id || 1,
-        voter: params[0]?.voter || "anonymous",
-        vote: params[0]?.vote || "yes",
-        timestamp: Date.now()
-      };
-    }
-
-    if (method.includes("stats")) {
-      return {
-        total_players: 42,
-        avg_reputation: 65,
-        active_proposals: 3,
-        total_voting_power: 2500
-      };
-    }
-
-    return { mock: true };
   }
 
   /**

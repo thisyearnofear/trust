@@ -5,39 +5,33 @@
  * - Uses `charms spell check` for local proof validation
  * - Creates proper 2-transaction pattern (commit + spell)
  * - Embeds reputation proof in witness data
- * - Ready for broadcast to Bitcoin testnet
- * 
- * For hackathon: Demonstrates the pattern without actual signing/broadcast
- * Post-launch: Replace mock txids with real bitcoin-cli signing
+ * - Real Bitcoin Signet transactions only (no mock mode)
  * 
  * Reference: https://docs.charms.dev/guides/charms-apps/cast-spell/
  */
 
 class CharmsGameClient {
   /**
-   * Initialize Charms client
+   * Initialize Charms client for PRODUCTION use only
    * 
    * @param {string} appId - Charms app verification key (64 hex chars)
    * @param {string} bitcoinAddress - Player's Bitcoin address
    * @param {object} config - Configuration options
-   *   - charmsAppBin: Path to compiled app binary
-   *   - mockMode: Use mock proofs for testing (default: false for real txs)
+   *   - charmsAppBin: Path to compiled app binary (required)
    *   - txBuilder: BitcoinTxBuilder instance (auto-initialized if not provided)
    */
   constructor(appId, bitcoinAddress, config = {}) {
     this.appId = appId;
     this.bitcoinAddress = bitcoinAddress;
-    this.mockMode = config.mockMode === true; // Default to REAL transactions (mockMode = false)
 
     this.charmsAppBin = config.charmsAppBin;
     this.txBuilder = config.txBuilder || getBitcoinTxBuilder();
     this.gameHistory = [];
     this.transactionHistory = [];
 
-    console.log("[CharmsClient] Initialized", {
+    console.log("[CharmsClient] Initialized (PRODUCTION MODE - REAL SIGNET)", {
       appId: appId.substring(0, 16) + "...",
       address: bitcoinAddress,
-      mode: this.mockMode ? "mock" : "REAL SIGNET TRANSACTIONS",
       charmsAppBin: config.charmsAppBin ? "set" : "not set"
     });
   }
@@ -46,10 +40,10 @@ class CharmsGameClient {
    * Submit game move as a Charms spell
    * 
    * Flow:
-   * 1. Generate proof (using charms spell check or mock)
+   * 1. Generate zero-knowledge proof via Charms zkVM
    * 2. Create spell with proof embedded
    * 3. Build 2-tx pattern (commit + spell)
-   * 4. Return txids for broadcast (see deployToTestnet)
+   * 4. Return txids for wallet signing and broadcast
    * 
    * @param {string} move - "COOPERATE" or "DEFECT"
    * @param {object} gameContext - Game state for proof
@@ -64,8 +58,8 @@ class CharmsGameClient {
         throw new Error("Invalid move");
       }
 
-      // Generate proof (local, no 5-min wait)
-      const proof = this._generateProof({
+      // Generate proof via Charms RPC
+      const proof = await this._generateProofViaCharms({
         type: "move",
         move: move === "COOPERATE" ? 0 : 1,
         appId: this.appId,
@@ -141,36 +135,20 @@ class CharmsGameClient {
         timestamp: Date.now()
       };
 
-      let result;
-
-      if (this.mockMode) {
-        // Mock mode: return dummy txids
-        const mockResult = this._build2TxPattern(spell);
-        result = {
-          type: "reputation",
-          commitTxid: mockResult.commitTx.txid,
-          spellTxid: mockResult.spellTx.txid,
-          proof: { type: "mock_proof", data: spell },
-          mode: "mock"
-        };
-      } else {
-        // Real mode: generate actual Signet transactions
-        if (!utxo || !utxo.txid) {
-          throw new Error("Real transactions require UTXO. Wallet integration needed.");
-        }
-
-        const txResult = this.txBuilder.build2TxPattern(spell, this.bitcoinAddress, utxo);
-        
-        result = {
-          type: "reputation",
-          commitTxid: txResult.commitTxid,
-          spellTxid: txResult.spellTxid,
-          commitTxHex: txResult.commitTxHex,
-          spellTxHex: txResult.spellTxHex,
-          mode: "real_signet",
-          note: "Unsigned hex ready for Unisat wallet signing"
-        };
+      // Production mode: generate actual Signet transactions
+      if (!utxo || !utxo.txid) {
+        throw new Error("UTXO required for transaction generation. Wallet integration needed.");
       }
+
+      const txResult = this.txBuilder.build2TxPattern(spell, this.bitcoinAddress, utxo);
+      
+      const result = {
+        type: "reputation",
+        commitTxid: txResult.commitTxid,
+        spellTxid: txResult.spellTxid,
+        commitTxHex: txResult.commitTxHex,
+        spellTxHex: txResult.spellTxHex
+      };
 
       // Track
       this.transactionHistory.push({
@@ -182,8 +160,7 @@ class CharmsGameClient {
 
       console.log("[CharmsClient] Reputation anchored:", {
         commitTxid: result.commitTxid.substring(0, 16) + "...",
-        spellTxid: result.spellTxid.substring(0, 16) + "...",
-        mode: result.mode
+        spellTxid: result.spellTxid.substring(0, 16) + "..."
       });
 
       return result;
@@ -266,42 +243,32 @@ class CharmsGameClient {
   }
 
   /**
-   * Generate proof (local, no network call)
-   * In production: calls `charms spell check` via backend
-   * For hackathon: generates valid-looking proof structure
+   * Generate zero-knowledge proof via Charms RPC
+   * Calls charms daemon for zkVM proof generation
    * @private
    */
-  _generateProof(proofData) {
-    if (this.mockMode) {
-      return {
-        type: "mock_proof",
-        data: proofData,
-        timestamp: Date.now(),
-        verified: true,
-        note: "This is a mock proof for hackathon. Post-launch: use real `charms spell check`"
-      };
-    }
-
-    // In production: Call backend API
-    // return fetch('/api/charms/spell-check', { body: JSON.stringify(proofData) })
-    return {
-      type: "real_proof",
-      data: proofData,
-      timestamp: Date.now(),
-      note: "Ready to call charms spell check"
-    };
+  async _generateProofViaCharms(proofData) {
+    const rpc = getCharmsRPC();
+    return await rpc.generateProof(this.appId, proofData);
   }
 
   /**
-   * Submit a governance vote to Charms
-   * Follows same pattern as reputation anchoring
+   * Submit a governance vote to Bitcoin via Charms
+   * Follows 2-transaction pattern (commit + spell)
+   * Requires wallet for signing and broadcasting
+   * 
    * @param {object} voteData - { proposalId, vote, votingPower }
-   * @param {object} walletConfig - Optional wallet integration { wallet, address }
-   * @returns {Promise<object>} { spellTxid, commitTxid, vote, proposalId, mode }
+   * @param {object} walletConfig - Wallet integration { wallet, address, utxo }
+   * @returns {Promise<object>} { commitTxid, spellTxid, proposalId, vote }
    */
   async submitVote(voteData, walletConfig = {}) {
     try {
-      console.log("[CharmsClient] Submitting governance vote:", voteData, "mode:", walletConfig.wallet ? "real" : "mock");
+      console.log("[CharmsClient] Submitting governance vote to Bitcoin:", voteData);
+
+      // Validate wallet configuration
+      if (!walletConfig.wallet) {
+        throw new Error("Wallet required for vote submission");
+      }
 
       // Create spell for vote
       const spell = {
@@ -314,82 +281,36 @@ class CharmsGameClient {
         timestamp: Date.now()
       };
 
-      let result;
+      const wallet = walletConfig.wallet;
+      const address = walletConfig.address || this.bitcoinAddress;
+      const utxo = walletConfig.utxo;
 
-      // If wallet provided, build real unsigned txs and send to wallet for signing
-      if (walletConfig.wallet && !this.mockMode) {
-        try {
-          console.log("[CharmsClient] Real mode: Building unsigned transactions for wallet signing");
-          
-          // Need a UTXO to build real transaction
-          const wallet = walletConfig.wallet;
-          const address = walletConfig.address || this.bitcoinAddress;
-          
-          // Use UTXO from walletConfig if provided, otherwise use default
-          let utxo = walletConfig.utxo;
-          if (!utxo) {
-            // Default mock UTXO for hackathon/testing
-            utxo = {
-              txid: "0000000000000000000000000000000000000000000000000000000000000000",
-              vout: 0,
-              amount: 10000
-            };
-          }
-          
-          console.log("[CharmsClient] Building with UTXO:", utxo.txid.substring(0, 16) + "...");
-          
-          // Build 2-tx pattern with real BitcoinTxBuilder
-          const txPattern = this.txBuilder.build2TxPattern(spell, address, utxo);
-          
-          console.log("[CharmsClient] Unsigned txs built, sending to wallet for signing...");
-          
-          // Sign and broadcast via wallet
-          const broadcastResult = await wallet.signAndBroadcast2TxPattern({
-            commitTxHex: txPattern.commitTxHex,
-            spellTxHex: txPattern.spellTxHex
-          });
-          
-          result = {
-            type: "vote",
-            commitTxid: broadcastResult.commitTxid,
-            spellTxid: broadcastResult.spellTxid,
-            proposalId: voteData.proposalId,
-            vote: voteData.vote,
-            mode: "real_signet_signed",
-            spell: spell
-          };
-          
-          console.log("[CharmsClient] Vote broadcast to Signet:", {
-            commitTxid: result.commitTxid.substring(0, 16) + "...",
-            spellTxid: result.spellTxid.substring(0, 16) + "..."
-          });
-          
-        } catch (walletError) {
-          console.error("[CharmsClient] Wallet signing failed, falling back to mock:", walletError);
-          
-          // Fallback to mock if wallet fails
-          const mockResult = this._build2TxPattern(spell);
-          result = {
-            type: "vote",
-            spellTxid: mockResult.spellTx.txid,
-            proposalId: voteData.proposalId,
-            vote: voteData.vote,
-            mode: "mock_fallback",
-            error: walletError.message
-          };
-        }
-      } else {
-        // Mock mode: generate txid without signing
-        const mockResult = this._build2TxPattern(spell);
-        result = {
-          type: "vote",
-          spellTxid: mockResult.spellTx.txid,
-          proposalId: voteData.proposalId,
-          vote: voteData.vote,
-          mode: "mock"
-        };
+      if (!utxo || !utxo.txid) {
+        throw new Error("UTXO required for vote transaction generation");
       }
 
+      console.log("[CharmsClient] Building 2-tx vote pattern...");
+      
+      // Build 2-tx pattern with BitcoinTxBuilder
+      const txPattern = this.txBuilder.build2TxPattern(spell, address, utxo);
+      
+      console.log("[CharmsClient] Sending unsigned txs to wallet for signing...");
+      
+      // Sign and broadcast via wallet
+      const broadcastResult = await wallet.signAndBroadcast2TxPattern({
+        commitTxHex: txPattern.commitTxHex,
+        spellTxHex: txPattern.spellTxHex
+      });
+      
+      const result = {
+        type: "vote",
+        commitTxid: broadcastResult.commitTxid,
+        spellTxid: broadcastResult.spellTxid,
+        proposalId: voteData.proposalId,
+        vote: voteData.vote,
+        spell: spell
+      };
+      
       this.transactionHistory.push({
         type: "vote",
         spell: spell,
@@ -397,34 +318,16 @@ class CharmsGameClient {
         timestamp: Date.now()
       });
 
-      console.log("[CharmsClient] Vote result:", result.mode, result.spellTxid.substring(0, 16) + "...");
+      console.log("[CharmsClient] Vote broadcast:", {
+        commitTxid: result.commitTxid.substring(0, 16) + "...",
+        spellTxid: result.spellTxid.substring(0, 16) + "..."
+      });
+      
       return result;
     } catch (error) {
       console.error("[CharmsClient] Vote submission failed:", error);
       throw error;
     }
-  }
-
-  /**
-    * Generate mock txid
-    * @private
-    */
-  _generateMockTxid(data) {
-    const hash = this._sha256(data + Date.now());
-    return hash.substring(0, 64);
-  }
-
-  /**
-   * Simple SHA256 simulation (not cryptographic)
-   * @private
-   */
-  _sha256(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.charCodeAt(i);
-      hash = hash & hash;
-    }
-    return Math.abs(hash).toString(16).padStart(64, "0");
   }
 
   /**

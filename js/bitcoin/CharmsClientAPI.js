@@ -23,7 +23,7 @@ class CharmsClientAPI {
     
     // Use shared CharmsRPC layer
     this.rpc = getCharmsRPC();
-    if (config.charmsRpcUrl || config.mockMode) {
+    if (config.charmsRpcUrl) {
       this.rpc.updateConfig(config);
     }
 
