@@ -272,52 +272,20 @@ var OnChainUI = {
   },
 
   /**
-   * Connect to Bitcoin wallet via Unisat
+   * Connect to Bitcoin wallet using consolidated manager
    */
   connectWallet: async function() {
     console.log("[OnChainUI] Attempting to connect wallet...");
 
-    // Use Unisat wallet integration
-    const wallet = getUnisatWallet();
-
-    if (!UnisatWalletIntegration.isAvailable()) {
-      // Check for Leather wallet as fallback
-      if (typeof window.LeatherProvider !== "undefined") {
-        console.log("[OnChainUI] Leather wallet detected, attempting connection...");
-        try {
-          // Request connection to Leather wallet
-          const response = await window.LeatherProvider.request('getAddresses');
-          if (response && response.result && response.result.addresses && response.result.addresses.length > 0) {
-            // Use the first Bitcoin address
-            const btcAddress = response.result.addresses.find(addr => addr.type === 'p2wpkh' || addr.type === 'p2tr');
-            if (btcAddress) {
-              this.playerAddress = btcAddress.address;
-              this.onWalletConnected("leather");
-              return;
-            }
-          }
-        } catch (error) {
-          console.warn("[OnChainUI] Leather connection failed:", error);
-        }
-      }
-      
-      // No wallet available - show error
-      console.error("[OnChainUI] No supported wallet detected or connection failed");
-      alert("Please install Unisat or Leather wallet to continue");
-      throw new Error("No wallet available");
-      return;
+    try {
+      const result = await window.walletManager.connect();
+      this.playerAddress = result.address;
+      this.onWalletConnected(result);
+    } catch (error) {
+      console.error("[OnChainUI] Wallet connection failed:", error);
+      alert(error.message);
+      throw error;
     }
-
-    // Connect to real wallet
-    wallet.connect()
-      .then(result => {
-        this.playerAddress = result.address;
-        this.onWalletConnected(result); // Pass wallet connection result
-      })
-      .catch(err => {
-        console.error("[OnChainUI] Wallet connection failed:", err);
-        this.showError("Wallet connection failed: " + err.message);
-      });
   },
 
   /**
