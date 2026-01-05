@@ -460,14 +460,13 @@ SLIDES.push({
             }
         });
 
-        // Show vote results
+        // Show vote results with transaction status
         var summaryText = "<b>Your Governance Vote is Complete!</b><br><br>";
         summaryText += "Your reputation gave you <b>" + reputation.getVotingPower() + " votes</b> in this round.<br><br>";
 
         // Show which proposals passed (after tallying)
         var passed = proposals.filter(p => p.has_passed && !p.is_voting_open);
-        var failed = proposals.filter(p => !p.has_passed && p.is_voting_open === false);
-
+        
         if (passed.length > 0) {
             summaryText += "<span style='color:#4caf50;'><b>✓ Proposals Passed:</b></span><br>";
             passed.forEach(p => {
@@ -476,16 +475,17 @@ SLIDES.push({
             summaryText += "<br>";
         }
 
-        summaryText += "<i>Your vote will be recorded on Bitcoin.</i>";
+        summaryText += "<i>Your vote is being recorded on Bitcoin...</i><br>";
+        summaryText += "<span style='color:#888; font-size:11px;'>Submitting to Charms protocol</span>";
 
         self.add({
             id: "text", type: "TextBox",
-            x: 50, y: 80, width: 860,
+            x: 200, y: 160, width: 400, height: 200,
             text: summaryText,
-            size: 13, color: "#333"
+            size: 11, color: "#333", align: "center"
         });
 
-        // Execute proposals (update payoff matrix for next game)
+        // Execute proposals and submit to Charms (consolidated)
         if (window.GovernanceIntegration && window.GovernanceIntegration.executePassedProposals) {
             window.GovernanceIntegration.executePassedProposals();
         }
@@ -498,34 +498,22 @@ SLIDES.push({
             }]);
         }
 
-        // Show transaction status (will be updated by governance/submitted event)
-        var txidText = "<span style='color:#888; font-size:12px;'>Submitting to Bitcoin...</span>";
-
-        self.add({
-            id: "txid_status", type: "TextBox",
-            x: 50, y: 330, width: 860,
-            text: txidText,
-            size: 12, color: "#666"
-        });
-
-        // Listen for Charms submission event (from OnChainUI.submitGovernanceVote)
-        var self_ref = self;
+        // Listen for Charms submission and auto-advance
         if (window.subscribe) {
             listen(self, "governance/submitted", function (data) {
                 if (data && data[0] && data[0].spellTxid) {
-                    var statusText = "<span style='color:#4089DD; font-weight: bold;'>✓ Bitcoin Spell Txid: " + data[0].spellTxid.substr(0, 16) + "...</span>";
-                    if (data[0].mode && data[0].mode.includes("real")) {
-                        statusText += "<br><span style='color:#16c784; font-size:11px;'>Signed with Unisat wallet ✓</span>";
-                    }
-                    o.txid_status.setText(statusText);
+                    // Auto-advance to next slide after successful submission
+                    setTimeout(function() {
+                        publish("slideshow/next");
+                    }, 2000);
                 }
             });
         }
 
-        // Button to continue
+        // Manual continue button
         self.add({
             id: "button", type: "Button",
-            x: 605, y: 450, size: "long",
+            x: 350, y: 380, size: "short",
             text_id: "governance_summary_btn",
             message: "slideshow/next"
         });
