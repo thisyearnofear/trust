@@ -31,7 +31,7 @@ SLIDES.push({
 		});
 		self.add({
 			id:"text5", type:"TextBox",
-			x:132, y:370, width:817, height:95, align:"right",
+			x:132, y:390, width:817, height:130, align:"center",
 			text_id:"evolution_intro_footer"
 		});
 
@@ -81,7 +81,7 @@ SLIDES.push({
 				self.add({
 					id:"bet_"+character, type:"Button", x:x, y:y, 
 					text_id: "icon_"+character,
-					tooltip: "who_"+character,
+					tooltip: "character_"+character,
 					onclick:function(){
 						_.answer = character;
 						publish("slideshow/next");
@@ -89,14 +89,14 @@ SLIDES.push({
 				});
 			})(character, x, y);
 		};
-		_addButton("all_c", 510, 295);
-		_addButton("all_d", 510, 295+70);
-		_addButton("tft", 510, 295+70*2);
+		_addButton("all_c", 510, 380);
+		_addButton("all_d", 510, 380+70);
+		_addButton("tft", 510, 380+70*2);
 
 		// WHO'S WHO?
 		self.add({
 			id:"forgot", type:"TextBox",
-			x:728, y:428, width:200, height:50,
+			x:728, y:500, width:200, height:50,
 			align:"center", color:"#aaa", size:16,
 			text_id:"forgot_whos_who"
 		});
@@ -116,8 +116,24 @@ SLIDES.push({
 
 		var o = self.objects;
 
+		// Store prediction and get tournament winner
+		_.evolutionPrediction = _.answer;
+		var tournament = o.tournament;
+		if(tournament && tournament.agents){
+			var maxCoins = -Infinity;
+			var winnerStrategy = "tft";
+			for(var i=0; i<tournament.agents.length; i++){
+				if(tournament.agents[i].coins > maxCoins){
+					maxCoins = tournament.agents[i].coins;
+					winnerStrategy = tournament.agents[i].strategyName;
+				}
+			}
+			_.evolutionTournamentWinner = winnerStrategy;
+			console.log("Evolution - User prediction:", _.answer, "Tournament winner:", winnerStrategy);
+		}
+
 		// What was your bet?
-		var response = Words.get("evo_2_"+_.answer)+" "+Words.get("evo_2");
+		var response = Words.get("evo_2_"+_.evolutionPrediction)+" "+Words.get("evo_2");
 		o.text.setText(response);
 		_hide(o.text); _fadeIn(o.text, 100);
 
@@ -164,7 +180,8 @@ SLIDES.push({
 				var response;
 				if(textStep<9){
 					if(textStep==3){
-						response = Words.get("evo_3_"+_.answer)+" "+Words.get("evo_3");
+						// Show evo_3 based on actual tournament winner, not prediction
+						response = Words.get("evo_3_"+_.evolutionTournamentWinner)+" "+Words.get("evo_3");
 					}else{
 						response = Words.get("evo_"+textStep);
 					}
@@ -198,15 +215,44 @@ SLIDES.push({
 
 		var o = self.objects;
 
-		// What was your bet?
-		var response = Words.get("evo_9")+"<br><br>"+Words.get("evo_9_"+_.answer)+" "+Words.get("evo_9_end");
+		// Show result based on whether prediction was correct
+		var winner = _.evolutionTournamentWinner || "tft";
+		var prediction = _.evolutionPrediction || _.answer;
+		var predictionCorrect = (winner === prediction);
+		var resultMessage = predictionCorrect ? "evo_9_"+prediction : "evo_9_"+winner;
+		
+		var response = Words.get("evo_9")+"<br><br>"+Words.get(resultMessage)+" "+Words.get("evo_9_end");
 		o.text.setText(response);
+		console.log("Evolution result - Winner:", winner, "Prediction:", prediction, "Correct:", predictionCorrect);
 		_hide(o.text); _fadeIn(o.text, 100);
 
 		// Oh by the way...
 		self.add({
 			id:"button", type:"Button", x:510, y:320, 
 			text_id:"evo_9_btn", size:"long",
+			message: "slideshow/next"
+		});
+		_hide(o.button); _fadeIn(o.button, 400);
+
+	},
+	onend: function(self){
+		self.remove("button");
+	}
+});
+
+// How Bitcoin Makes This Automatic
+SLIDES.push({
+	onstart: function(self){
+
+		var o = self.objects;
+
+		var response = Words.get("evo_bitcoin_mechanism");
+		o.text.setText(response);
+		_hide(o.text); _fadeIn(o.text, 100);
+
+		self.add({
+			id:"button", type:"Button", x:510, y:480, 
+			text_id:"evo_bitcoin_mechanism_btn", size:"long",
 			message: "slideshow/next"
 		});
 		_hide(o.button); _fadeIn(o.button, 400);

@@ -14,6 +14,7 @@ function TextBox(config){
 	// Set Text!
 	self.setText = function(words){
 		self.dom.innerHTML = words;
+		self.text_id = null;
 	};
 	self.setTextID = function(id){
 		self.text_id = id;

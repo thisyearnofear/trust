@@ -80,6 +80,15 @@ SLIDES.push({
 
 		var o = self.objects;
 
+		// Ensure answer is stored with correct mappings
+		_.answerOriginal = _.answer; // Keep original (tft, all_d, etc.) for icon lookups
+		if(window.BITCOIN_MODE && typeof getBitcoinStrategyName !== 'undefined'){
+			_.answerBitcoin = getBitcoinStrategyName(_.answer);
+		} else {
+			_.answerBitcoin = _.answer;
+		}
+		console.log("Tournament intro - Answer stored:", _.answer, "Original:", _.answerOriginal, "Bitcoin:", _.answerBitcoin);
+
 		// What was your bet?
 		var tournament_intro = Words.get("tournament_intro");
 		tournament_intro = tournament_intro.replace(/\[CHAR\]/g, "<span class='"+_.answerOriginal+"'>"+Words.get("icon_"+_.answerOriginal)+"</span>");
@@ -201,6 +210,26 @@ SLIDES.push({
 	}
 });
 
+// drumroll please...
+SLIDES.push({
+	onstart: function(self){
+		var o = self.objects;
+		o.text.setText(""); // Clear text
+
+		// NEXT
+		self.add({
+			id:"button", type:"Button",
+			x:510, y:420, size:"long",
+			text_id:"the_winner_is",
+			message:"slideshow/next"
+		});
+		_hide(o.button); _fadeIn(o.button, 100);
+	},
+	onend: function(self){
+		self.remove("button");
+	}
+});
+
 // who the winner is!
 SLIDES.push({
 	onstart: function(self){
@@ -231,6 +260,7 @@ SLIDES.push({
 		}
 		
 		console.log("Winner calculation - Strategy:", winnerStrategy, "Coins:", maxCoins);
+		console.log("User prediction - Original:", _.answerOriginal, "Bitcoin:", _.answerBitcoin);
 		
 		// Convert to original name (tft, all_d, etc.) for word lookups
 		var winnerStrategyOriginal = winnerStrategy;
@@ -238,13 +268,20 @@ SLIDES.push({
 			winnerStrategyOriginal = getOriginalStrategyName(winnerStrategy);
 		}
 
-		// WORDS
+		// WORDS - dynamically build winner announcement with correct strategy name
 		var words = "";
-		words += Words.get("tournament_winner_1");
-		if(_.answerBitcoin==winnerStrategy){
+		var winnerLabel = Words.get("icon_"+winnerStrategyOriginal) || winnerStrategyOriginal;
+		var winnerAnnouncement = "<b class='"+winnerStrategyOriginal+"'>"+winnerLabel.toUpperCase()+" ACCUMULATED THE HIGHEST PAYOFF.</b>";
+		words += winnerAnnouncement;
+		
+		// Check if prediction was correct - compare Bitcoin names
+		var predictionCorrect = (_.answerBitcoin && _.answerBitcoin === winnerStrategy);
+		console.log("Prediction correct?", predictionCorrect, "User:", _.answerBitcoin, "Winner:", winnerStrategy);
+		
+		if(predictionCorrect){
 			words += Words.get("tournament_winner_2_yay");
 		}else{
-			words += Words.get("tournament_winner_2_nay").replace(/\[CHAR\]/g, "<span class='"+winnerStrategyOriginal+"'>"+Words.get("icon_"+winnerStrategyOriginal)+"</span>");
+			words += Words.get("tournament_winner_2_nay").replace(/\[CHAR\]/g, "<span class='"+_.answerOriginal+"'>"+Words.get("icon_"+_.answerOriginal)+"</span>");
 		}
 		words += "<br><br>";
 		words += Words.get("tournament_winner_3");
@@ -263,7 +300,7 @@ SLIDES.push({
 		if(!o.button){
 			self.add({
 				id:"button", type:"Button",
-				x:510, y:430, size:"long",
+				x:510, y:500, size:"long",
 				text_id:"tournament_teaser",
 				message: "slideshow/next"
 			});
