@@ -160,7 +160,7 @@ SLIDES.push({
 			id:"gate_title", type:"TextBox",
 			x:130, y:80, width:700, height:80,
 			size:48, lineHeight:0.9, align:"center",
-			text:"Build Your Alignment Score"
+			text:"Learn Bitcoin Through Play"
 		});
 
 		// TIER DISPLAY: Color coded based on reputation tier
@@ -177,7 +177,7 @@ SLIDES.push({
 		// STATUS MESSAGE: Dynamic based on lock state
 		var statusMsg = isUnlocked ? 
 			"Your consensus alignment is strong. Now you can:<br>• Vote on Bitcoin's payoff structure and incentives<br>• Anchor your strategy record on-chain via Charms<br>• Help shape how Bitcoin's game design evolves" :
-			"To vote on Bitcoin rules and anchor your strategy record on-chain, you need to demonstrate consistent alignment with consensus.<br><br>Next: Learn how Bitcoin works, then play to increase your alignment score (75%+).";
+			"Play strategic games against other validators<br>Your choices build a reputation score (0-100%)<br>Higher scores unlock governance voting power<br><br>Next: See how Bitcoin's consensus actually works";
 		
 		self.add({
 			id:"status_msg", type:"TextBox",

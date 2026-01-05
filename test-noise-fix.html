@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Noise Slide Fix</title>
+    <script src="js/lib/helpers.js"></script>
+    <script src="js/lib/pegasus.js"></script>
+    <script>var c_ = {};</script>
+    <script src="js/lib/minpubsub.src.js"></script>
+    <script src="js/lib/q.js"></script>
+    <script src="js/lib/pixi.min.js"></script>
+    <script src="js/lib/howler.js"></script>
+    <script>var createjs = window;</script>
+    <script src="js/lib/tweenjs-0.6.2.min.js"></script>
+    <script>Ticker.framerate=60; Ticker.paused=true;</script>
+    
+    <script src="js/sims/PD.js"></script>
+    <script src="js/sims/Iterated.js"></script>
+    <script src="js/slides/6_Slides_Noise.js"></script>
+    
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #testResult { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Testing Noise Slide Consensus Button Fix</h1>
+    <div id="testResult"></div>
+    
+    <script>
+        // Test the playOneRound function with TRIP move
+        function testTripMove() {
+            const resultElement = document.getElementById('testResult');
+            resultElement.innerHTML = 'Testing TRIP move...<br>';
+            
+            try {
+                // Create a mock Iterated instance
+                const mockConfig = { id: 'test', x: 0, y: 0 };
+                const iterated = new Iterated(mockConfig);
+                
+                // Mock opponent logic
+                iterated.opponentLogic = {
+                    play: function() { return PD.COOPERATE; }, // Opponent always cooperates
+                    remember: function() {} // Empty remember function
+                };
+                
+                // Test the TRIP move - this should not throw an error anymore
+                iterated.playOneRound('TRIP');
+                
+                resultElement.innerHTML += '<span class="success">✓ SUCCESS: TRIP move handled correctly without errors!</span>';
+                resultElement.innerHTML += '<br>✓ The consensus button should now work properly.';
+                
+            } catch (error) {
+                resultElement.innerHTML += '<span class="error">✗ ERROR: ' + error.message + '</span>';
+                resultElement.innerHTML += '<br>✗ The fix did not work as expected.';
+            }
+        }
+        
+        // Run the test when page loads
+        window.onload = testTripMove;
+    </script>
+</body>
+</html>
