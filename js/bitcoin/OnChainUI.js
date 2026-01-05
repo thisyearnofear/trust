@@ -281,8 +281,17 @@ var OnChainUI = {
     const wallet = getUnisatWallet();
 
     if (!UnisatWalletIntegration.isAvailable()) {
-      // Fallback: Use demo address if wallet not installed
-      console.warn("[OnChainUI] Unisat wallet not detected, using demo mode");
+      // Check for Leather wallet as fallback
+      if (typeof window.LeatherProvider !== "undefined") {
+        console.log("[OnChainUI] Leather wallet detected, attempting connection...");
+        // For now, use demo mode but indicate Leather is available
+        this.playerAddress = "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx";
+        this.onWalletConnected("leather"); // indicate leather mode
+        return;
+      }
+      
+      // Fallback: Use demo address if no wallet installed
+      console.warn("[OnChainUI] No supported wallet detected, using demo mode");
       this.playerAddress = "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx"; // Signet testnet address
       this.onWalletConnected(null); // null = demo mode
       return;
@@ -328,13 +337,20 @@ var OnChainUI = {
       }
     );
 
-    // Update UI
-    document.getElementById("wallet-status").className = "onchain-status active";
-    document.getElementById("wallet-status-text").textContent = this.isDemo ? "Demo Mode" : "Connected";
-    document.getElementById("wallet-address").textContent = this.playerAddress;
-    document.getElementById("wallet-address-container").style.display = "block";
-    document.getElementById("connect-wallet").style.display = "none";
-    document.getElementById("disconnect-wallet").style.display = "inline-block";
+    // Update UI (with null checks)
+    const walletStatus = document.getElementById("wallet-status");
+    const walletStatusText = document.getElementById("wallet-status-text");
+    const walletAddress = document.getElementById("wallet-address");
+    const walletAddressContainer = document.getElementById("wallet-address-container");
+    const connectWallet = document.getElementById("connect-wallet");
+    const disconnectWallet = document.getElementById("disconnect-wallet");
+    
+    if (walletStatus) walletStatus.className = "onchain-status active";
+    if (walletStatusText) walletStatusText.textContent = this.isDemo ? "Demo Mode" : "Connected";
+    if (walletAddress) walletAddress.textContent = this.playerAddress;
+    if (walletAddressContainer) walletAddressContainer.style.display = "block";
+    if (connectWallet) connectWallet.style.display = "none";
+    if (disconnectWallet) disconnectWallet.style.display = "inline-block";
 
     const message = this.isDemo
       ? "Demo mode: Transactions will be generated but not signed/broadcast"

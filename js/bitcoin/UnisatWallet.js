@@ -22,10 +22,13 @@ class UnisatWalletIntegration {
     this.balance = null;
     this.publicKey = null;
     
-    // Check if Unisat is available
+    // Check if wallets are available
     this.hasUnisat = typeof window.unisat !== "undefined";
+    this.hasLeather = typeof window.LeatherProvider !== "undefined";
+    this.hasWallet = this.hasUnisat || this.hasLeather;
     
-    console.log("[UnisatWallet]", this.hasUnisat ? "Detected" : "Not detected");
+    console.log("[UnisatWallet]", this.hasUnisat ? "Unisat detected" : "Unisat not detected");
+    console.log("[UnisatWallet]", this.hasLeather ? "Leather detected" : "Leather not detected");
   }
 
   /**
