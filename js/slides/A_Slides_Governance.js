@@ -173,11 +173,15 @@ SLIDES.push({
         var proposal = proposals[0];
         window._currentProposalIndex = 0;
 
+        // Add Iterated component for central framing animation
+        self.add({id:"iterated", type:"Iterated", x:130, y:133});
+        o.iterated.dehighlightPayoff();
+
         self.add({
             id: "header", type: "TextBox",
-            x: 50, y: 20, width: 860,
+            x: 200, y: 150, width: 400,
             text_id: "governance_header",
-            size: 18, color: "#333"
+            size: 14, color: "#333", align: "center"
         });
 
 
@@ -185,21 +189,21 @@ SLIDES.push({
         // Proposal description
         var proposalText = `<b>Proposal #${proposal.id}: ${proposal.title}</b><br><br>`;
         proposalText += proposal.description + "<br><br>";
-        proposalText += `<span style="color:#666; font-size:14px;">Impact: ${proposal.impact}</span>`;
+        proposalText += `<span style="color:#666; font-size:11px;">Impact: ${proposal.impact}</span>`;
 
         self.add({
             id: "proposal", type: "TextBox",
-            x: 50, y: 70, width: 860,
+            x: 200, y: 180, width: 400, height: 120,
             text: proposalText,
-            size: 14, color: "#333"
+            size: 11, color: "#333", align: "center"
         });
 
         // Voting power display
         self.add({
             id: "power", type: "TextBox",
-            x: 50, y: 220, width: 860,
+            x: 200, y: 310, width: 400,
             text: `Your voting power: <b>${reputation.getVotingPower()} votes</b> (${tier.label})`,
-            size: 13, color: "#666"
+            size: 10, color: "#666", align: "center"
         });
 
         // Vote buttons - show preview modal before submission
@@ -409,21 +413,21 @@ SLIDES.push({
 
         self.add({
             id: "button_yes", type: "Button",
-            x: 50, y: 310, size: "short",
+            x: 250, y: 340, size: "short",
             text_id: "button_vote_yes",
             onclick: handleVote('yes')
         });
 
         self.add({
             id: "button_no", type: "Button",
-            x: 350, y: 310, size: "short",
+            x: 350, y: 340, size: "short",
             text_id: "button_vote_no",
             onclick: handleVote('no')
         });
 
         self.add({
             id: "button_abstain", type: "Button",
-            x: 650, y: 310, size: "short",
+            x: 450, y: 340, size: "short",
             text_id: "button_abstain",
             onclick: handleVote('abstain')
         });
@@ -431,9 +435,9 @@ SLIDES.push({
         // Confirmation/status message (hidden initially)
         self.add({
             id: "voted_status", type: "TextBox",
-            x: 50, y: 370, width: 860,
+            x: 200, y: 380, width: 400,
             text: "",
-            size: 14, color: "#4caf50"
+            size: 11, color: "#4caf50", align: "center"
         });
         _hide(o.voted_status);
 
@@ -451,6 +455,10 @@ SLIDES.push({
         var o = self.objects;
         var governance = getGameGovernance();
         var reputation = getGameReputation();
+
+        // Add Iterated component for central framing animation
+        self.add({id:"iterated", type:"Iterated", x:130, y:133});
+        o.iterated.dehighlightPayoff();
 
         // Tally votes for all proposals first
         var proposals = governance.getActiveProposals();
@@ -476,13 +484,19 @@ SLIDES.push({
         }
 
         summaryText += "<i>Your vote is being recorded on Bitcoin...</i><br>";
-        summaryText += "<span style='color:#888; font-size:11px;'>Submitting to Charms protocol</span>";
+        summaryText += "<span style='color:#888; font-size:11px;'>Submitting to Charms protocol</span><br><br>";
+        
+        // Add the "loop closed" message
+        summaryText += "<b>THE LOOP IS CLOSED.</b><br>";
+        summaryText += `Your <b>${reputation.cooperativeMoves} cooperative moves</b> earned you <span style="color: ${tier.cssClass === 'reputation-aligned' ? '#4089DD' : (tier.cssClass === 'reputation-neutral' ? '#efc701' : '#FF5E5E')}">${tier.label}</span> reputation.<br>`;
+        summaryText += `That reputation gave you <b>${reputation.getVotingPower()} governance votes</b> that <b>changed the rules</b> for future players.<br><br>`;
+        summaryText += "<i>Your behavior shaped Bitcoin's future.</i>";
 
         self.add({
             id: "text", type: "TextBox",
             x: 200, y: 160, width: 400, height: 200,
             text: summaryText,
-            size: 11, color: "#333", align: "center"
+            size: 10, color: "#333", align: "center"
         });
 
         // Execute proposals and submit to Charms (consolidated)
@@ -517,50 +531,6 @@ SLIDES.push({
             text_id: "governance_summary_btn",
             message: "slideshow/next"
         });
-
-    },
-    onend: function (self) {
-        self.clear();
-    }
-});
-
-// Voting confirmation: Show the loop closed (reputation→votes→rules changed)
-SLIDES.push({
-    id: "governance_confirmation",
-    onstart: function (self) {
-
-        var o = self.objects;
-        const reputation = getGameReputation();
-        const governance = getGameGovernance();
-        const tier = reputation.getReputationTier();
-
-        // Splash
-        self.add({ id: "splash", type: "Splash" });
-
-        // Build confirmation text showing the full loop
-        var confirmText = `
-			<b>THE LOOP IS CLOSED.</b><br><br>
-			You played the game. Your <b>${reputation.cooperativeMoves} cooperative moves</b> earned you a <span style="color: ${tier.label === 'Trusted' ? '#4089DD' : (tier.label === 'Neutral' ? '#efc701' : '#FF5E5E')}">${tier.label}</span> reputation.<br><br>
-			That reputation gave you <b>${reputation.getVotingPower()} governance votes.</b><br><br>
-			Those votes <b>changed the rules</b> that future players will face.<br><br>
-			<i>Your behavior shaped Bitcoin's future.</i>
-		`;
-
-        self.add({
-            id: "text", type: "TextBox",
-            x: 130, y: 60, width: 700, height: 350, align: "center",
-            text: confirmText,
-            size: 14
-        });
-
-        self.add({
-            id: "button", type: "Button", x: 304, y: 466, size: "long",
-            text_id: "button_how_it_works",
-            message: "slideshow/next"
-        });
-
-        _hide(o.text); _fadeIn(o.text, 200);
-        _hide(o.button); _fadeIn(o.button, 700);
 
     },
     onend: function (self) {
