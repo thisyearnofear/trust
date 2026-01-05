@@ -42,10 +42,10 @@ class CharmsGameClient {
   /**
    * Submit game move as a Charms spell
    * 
-   * Flow:
+   * Full flow:
    * 1. Generate zero-knowledge proof via Charms CLI (charms spell prove)
-   * 2. Returns both commit and spell transactions (signed unsigned pair)
-   * 3. Ready for wallet signing and submitpackage broadcast
+   * 2. Sign both transactions via wallet
+   * 3. Broadcast via submitpackage (atomic)
    * 
    * @param {object} gameData - Game history for proof
    *   - player_address: Bitcoin address
@@ -57,9 +57,10 @@ class CharmsGameClient {
    *   - vout: Output index
    *   - amount: Satoshis
    * @param {string} changeAddress - Signet change address (tb1q...)
-   * @returns {Promise<object>} { commitTxHex, spellTxHex, commitTxid, spellTxid }
+   * @param {object} wallet - Wallet instance for signing (optional, if not provided only generates proof)
+   * @returns {Promise<object>} { commitTxid, spellTxid, status, broadcastMode }
    */
-  async submitMove(gameData, utxoData, changeAddress) {
+  async submitMove(gameData, utxoData, changeAddress, wallet = null) {
     try {
       console.log("[CharmsClient] Submitting move with real ZK proof");
 
@@ -74,13 +75,14 @@ class CharmsGameClient {
         throw new Error("Invalid Signet change address");
       }
 
-      // Generate real ZK proof via charms spell prove CLI
+      // Step 1: Generate real ZK proof
+      console.log("[CharmsClient] Step 1: Generating ZK proof...");
       const proofResult = await this._generateProofViaCharms(gameData, utxoData, changeAddress);
 
       // Build 2-tx pattern from real transaction hex
       const txPattern = this._build2TxPattern(proofResult.commitTxHex, proofResult.spellTxHex);
 
-      // Track transaction
+      // Track transaction in history
       this.gameHistory.push({
         moves: gameData.moves,
         timestamp: Date.now()
@@ -96,14 +98,40 @@ class CharmsGameClient {
         timestamp: Date.now()
       });
 
-      console.log("[CharmsClient] Move proof generated (ready for wallet signing)");
+      // If no wallet provided, return unsigned txs
+      if (!wallet) {
+        console.log("[CharmsClient] Proof generated (wallet signing required)");
+        return {
+          type: "move",
+          status: "unsigned",
+          commitTxHex: proofResult.commitTxHex,
+          spellTxHex: proofResult.spellTxHex,
+          commitTxid: txPattern.commitTxid,
+          spellTxid: txPattern.spellTxid
+        };
+      }
+
+      // Step 2: Sign and broadcast via wallet
+      console.log("[CharmsClient] Step 2: Signing and broadcasting...");
+      const broadcastResult = await wallet.signAndBroadcast2TxPattern({
+        commitTxHex: proofResult.commitTxHex,
+        spellTxHex: proofResult.spellTxHex
+      });
+
+      // Update history with broadcast result
+      const lastTx = this.transactionHistory[this.transactionHistory.length - 1];
+      lastTx.status = "broadcast";
+      lastTx.broadcastMode = broadcastResult.broadcastMode;
+      lastTx.broadcastTime = Date.now();
+
+      console.log("[CharmsClient] Move submitted to Bitcoin:", broadcastResult);
 
       return {
         type: "move",
-        commitTxHex: proofResult.commitTxHex,
-        spellTxHex: proofResult.spellTxHex,
-        commitTxid: txPattern.commitTxid,
-        spellTxid: txPattern.spellTxid
+        status: "broadcast",
+        commitTxid: broadcastResult.commitTxid,
+        spellTxid: broadcastResult.spellTxid,
+        broadcastMode: broadcastResult.broadcastMode
       };
     } catch (error) {
       console.error("[CharmsClient] Move submission failed:", error);
@@ -114,8 +142,10 @@ class CharmsGameClient {
   /**
    * Submit reputation to Bitcoin as a Charms spell
    * 
-   * This anchors player reputation on-chain after a game completes.
-   * Uses real Bitcoin transactions on Signet with actual ZK proofs.
+   * Full flow:
+   * 1. Generate ZK proof of game history and reputation
+   * 2. Sign both transactions via wallet
+   * 3. Broadcast via submitpackage (atomic)
    * 
    * @param {object} gameData - Game history for proof
    *   - player_address: Bitcoin address
@@ -127,9 +157,10 @@ class CharmsGameClient {
    *   - vout: Output index
    *   - amount: Satoshis
    * @param {string} changeAddress - Signet change address (tb1q...)
-   * @returns {Promise<object>} { commitTxHex, spellTxHex, commitTxid, spellTxid }
+   * @param {object} wallet - Wallet instance for signing (optional, if not provided only generates proof)
+   * @returns {Promise<object>} { commitTxid, spellTxid, status, broadcastMode }
    */
-  async submitReputationOnChain(gameData, utxoData, changeAddress) {
+  async submitReputationOnChain(gameData, utxoData, changeAddress, wallet = null) {
     try {
       console.log("[CharmsClient] Anchoring reputation to Bitcoin with real ZK proof");
 
@@ -144,7 +175,8 @@ class CharmsGameClient {
         throw new Error("Invalid Signet change address");
       }
 
-      // Generate real ZK proof via charms spell prove CLI
+      // Step 1: Generate real ZK proof
+      console.log("[CharmsClient] Step 1: Generating reputation proof...");
       const proofResult = await this._generateProofViaCharms(gameData, utxoData, changeAddress);
 
       // Build 2-tx pattern from real transaction hex
@@ -161,17 +193,40 @@ class CharmsGameClient {
         timestamp: Date.now()
       });
 
-      console.log("[CharmsClient] Reputation anchored (ready for wallet signing):", {
-        commitTxid: txPattern.commitTxid.substring(0, 16) + "...",
-        spellTxid: txPattern.spellTxid.substring(0, 16) + "..."
+      // If no wallet provided, return unsigned txs
+      if (!wallet) {
+        console.log("[CharmsClient] Reputation proof generated (wallet signing required)");
+        return {
+          type: "reputation",
+          status: "unsigned",
+          commitTxHex: proofResult.commitTxHex,
+          spellTxHex: proofResult.spellTxHex,
+          commitTxid: txPattern.commitTxid,
+          spellTxid: txPattern.spellTxid
+        };
+      }
+
+      // Step 2: Sign and broadcast via wallet
+      console.log("[CharmsClient] Step 2: Signing and broadcasting...");
+      const broadcastResult = await wallet.signAndBroadcast2TxPattern({
+        commitTxHex: proofResult.commitTxHex,
+        spellTxHex: proofResult.spellTxHex
       });
+
+      // Update history with broadcast result
+      const lastTx = this.transactionHistory[this.transactionHistory.length - 1];
+      lastTx.status = "broadcast";
+      lastTx.broadcastMode = broadcastResult.broadcastMode;
+      lastTx.broadcastTime = Date.now();
+
+      console.log("[CharmsClient] Reputation anchored to Bitcoin:", broadcastResult);
 
       return {
         type: "reputation",
-        commitTxHex: proofResult.commitTxHex,
-        spellTxHex: proofResult.spellTxHex,
-        commitTxid: txPattern.commitTxid,
-        spellTxid: txPattern.spellTxid
+        status: "broadcast",
+        commitTxid: broadcastResult.commitTxid,
+        spellTxid: broadcastResult.spellTxid,
+        broadcastMode: broadcastResult.broadcastMode
       };
     } catch (error) {
       console.error("[CharmsClient] Reputation submission failed:", error);

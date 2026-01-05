@@ -239,10 +239,14 @@ class UnisatWalletIntegration {
   }
 
   /**
-   * Sign multiple transactions and broadcast commit, then spell
-   * Implements proper 2-tx pattern for Charms
+   * Sign multiple transactions and broadcast as atomic package
+   * Implements proper 2-tx pattern for Charms (commit + spell)
+   * 
+   * Per Charms spec: both txs must be submitted together via submitpackage
+   * https://docs.charms.dev/guides/charms-apps/cast-spell/
+   * 
    * @param {object} txPair - { commitTxHex, spellTxHex }
-   * @returns {Promise<object>} { commitTxid, spellTxid }
+   * @returns {Promise<object>} { commitTxid, spellTxid, broadcastMode }
    */
   async signAndBroadcast2TxPattern(txPair) {
     try {
@@ -255,35 +259,140 @@ class UnisatWalletIntegration {
         autoFinalize: true
       });
 
-      // Broadcast commit first
-      console.log("[UnisatWallet] Broadcasting commit transaction...");
-      const commitTxid = await this.broadcastTransaction(signedCommit);
-      
-      // Wait a moment for commit to propagate
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Now sign spell (spends commit output)
       console.log("[UnisatWallet] Signing spell transaction...");
       const signedSpell = await this.signTransaction(txPair.spellTxHex, {
         toSignInputs: [{ index: 0, publicKey: this.publicKey }],
         autoFinalize: true
       });
 
-      // Broadcast spell
-      console.log("[UnisatWallet] Broadcasting spell transaction...");
-      const spellTxid = await this.broadcastTransaction(signedSpell);
+      // Try submitpackage first (atomic broadcast)
+      let result;
+      try {
+        result = await this._submitPackage([signedCommit, signedSpell]);
+      } catch (error) {
+        console.warn("[UnisatWallet] submitpackage not available, falling back to sequential broadcast:", error.message);
+        // Fallback: sequential broadcast (less ideal but works)
+        result = await this._sequentialBroadcast(signedCommit, signedSpell);
+      }
 
-      console.log("[UnisatWallet] 2-tx pattern complete:", {
-        commitTxid: commitTxid,
-        spellTxid: spellTxid
-      });
+      console.log("[UnisatWallet] 2-tx pattern complete:", result);
+      this._dispatch("2tx_broadcast", result);
 
-      this._dispatch("2tx_broadcast", { commitTxid, spellTxid });
-
-      return { commitTxid, spellTxid };
+      return result;
     } catch (error) {
       console.error("[UnisatWallet] 2-tx pattern failed:", error);
       throw error;
+    }
+  }
+
+  /**
+   * Broadcast transaction package atomically via submitpackage
+   * @private
+   */
+  async _submitPackage(txHexArray) {
+    try {
+      console.log("[UnisatWallet] Broadcasting via submitpackage (atomic)...");
+      
+      // Try Unisat API first
+      if (window.unisat && window.unisat.pushTxs) {
+        const result = await window.unisat.pushTxs(txHexArray);
+        return {
+          commitTxid: result[0],
+          spellTxid: result[1],
+          broadcastMode: "unisat_submitpackage"
+        };
+      }
+
+      // Fallback to manual submitpackage via RPC
+      if (this._hasRpcAccess()) {
+        const txids = await this._rpcSubmitPackage(txHexArray);
+        return {
+          commitTxid: txids[0],
+          spellTxid: txids[1],
+          broadcastMode: "rpc_submitpackage"
+        };
+      }
+
+      throw new Error("submitpackage not available");
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Fallback: broadcast transactions sequentially
+   * @private
+   */
+  async _sequentialBroadcast(signedCommit, signedSpell) {
+    console.log("[UnisatWallet] Broadcasting commit transaction...");
+    const commitTxid = await this.broadcastTransaction(signedCommit);
+    
+    // Wait for commit to propagate
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    console.log("[UnisatWallet] Broadcasting spell transaction...");
+    const spellTxid = await this.broadcastTransaction(signedSpell);
+
+    return {
+      commitTxid: commitTxid,
+      spellTxid: spellTxid,
+      broadcastMode: "sequential"
+    };
+  }
+
+  /**
+   * Check if we have RPC access for submitpackage
+   * @private
+   */
+  _hasRpcAccess() {
+    // Would need Bitcoin Core RPC endpoint or Signet node
+    // For now, check if available in window
+    return typeof window.bitcoinRpc !== 'undefined' || this._getRpcEndpoint();
+  }
+
+  /**
+   * Get Bitcoin RPC endpoint (if available)
+   * @private
+   */
+  _getRpcEndpoint() {
+    // Can be set via config or environment
+    return window.BITCOIN_RPC_ENDPOINT || process.env.BITCOIN_RPC_ENDPOINT || null;
+  }
+
+  /**
+   * Call Bitcoin RPC submitpackage
+   * @private
+   */
+  async _rpcSubmitPackage(txHexArray) {
+    const endpoint = this._getRpcEndpoint();
+    if (!endpoint) {
+      throw new Error("Bitcoin RPC endpoint not configured");
+    }
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa('bitcoin:bitcoin') // Default creds
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: Date.now(),
+          method: 'submitpackage',
+          params: [txHexArray]
+        })
+      });
+
+      const result = await response.json();
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
+      // Extract txids from result
+      return result.result.tx_results.map(r => r.txid);
+    } catch (error) {
+      throw new Error(`RPC submitpackage failed: ${error.message}`);
     }
   }
 
