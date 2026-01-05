@@ -9,14 +9,14 @@
 
 // STRATEGY MAPPING: Original game theory name → Bitcoin node type
 var BITCOIN_STRATEGY_MAP = {
-  "tft": "HonestNode",           // Copycat → Honest Node (validates fairly, mirrors opponent)
-  "all_c": "FullNode",           // Always Cooperate → Full Node (always follows consensus)
-  "all_d": "Attacker51",         // Always Cheat → 51% Attacker (always attacks)
-  "grudge": "ChainValidator",    // Grudger → Chain Validator (fair but remembers attackers)
-  "prober": "AdaptiveNode",      // Detective → Adaptive Node (probes then adapts)
-  "tf2t": "ForgivingNode",       // Copykitten → Forgiving Node (more forgiving of mistakes)
-  "pavlov": "SimplexNode",       // Simpleton → Simplex Node (win-stay, lose-shift)
-  "random": "UnpredictableNode"  // Random → Unpredictable Node
+  "tft": "ResponsiveValidator",       // Copycat → Responsive Validator (validates by rules, mirrors opponent's strategy)
+  "all_c": "ConsensusFollower",       // Always Cooperate → Consensus Follower (always aligns with consensus rules)
+  "all_d": "DivergentMiner",          // Always Cheat → Divergent Miner (always builds minority forks)
+  "grudge": "PenalizingValidator",    // Grudger → Penalizing Validator (validates fairly, permanently reduces peer reputation after divergence)
+  "prober": "AdaptiveValidator",      // Detective → Adaptive Validator (tests alignment, then commits to strategy)
+  "tf2t": "ForgivingValidator",       // Copykitten → Forgiving Validator (tolerates occasional divergence)
+  "pavlov": "ReactiveValidator",      // Simpleton → Reactive Validator (mirrors network success/failure)
+  "random": "UnpredictableValidator"  // Random → Unpredictable Validator (follows no consistent strategy)
 };
 
 // Get Bitcoin strategy name (or original if not in Bitcoin mode)
@@ -27,12 +27,27 @@ function getBitcoinStrategyName(originalId) {
   return BITCOIN_STRATEGY_MAP[originalId];
 }
 
+// Get original strategy name from Bitcoin name (reverse mapping)
+function getOriginalStrategyName(bitcoinName) {
+  if (!BITCOIN_MODE) {
+    return bitcoinName;
+  }
+  // Reverse lookup: find the original ID from the Bitcoin name
+  for (var originalId in BITCOIN_STRATEGY_MAP) {
+    if (BITCOIN_STRATEGY_MAP[originalId] === bitcoinName) {
+      return originalId;
+    }
+  }
+  // If not found in map, return as-is (might already be original name)
+  return bitcoinName;
+}
+
 /**
- * HONEST NODE
- * Validates correctly first, then mirrors opponent's last move
- * Bitcoin context: Tit-for-tat on consensus rules
+ * RESPONSIVE VALIDATOR
+ * Validates by rules first, then mirrors opponent's last move
+ * Bitcoin context: Reciprocal response to network strategies
  */
-function Logic_HonestNode() {
+function Logic_ResponsiveValidator() {
   // Delegate to existing tit-for-tat logic
   var tftLogic = new Logic_tft();
   
@@ -41,16 +56,16 @@ function Logic_HonestNode() {
   this.resetLogic = tftLogic.resetLogic;
   
   // Bitcoin metadata
-  this.bitcoinName = "Honest Node";
-  this.bitcoinDescription = "Validates correctly, copies opponent's last move";
+  this.bitcoinName = "Responsive Validator";
+  this.bitcoinDescription = "Validates according to rules, mirrors opponent's strategy";
 }
 
 /**
- * 51% ATTACKER
- * Always attacks – tries to exploit the network
- * Bitcoin context: Always attempts double-spending or block withholding
+ * DIVERGENT MINER
+ * Always builds minority forks regardless of consensus
+ * Bitcoin context: Pursues divergent path independent of network
  */
-function Logic_51Attacker() {
+function Logic_DivergentMiner() {
   // Delegate to existing always-defect logic
   var adLogic = new Logic_all_d();
   
@@ -59,16 +74,16 @@ function Logic_51Attacker() {
   this.resetLogic = adLogic.resetLogic;
   
   // Bitcoin metadata
-  this.bitcoinName = "51% Attacker";
-  this.bitcoinDescription = "Always attempts to attack the network for profit";
+  this.bitcoinName = "Divergent Miner";
+  this.bitcoinDescription = "Always builds minority forks, ignoring consensus alignment";
 }
 
 /**
- * FULL NODE
- * Always follows consensus rules
- * Bitcoin context: Naive validator that trusts the majority
+ * CONSENSUS FOLLOWER
+ * Always aligns with consensus rules without adaptation
+ * Bitcoin context: Deterministic validator with no strategic flexibility
  */
-function Logic_FullNode() {
+function Logic_ConsensusFollower() {
   // Delegate to existing always-cooperate logic
   var acLogic = new Logic_all_c();
   
@@ -77,16 +92,16 @@ function Logic_FullNode() {
   this.resetLogic = acLogic.resetLogic;
   
   // Bitcoin metadata
-  this.bitcoinName = "Full Node";
-  this.bitcoinDescription = "Always follows consensus rules, trusts the network";
+  this.bitcoinName = "Consensus Follower";
+  this.bitcoinDescription = "Always aligns with consensus rules, regardless of incentives";
 }
 
 /**
- * CHAIN VALIDATOR
- * Validates fairly, but permanently rejects attackers
- * Bitcoin context: Hardening against specific malicious nodes
+ * PENALIZING VALIDATOR
+ * Validates by rules, but permanently reduces reputation after one divergence
+ * Bitcoin context: Peer reputation scoring and block relay de-prioritization
  */
-function Logic_ChainValidator() {
+function Logic_PenalizingValidator() {
   // Delegate to existing grudger logic
   var grudgeLogic = new Logic_grudge();
   
@@ -95,16 +110,16 @@ function Logic_ChainValidator() {
   this.resetLogic = grudgeLogic.resetLogic;
   
   // Bitcoin metadata
-  this.bitcoinName = "Chain Validator";
-  this.bitcoinDescription = "Validates fairly, but permanently blacklists attackers";
+  this.bitcoinName = "Penalizing Validator";
+  this.bitcoinDescription = "Validates fairly, permanently reduces reputation and disconnects from peers that diverge";
 }
 
 /**
- * ADAPTIVE NODE
- * Tests opponent's trustworthiness, then adapts strategy
- * Bitcoin context: Performs consensus validation tests before committing
+ * ADAPTIVE VALIDATOR
+ * Tests opponent's alignment, then commits to matching strategy
+ * Bitcoin context: Probes consensus compliance before deciding response
  */
-function Logic_AdaptiveNode() {
+function Logic_AdaptiveValidator() {
   // Delegate to existing prober logic
   var proberLogic = new Logic_prober();
   
@@ -113,16 +128,16 @@ function Logic_AdaptiveNode() {
   this.resetLogic = proberLogic.resetLogic;
   
   // Bitcoin metadata
-  this.bitcoinName = "Adaptive Node";
-  this.bitcoinDescription = "Tests rules compliance, then adapts strategy";
+  this.bitcoinName = "Adaptive Validator";
+  this.bitcoinDescription = "Tests alignment strategy, then commits to matching response";
 }
 
 /**
- * LENIENT NODE
- * Tolerates one attack, but punishes repeated attacks
- * Bitcoin context: Allows for honest mistakes/network delays
+ * FORGIVING VALIDATOR
+ * Tolerates occasional divergence, but punishes persistent divergence
+ * Bitcoin context: Allows for network delays and brief rule deviations
  */
-function Logic_LenientNode() {
+function Logic_ForgivingValidator() {
   // Delegate to existing "two-tit-for-tat" logic
   var tf2tLogic = new Logic_tf2t();
   
@@ -131,16 +146,16 @@ function Logic_LenientNode() {
   this.resetLogic = tf2tLogic.resetLogic;
   
   // Bitcoin metadata
-  this.bitcoinName = "Lenient Node";
-  this.bitcoinDescription = "Tolerates mistakes, retaliates after 2 attacks";
+  this.bitcoinName = "Forgiving Validator";
+  this.bitcoinDescription = "Tolerates occasional divergence, rejects persistent divergence";
 }
 
 /**
- * WIN-STAY NODE
- * Repeats actions that were rewarded, changes if punished
- * Bitcoin context: Adjusts block propagation strategy based on rewards
+ * REACTIVE VALIDATOR
+ * Repeats actions that increased payoff, changes actions that decreased payoff
+ * Bitcoin context: Adjusts validation/relay strategy based on network rewards
  */
-function Logic_WinStayNode() {
+function Logic_ReactiveValidator() {
   // Delegate to existing Pavlov logic
   var pavlovLogic = new Logic_pavlov();
   
@@ -149,16 +164,16 @@ function Logic_WinStayNode() {
   this.resetLogic = pavlovLogic.resetLogic;
   
   // Bitcoin metadata
-  this.bitcoinName = "Win-Stay Node";
-  this.bitcoinDescription = "Repeats rewarded actions, changes when punished";
+  this.bitcoinName = "Reactive Validator";
+  this.bitcoinDescription = "Repeats profitable actions, changes unprofitable ones";
 }
 
 /**
- * UNPREDICTABLE NODE
- * Randomly validates or attacks
- * Bitcoin context: Unreliable node with unstable consensus rules
+ * UNPREDICTABLE VALIDATOR
+ * Randomly validates or diverges with no pattern
+ * Bitcoin context: Unreliable node with unstable consensus adherence
  */
-function Logic_UnpredictableNode() {
+function Logic_UnpredictableValidator() {
   // Delegate to existing random logic
   var randomLogic = new Logic_random();
   
@@ -167,7 +182,7 @@ function Logic_UnpredictableNode() {
   this.resetLogic = randomLogic.resetLogic;
   
   // Bitcoin metadata
-  this.bitcoinName = "Unpredictable Node";
+  this.bitcoinName = "Unpredictable Validator";
   this.bitcoinDescription = "Randomly validates or attacks – unreliable network participant";
 }
 
@@ -191,32 +206,32 @@ var STRATEGY_BITCOIN_MAPPING = {
  */
 function createBitcoinStrategy(strategyId) {
   switch(strategyId) {
-    case 'tft': return new Logic_HonestNode();
-    case 'all_d': return new Logic_51Attacker();
-    case 'all_c': return new Logic_FullNode();
-    case 'grudge': return new Logic_ChainValidator();
-    case 'prober': return new Logic_AdaptiveNode();
-    case 'tf2t': return new Logic_LenientNode();
-    case 'pavlov': return new Logic_WinStayNode();
-    case 'random': return new Logic_UnpredictableNode();
+    case 'tft': return new Logic_ResponsiveValidator();
+    case 'all_d': return new Logic_DivergentMiner();
+    case 'all_c': return new Logic_ConsensusFollower();
+    case 'grudge': return new Logic_PenalizingValidator();
+    case 'prober': return new Logic_AdaptiveValidator();
+    case 'tf2t': return new Logic_ForgivingValidator();
+    case 'pavlov': return new Logic_ReactiveValidator();
+    case 'random': return new Logic_UnpredictableValidator();
     default: return new Logic_tft(); // fallback to original
   }
 }
 
 /**
  * Create window aliases for Bitcoin strategy names
- * So Iterated.js can find Logic_HonestNode, Logic_51Attacker, etc.
+ * So other code can find Logic_ResponsiveValidator, etc.
  */
 if (typeof window !== 'undefined') {
   // Alias Bitcoin strategy names to their implementations
-  window.Logic_HonestNode = Logic_HonestNode;
-  window.Logic_Attacker51 = Logic_51Attacker;
-  window.Logic_FullNode = Logic_FullNode;
-  window.Logic_ChainValidator = Logic_ChainValidator;
-  window.Logic_AdaptiveNode = Logic_AdaptiveNode;
-  window.Logic_ForgivingNode = Logic_LenientNode;
-  window.Logic_SimplexNode = Logic_WinStayNode;
-  window.Logic_UnpredictableNode = Logic_UnpredictableNode;
+  window.Logic_ResponsiveValidator = Logic_ResponsiveValidator;
+  window.Logic_DivergentMiner = Logic_DivergentMiner;
+  window.Logic_ConsensusFollower = Logic_ConsensusFollower;
+  window.Logic_PenalizingValidator = Logic_PenalizingValidator;
+  window.Logic_AdaptiveValidator = Logic_AdaptiveValidator;
+  window.Logic_ForgivingValidator = Logic_ForgivingValidator;
+  window.Logic_ReactiveValidator = Logic_ReactiveValidator;
+  window.Logic_UnpredictableValidator = Logic_UnpredictableValidator;
 }
 
 /**
@@ -234,6 +249,7 @@ if (typeof module !== 'undefined' && module.exports) {
     Logic_UnpredictableNode,
     BITCOIN_STRATEGY_MAP,
     getBitcoinStrategyName,
+    getOriginalStrategyName,
     createBitcoinStrategy
   };
 }

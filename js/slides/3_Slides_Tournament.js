@@ -18,9 +18,12 @@ SLIDES.push({
 			{strategy:"prober", count:1}
 		];
 		
-		// Store the bet answer using the bitcoin name if in bitcoin mode
+		// Store the bet answer - keep original for display, Bitcoin name for comparison
+		_.answerOriginal = _.answer; // Keep original (tft, all_d, etc.) for icon lookups
 		if(window.BITCOIN_MODE && typeof getBitcoinStrategyName !== 'undefined'){
-			_.answer = getBitcoinStrategyName(_.answer);
+			_.answerBitcoin = getBitcoinStrategyName(_.answer);
+		} else {
+			_.answerBitcoin = _.answer;
 		}
 		Tournament.FLOWER_CONNECTIONS = true;
 		self.add({id:"tournament", type:"Tournament", x:-20, y:20});
@@ -79,14 +82,14 @@ SLIDES.push({
 
 		// What was your bet?
 		var tournament_intro = Words.get("tournament_intro");
-		tournament_intro = tournament_intro.replace(/\[CHAR\]/g, "<span class='"+_.answer+"'>"+Words.get("icon_"+_.answer)+"</span>");
+		tournament_intro = tournament_intro.replace(/\[CHAR\]/g, "<span class='"+_.answerOriginal+"'>"+Words.get("icon_"+_.answerOriginal)+"</span>");
 		o.text.setText(tournament_intro);
 		_hide(o.text); _fadeIn(o.text, 100);
 
 		// "First Match" Button
 		self.add({
 			id:"button", type:"Button",
-			x:510, y:230, 
+			x:510, y:420, 
 			text_id:"first_match",
 			message: "slideshow/next"
 		});
@@ -110,6 +113,9 @@ SLIDES.push({
 			x:510, y:270, width:450, height:460
 		});
 
+		// Store tournament in global scope for winner slide to access
+		window._tournament = o.tournament;
+
 		var showTournament = function(num){
 
 			var words = "";
@@ -119,8 +125,6 @@ SLIDES.push({
 			var matchData = o.tournament.playMatch(num);
 			var charA = matchData.charA;
 			var charB = matchData.charB;
-			var scoreA = matchData.scoreA
-			var scoreB = matchData.scoreB;
 			var roundPayoffs = matchData.payoffs;
 
 			// Match N: [A] versus [B]
@@ -144,9 +148,12 @@ SLIDES.push({
 			}
 			words += "<br>";
 
-			// The total scores - round to whole numbers for clean display
-			scoreA = Math.round(scoreA);
-			scoreB = Math.round(scoreB);
+			// The total scores - show cumulative coins from all matches so far (rounded to 1 decimal)
+			var agents = o.tournament.agents;
+			var agentA = agents.find(function(a){ return a.strategyName === charA; });
+			var agentB = agents.find(function(a){ return a.strategyName === charB; });
+			var scoreA = agentA ? (Math.round(agentA.coins * 10) / 10) : 0;
+			var scoreB = agentB ? (Math.round(agentB.coins * 10) / 10) : 0;
 			if(scoreA>0) scoreA="+"+scoreA;
 			if(scoreB>0) scoreB="+"+scoreB;
 			match_header = Words.get("match_header_3");
@@ -165,11 +172,6 @@ SLIDES.push({
 			// FADE IN BUTTON
 			_hide(o.button); _fadeIn(o.button, 100+500);
 
-			// FINAL MATCH?
-			if(_matchNumber==9){
-				_switchButton();
-			}
-
 		};
 
 		// "Next Match" Button
@@ -179,15 +181,14 @@ SLIDES.push({
 			text_id:"next_match",
 			onclick:function(){
 				_matchNumber++;
-				showTournament(_matchNumber);
+				if(_matchNumber < 10){
+					showTournament(_matchNumber);
+				} else {
+					// All matches done, show winner
+					publish("slideshow/next");
+				}
 			}
 		});
-		var _switchButton = function(){
-			o.button.setText("the_winner_is");
-			o.button.config.onclick = function(){
-				publish("slideshow/next");
-			};
-		};
 
 		// MATCH NUMBER!
 		_matchNumber = 0;
@@ -205,47 +206,69 @@ SLIDES.push({
 	onstart: function(self){
 
 		var o = self.objects;
-		o.tournament.dehighlightAllConnections();
-
-		// CALCULATE THE ACTUAL WINNER
-		// Note: Keep strategy names in their original form (tft, all_d, etc.)
-		// for word lookups, but convert for comparison with user's bet
-		var agents = o.tournament.agents;
-		var strategyCoinTotals = {};
-		for(var i=0; i<agents.length; i++){
-			var strategy = agents[i].strategyName;
-			if(!strategyCoinTotals[strategy]) strategyCoinTotals[strategy] = 0;
-			strategyCoinTotals[strategy] += agents[i].coins;
-		}
-		var winnerStrategyOriginal = Object.keys(strategyCoinTotals).reduce(function(a,b){
-			return strategyCoinTotals[a] > strategyCoinTotals[b] ? a : b;
-		});
 		
-		// Convert to Bitcoin name for comparison with user's bet
-		var winnerStrategy = winnerStrategyOriginal;
-		if(window.BITCOIN_MODE && typeof getBitcoinStrategyName !== 'undefined'){
-			winnerStrategy = getBitcoinStrategyName(winnerStrategyOriginal);
+		// Use stored tournament from matches slide
+		var tournament = window._tournament;
+		if(!tournament){
+			console.error("Tournament not found in window._tournament");
+			return;
+		}
+		
+		if(tournament.dehighlightAllConnections) {
+			tournament.dehighlightAllConnections();
+		}
+
+		// CALCULATE THE ACTUAL WINNER - find agent with highest coins
+		var agents = tournament.agents;
+		var winnerStrategy = "tft"; // default fallback
+		var maxCoins = -Infinity;
+		
+		for(var i=0; i<agents.length; i++){
+			if(agents[i].coins > maxCoins){
+				maxCoins = agents[i].coins;
+				winnerStrategy = agents[i].strategyName;
+			}
+		}
+		
+		console.log("Winner calculation - Strategy:", winnerStrategy, "Coins:", maxCoins);
+		
+		// Convert to original name (tft, all_d, etc.) for word lookups
+		var winnerStrategyOriginal = winnerStrategy;
+		if(window.BITCOIN_MODE && typeof getOriginalStrategyName !== 'undefined'){
+			winnerStrategyOriginal = getOriginalStrategyName(winnerStrategy);
 		}
 
 		// WORDS
 		var words = "";
 		words += Words.get("tournament_winner_1");
-		if(_.answer==winnerStrategy){
+		if(_.answerBitcoin==winnerStrategy){
 			words += Words.get("tournament_winner_2_yay");
 		}else{
 			words += Words.get("tournament_winner_2_nay").replace(/\[CHAR\]/g, "<span class='"+winnerStrategyOriginal+"'>"+Words.get("icon_"+winnerStrategyOriginal)+"</span>");
 		}
 		words += "<br><br>";
 		words += Words.get("tournament_winner_3");
+		
+		// Ensure text object exists and set text
+		if(!o.text){
+			self.add({
+				id:"text", type:"TextBox",
+				x:510, y:30, width:450, height:500
+			});
+			o = self.objects;
+		}
 		o.text.setText(words);
 
-		// Next...
-		self.add({
-			id:"button", type:"Button",
-			x:510, y:430, size:"long",
-			text_id:"tournament_teaser",
-			message: "slideshow/scratch"
-		});
+		// Ensure button exists
+		if(!o.button){
+			self.add({
+				id:"button", type:"Button",
+				x:510, y:430, size:"long",
+				text_id:"tournament_teaser",
+				message: "slideshow/next"
+			});
+			o = self.objects;
+		}
 
 		// DRUMROLL
 		Loader.sounds.drumroll.volume(0.8).play();

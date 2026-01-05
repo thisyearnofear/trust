@@ -72,39 +72,39 @@ SLIDES.push({
 		const reputation = getGameReputation();
 		const tier = reputation.getReputationTier();
 		
-		// Splash character with blush if trusted
+		// Splash character with blush if well-aligned
 		self.add({ 
 			id:"splash", 
 			type:"Splash", 
-			blush: (tier.label === 'Trusted')
+			blush: (tier.label === 'WellAligned')
 		});
 		
 		// Tier-specific celebration text
 		var celebrationText = "";
 		var tierColor = "#333";
 		
-		if (tier.label === 'Trusted') {
+		if (tier.label === 'WellAligned') {
 			celebrationText = `
-				<b>YOU ARE TRUSTED.</b><br><br>
-				Your consistent cooperation has made you a trusted member of the Bitcoin network.<br><br>
-				With your ${reputation.getVotingPower()} votes, you shaped the rules that future players will follow.<br><br>
-				<i>This is the power of decentralized consensus.</i>
+				<b>YOU ARE WELL-ALIGNED.</b><br><br>
+				Your consistent alignment with consensus rules has given you strong voting power in the Bitcoin network.<br><br>
+				With your ${reputation.getVotingPower()} votes, you shaped the payoff structure that future players will follow.<br><br>
+				<i>This is how decentralized governance works: the game design shapes the outcome.</i>
 			`;
 			tierColor = "#4089DD";
 		} else if (tier.label === 'Neutral') {
 			celebrationText = `
 				<b>YOU ARE BALANCED.</b><br><br>
-				You cooperated ${reputation.cooperativeMoves} times out of ${reputation.totalMoves} moves.<br><br>
-				With your ${reputation.getVotingPower()} votes, you helped decide the network's future.<br><br>
-				<i>Every voice matters in Bitcoin's governance.</i>
+				You aligned with consensus ${reputation.cooperativeMoves} times out of ${reputation.totalMoves} moves.<br><br>
+				With your ${reputation.getVotingPower()} votes, you helped shape the network's future payoff structure.<br><br>
+				<i>Every voice matters in Bitcoin's governance, and your voice shaped the rules.</i>
 			`;
 			tierColor = "#efc701";
 		} else {
 			celebrationText = `
 				<b>YOU ARE LEARNING.</b><br><br>
-				Defection was tempting, but it didn't pay off long-term.<br><br>
-				Even with less voting power, you participated in shaping Bitcoin's future.<br><br>
-				<i>Try again. Cooperation pays off in the long run.</i>
+				Diverging from consensus was tempting, but it didn't maximize your long-term payoff.<br><br>
+				Even with less voting power, you participated in designing Bitcoin's future incentive structure.<br><br>
+				<i>Try again. Consensus alignment pays off in the long run because of the game design.</i>
 			`;
 			tierColor = "#FF5E5E";
 		}

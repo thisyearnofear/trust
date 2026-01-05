@@ -16,11 +16,11 @@ SLIDES.push({
         const tier = reputation.getReputationTier();
         
         // Splash
-        self.add({ 
-            id:"splash", 
-            type:"Splash", 
-            blush: (tier.label === 'Trusted')
-        });
+         self.add({ 
+             id:"splash", 
+             type:"Splash", 
+             blush: (tier.label === 'WellAligned')
+         });
         
         // Get dynamic text
         var revealText = Words.get("reputation_reveal");
@@ -71,12 +71,12 @@ SLIDES.push({
         meaningText = meaningText.replace("[TIER_LABEL]", tier.label);
         
         // Add tier-specific content
-        if (tier.label === 'Trusted') {
-            meaningText += "<br><br><b>YOU are a Trusted node.</b> Your governance voice shapes Bitcoin's future.";
+        if (tier.label === 'WellAligned') {
+            meaningText += "<br><br><b>YOU are a Well-Aligned validator.</b> Your governance votes shape Bitcoin's game design.";
         } else if (tier.label === 'Neutral') {
-            meaningText += "<br><br><b>YOU are a Neutral node.</b> Your participation matters in consensus.";
+            meaningText += "<br><br><b>YOU are a Neutral participant.</b> Your votes influence Bitcoin's consensus rules.";
         } else {
-            meaningText += "<br><br><b>YOU are a Learning node.</b> This is your chance to shape Bitcoin's next chapter.";
+            meaningText += "<br><br><b>YOU are a Learning validator.</b> Your participation in game design shapes Bitcoin's future.";
         }
         
         self.add({

@@ -29,10 +29,21 @@ function GameGovernance(appId = "trust_game_v1", charmsEnabled = true) {
     this.pendingVoteSubmissions = []; // Track votes submitted to chain
     
     if (charmsEnabled) {
-        this.charmsRPC = getCharmsRPC ? getCharmsRPC() : null;
-        console.log("[GameGovernance] Charms integration enabled");
+        // Defer RPC initialization - will be called when actually needed
+        this._initCharmsRPC();
     }
 }
+
+/**
+ * Initialize Charms RPC when needed (lazy initialization)
+ * @private
+ */
+GameGovernance.prototype._initCharmsRPC = function() {
+    if (!this.charmsRPC && typeof getCharmsRPC === 'function') {
+        this.charmsRPC = getCharmsRPC();
+        console.log("[GameGovernance] Charms RPC initialized");
+    }
+};
 
 /**
  * Initialize governance with default proposals

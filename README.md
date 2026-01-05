@@ -4,14 +4,14 @@ A game-theory simulator that teaches **Bitcoin's consensus model through interac
 
 ## What This Is
 
-This is an adaptation of Nicky Case's *["The Evolution of Trust"](http://ncase.me/trust/)* that maps Prisoner's Dilemma concepts to Bitcoin:
+This is an adaptation of Nicky Case's *["The Evolution of Trust"](http://ncase.me/trust/)* that maps Prisoner's Dilemma concepts to Bitcoin's consensus incentives:
 
-- **Cooperate** = Follow consensus rules / validate honestly
-- **Defect** = Attack network / attempt double-spend
-- **Opponent** = Network node / miner
-- **Score** = Mining rewards / transaction fees
+- **Consensus-Following** = Build on the longest valid chain / align with network rules
+- **Divergent Path** = Build minority fork / follow alternative consensus choice
+- **Opponent** = Network validator / competing miner
+- **Score** = Proportional to network alignment / rewards for consensus participation
 
-Players learn why honest strategies dominate in repeated games—exactly why Bitcoin's incentive model works.
+Players learn why consensus-aligned strategies dominate in Bitcoin's repeated game—how game design produces strategy outcomes.
 
 ## Play It Live
 
@@ -33,16 +33,16 @@ For detailed setup: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
 **Game Theory + Bitcoin + Zero-Knowledge Proofs:**
 
-✅ **Reputation System** — Cooperative moves tracked, converted to on-chain reputation score (0-100%)  
-✅ **Tier System** — Suspicious (0-49%) / Neutral (50-74%) / Trusted (75-100%) with voting multipliers  
+✅ **Reputation System** — Strategic alignment tracked, converted to on-chain alignment score (0-100%)  
+✅ **Tier System** — Misaligned (0-49%) / Neutral (50-74%) / Well-Aligned (75-100%) with voting multipliers  
 ✅ **Governance Voting** — Community votes on game rules using reputation-weighted voting power  
 ✅ **Charms Smart Contracts** — Game moves validated by Rust smart contracts via zero-knowledge proofs  
 ✅ **Cross-App API** — Other Bitcoin apps can query reputation and enforce tier requirements  
 ✅ **Spell Proving** — Interactive Charms spell demo (no node required) for testing game validation  
 ✅ **2-TX Pattern** — Real Bitcoin transaction structure (commit + spell) ready for testnet4  
 ✅ **On-Chain Anchoring** — Game outcomes embedded in Bitcoin witness data via Taproot  
-✅ **Bitcoin Understanding** — Enhanced narrative teaches real Bitcoin mechanics (mining, attacks, consensus rules, governance)  
-✅ **Reputation-to-Governance Arc** — Players see earned reputation directly translate to voting power  
+✅ **Bitcoin Understanding** — Enhanced narrative teaches real Bitcoin mechanics (mining, incentives, consensus rules, governance)  
+✅ **Alignment-to-Governance Arc** — Players see earned alignment score directly translate to voting power  
 
 ## How It Works
 

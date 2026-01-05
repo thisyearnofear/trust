@@ -120,11 +120,87 @@ SLIDES.push({
 		self.add({
 			id:"intro_button", type:"Button", x:304, y:466, size:"long",
 			text_id:"intro_button", 
-			message:"slideshow/scratch"
+			message:"slideshow/next",  // Go to validator_gate instead of scratching
+			config:{
+				onclick: function(){
+					// Ensure reputation is loaded before showing gate
+					initGameReputation();
+					publish("slideshow/next");
+				}
+			}
 		});
 
 		_hide(o.intro_text); _fadeIn(o.intro_text, 200);
 		_hide(o.intro_button); _fadeIn(o.intro_button, 700);
+
+	},
+	onend: function(self){
+		self.clear();
+	}
+
+});
+
+// VALIDATOR GATE: REPUTATION PROOF SCREEN
+// Shows player their current reputation tier and path to unlock governance
+SLIDES.push({
+	id: "validator_gate",
+	onstart: function(self){
+
+		var o = self.objects;
+		var rep = getGameReputation();
+		var accessStatus = rep.getValidatorAccessStatus();
+		var tier = accessStatus.tier;
+		var isUnlocked = accessStatus.unlocked;
+
+		// Splash in background
+		self.add({ id:"splash", type:"Splash" });
+
+		// TITLE
+		self.add({
+			id:"gate_title", type:"TextBox",
+			x:130, y:80, width:700, height:80,
+			size:48, lineHeight:0.9, align:"center",
+			text:"Build Your Alignment Score"
+		});
+
+		// TIER DISPLAY: Color coded based on reputation tier
+		var tierColor = tier.cssClass === 'reputation-aligned' ? '#4CAF50' :
+						tier.cssClass === 'reputation-neutral' ? '#FFC107' : '#F44336';
+
+		self.add({
+			id:"tier_badge", type:"TextBox",
+			x:250, y:180, width:500, height:100,
+			size:36, align:"center", color:tierColor,
+			text:"[" + tier.label.toUpperCase() + "] " + Math.round(tier.score) + "%"
+		});
+
+		// STATUS MESSAGE: Dynamic based on lock state
+		var statusMsg = isUnlocked ? 
+			"Your consensus alignment is strong. Now you can:<br>• Vote on Bitcoin's payoff structure and incentives<br>• Anchor your strategy record on-chain via Charms<br>• Help shape how Bitcoin's game design evolves" :
+			"To vote on Bitcoin rules and anchor your strategy record on-chain, you need to demonstrate consistent alignment with consensus.<br><br>Next: Learn how Bitcoin works, then play to increase your alignment score (75%+).";
+		
+		self.add({
+			id:"status_msg", type:"TextBox",
+			x:130, y:280, width:700, height:120,
+			size:13, align:"center", color:"#aaa",
+			text:statusMsg
+		});
+
+		// CTA BUTTON: Different text & action based on lock state
+		var buttonTextId = isUnlocked ? "validator_gate_button_unlocked" : "validator_gate_button_locked";
+		var buttonMessage = isUnlocked ? "slideshow/next" : "slideshow/scratch";
+		
+		self.add({
+			id:"gate_button", type:"Button", x:304, y:450, size:"long",
+			text_id:buttonTextId,
+			message:buttonMessage
+		});
+
+		// Fade in sequence
+		_hide(o.gate_title); _fadeIn(o.gate_title, 200);
+		_hide(o.tier_badge); _fadeIn(o.tier_badge, 300);
+		_hide(o.status_msg); _fadeIn(o.status_msg, 400);
+		_hide(o.gate_button); _fadeIn(o.gate_button, 700);
 
 	},
 	onend: function(self){

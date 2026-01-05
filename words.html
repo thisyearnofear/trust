@@ -57,11 +57,11 @@ OFF
 <!-- - - - - STRATEGY LABELS - - - - -->
 <!-- - - - - - - - - - - - - - - - - -->
 
-<p id="icon_tft">Honest Node</p>
-<p id="icon_all_c">Full Node</p>
-<p id="icon_all_d">51% Attacker</p>
-<p id="icon_grudge">Chain Validator</p>
-<p id="icon_prober">Adaptive Node</p>
+<p id="icon_tft">Responsive</p>
+<p id="icon_all_c">Consensus</p>
+<p id="icon_all_d">Divergent</p>
+<p id="icon_grudge">Penalizing</p>
+<p id="icon_prober">Adaptive</p>
 
 <!-- - - - - - - - - - - - - - - - - -->
 <!-- - - - - - TITLE! - - - - - - - - -->
@@ -93,8 +93,8 @@ In 2008, Satoshi Nakamoto solved an ancient problem:
 <br><br>
 <b>How do strangers exchange value without a bank?</b>
 <br><br>
-Bitcoin works because the rules reward cooperation and punish cheating.
-Miners don't need to trust each other — they trust the incentives.
+Bitcoin works because the game rules reward consensus-following and make divergence less profitable.
+Miners don't need to trust each other — they align their strategies because the payoff structure aligns their incentives.
 <br><br>
 <b>Game theory is the answer.</b>
 <br><br>
@@ -102,6 +102,36 @@ Let's play the Bitcoin game and see how it works...
 </p>
 <p id="intro_button">
 ...let's play a game about Bitcoin. &rarr;
+</p>
+
+<!-- - - - - - - - - - - - - - - - - -->
+<!-- - - - VALIDATOR GATE - - - - - - -->
+<!-- - - - - - - - - - - - - - - - - -->
+
+<p id="validator_gate_title">
+Build Your Alignment Score
+</p>
+
+<p id="validator_gate_locked">
+You are <b>Neutral</b> (<span class="score">50</span>% alignment). <br><br>
+To vote on Bitcoin rules and anchor your strategy record on-chain, you need to demonstrate consistent alignment with consensus. <br><br>
+<b>Play the game</b> to increase your alignment score (75%+).
+</p>
+
+<p id="validator_gate_unlocked">
+You are <b>Well-Aligned</b> (<span class="score">75</span>%+ alignment). <br><br>
+Your gameplay shows consistent alignment with consensus strategies. Now you can:<br>
+• Vote on Bitcoin's payoff rules and incentive structure<br>
+• Anchor your strategy record on-chain via Charms<br>
+• Help shape how Bitcoin's game design evolves
+</p>
+
+<p id="validator_gate_button_locked">
+Continue &rarr;
+</p>
+
+<p id="validator_gate_button_unlocked">
+Anchor on Bitcoin &rarr;
 </p>
 
 <!-- - - - - - - - - - - - - - - - - -->
@@ -125,7 +155,7 @@ Bitcoin's breakthrough:
 <br><b>Distributed ledger + game theory.</b>
 <br><br>
 Thousands of nodes instead of one authority.
-Proof-of-work + incentives make attacking unprofitable and cooperation perpetual.
+Proof-of-work + incentives make diverging from consensus less profitable than aligning with it.
 </p>
 
 <p id="why_this_works_btn">
@@ -137,35 +167,35 @@ So let's play the game Bitcoin nodes play every day. &rarr;
 <!-- - - - - - - - - - - - - - - - - -->
 
 <p id="label_you_cooperate">
-you<br>follow consensus
+you<br>consensus
 </p>
 
 <p id="label_you_attack">
-you<br>build fork
+you<br>fork
 </p>
 
 <p id="label_they_cooperate">
-they<br>follow consensus
+they<br>consensus
 </p>
 
 <p id="label_they_attack">
-they<br>build fork
+they<br>fork
 </p>
 
 <p id="label_you_cheat">
-you<br>build fork
+you<br>fork
 </p>
 
 <p id="label_they_cheat">
-they<br>build fork
+they<br>fork
 </p>
 
 <p id="label_cheat">
-build fork
+fork
 </p>
 
 <p id="label_attack">
-build fork
+fork
 </p>
 
 <p id="label_you">
@@ -176,16 +206,14 @@ other participant<br>↘
 </p>
 
 <p id="oneoff_0_top">
-
-<b>A SINGLE BLOCK</b>
+<b>A SINGLE BLOCK</b> — You're a miner choosing which chain to build on.
 <br>
-You're a miner. <b>COOPERATE:</b> Build on the consensus chain, earn full reward.
-<br><b>ATTACK:</b> Build on your own fork, but network follows the longest chain.
+<b>CONSENSUS:</b> Build on the chain everyone else is using, earn +2. Safe. &nbsp; <b>FORK:</b> Build your own chain, earn +3 if miners follow you, but earn 0 if they stick with consensus.
 </p>
 
 <p id="oneoff_0_btm">
-<b>The other miner builds on a different fork.</b><br>
-Do you follow consensus or build your own chain?
+<b>The other miner just built on a different fork.</b><br>
+Do you join the consensus or build your own chain?
 </p>
 
 <p id="oneoff_game_to_bitcoin">
@@ -193,12 +221,12 @@ Do you follow consensus or build your own chain?
 <br>
 This isn't just an abstract game. These exact dynamics play out every day in Bitcoin mining:
 <br>
-• <b>Cooperate</b> = Build on the consensus chain (longest valid chain)
-• <b>Attack</b> = Build on a minority fork (disagreeing with majority)
-• <b>Payoffs</b> = Real BTC rewards reduced if your fork is rejected
-• <b>Strategies</b> = Different mining approaches (tit-for-tat, always follow consensus, etc.)
+• <b>Consensus-Following</b> = Build on the longest valid chain (majority rule)
+• <b>Divergent Path</b> = Build on a minority fork (alternative consensus choice)
+• <b>Payoffs</b> = BTC rewards scale with network alignment; divergent paths earn less as the consensus chain grows
+• <b>Strategies</b> = Different mining approaches (responsive to feedback, always-consensus, adaptive, etc.)
 <br>
-Bitcoin's genius: the network always follows the longest chain, so consensus is the most profitable strategy.
+Bitcoin's design principle: the network follows the longest valid chain, so consensus-aligned strategies earn more over time.
 </p>
 
 <p id="oneoff_bitcoin_economics">
@@ -221,33 +249,33 @@ The key: Bitcoin's consensus mechanism (longest chain wins) makes following the 
 <p id="oneoff_bitcoin_difficulty">
 <b>LONG-TERM INCENTIVES & DIFFICULTY</b><br>
 <br>
-Bitcoin's genius isn't that miners are altruistic. It's that Bitcoin makes attacking more expensive than earning:
+Bitcoin's design isn't based on altruism. It makes diverging from consensus more expensive than aligning with it:
 <br>
-• <b>Difficulty Adjustment</b>: Every 2016 blocks (~2 weeks), Bitcoin automatically adjusts mining difficulty. Attacking becomes progressively more expensive.
+• <b>Difficulty Adjustment</b>: Every 2016 blocks (~2 weeks), Bitcoin automatically adjusts mining difficulty to maintain constant block time. This ensures divergent chains fall behind faster.
 <br>
-• <b>Cost to Attack</b>: A 51% attack costs ~$15B/year in electricity at current difficulty levels.
+• <b>Cost to Diverge</b>: Diverging costs the same hash power as consensus-following, but earns less because minority followers are fewer. Consensus chains accumulate faster.
 <br>
-• <b>Reputation System</b>: Honest miners build reputation over time. Attackers get permanently banned from mempool access.
+• <b>Network Coordination</b>: The longest valid chain becomes the canonical chain. Blocks on divergent paths get orphaned, reducing rewards.
 <br>
-• <b>Compound Rewards</b>: After 780,000 blocks, honest miners have earned ~10 million BTC. Attackers have earned 0.
+• <b>Compound Advantage</b>: After 780,000 blocks, consensus-aligned miners have earned full rewards. Divergent miners have earned from fewer followers and face increasing rejection.
 <br>
 <br>
-The math is undeniable: <b>honesty dominates</b> in the long run.
+The math is undeniable: <b>consensus-aligned strategies accumulate more wealth</b> in the long run.
 </p>
 
 <p id="oneoff_fork_choice">
-<b>FORK CHOICE RULE: LONGEST CHAIN WINS</b><br>
+<b>FORK CHOICE RULE: LONGEST VALID CHAIN WINS</b><br>
 <br>
-This game now implements Bitcoin's actual fork choice rule:
+This game implements Bitcoin's actual fork choice rule:
 <br>
-• <b>Honest Mining (Both Cooperate)</b>: Both miners' blocks get accepted. Network grows securely.
+• <b>Both Consensus-Following</b>: Both miners' blocks get accepted and validated. Network grows steadily.
 <br>
-• <b>Attack Attempt (One Attacks)</b>: Attacker's invalid blocks get orphaned (only 30% reward). Honest miner gets bonus (120% reward).
+• <b>One Diverges</b>: Divergent miner's minority fork accumulates slower. Consensus chain grows faster, making the divergent blocks orphaned. Consensus-following miner earns more.
 <br>
-• <b>Mutual Attack (Both Attack)</b>: Network breaks down. Both get only 10% reward due to instability.
+• <b>Both Diverge Differently</b>: Network splits. Both chains grow slowly, accumulating fewer followers. Both earn less due to reduced network coordination.
 <br>
 <br>
-This creates the <b>emergent dominant strategy</b>: honesty pays better than attacking, because the network always chooses the longest <b>valid</b> chain.
+This creates the <b>emergent dominant strategy</b>: consensus-aligned strategies earn more because the network coordinates around the longest valid chain.
 </p>
 
 <p id="oneoff_reputation">
@@ -318,17 +346,17 @@ Noble! Sure, seems right... <b>OR IS IT??</b>
 <p id="oneoff_2_top">
 <b>Now here's the reality of mutual cooperation:</b>
 <br><br>
-If you both cooperate: you both earn steady, reliable rewards (+2 each). The network is secure. No one steals anything.
+If you both build consensus: you both earn steady, reliable rewards (+2 each). The network is secure. No one steals anything.
 <br><br>
-But look at the incentive: if you attack while they cooperate, you get +3 while they get -1. You win bigger in the short term.
+But look at the incentive: if you fork while they stay on consensus, you get +3 while they get -1. You win bigger in the short term.
 <br><br>
-<b>Game theory's paradox:</b> Individually, attacking pays more (+3 vs +2). But only if you're the one attacking while they're honest. So game theory says: ATTACK is the "rational" choice... even though mutual cooperation (+2 each) beats mutual attack (0 each).
+<b>Game theory's paradox:</b> Individually, forking pays more (+3 vs +2). But only if you're the one forking while they're honest. So game theory says: FORK is the "rational" choice... even though mutual consensus (+2 each) beats mutual forking (0 each).
 </p>
 
 <p id="oneoff_2_btm">
 And <i>that's</i> Bitcoin's core challenge.
-Individual participants have incentive to attack the network, even if it destroys value for everyone.
-Sometimes, breaking the rules <i>seems</i> rational in isolation!
+Individual miners have incentive to fork off, even if it destroys the network's value for everyone.
+Sometimes, breaking consensus <i>seems</i> rational in isolation!
 But what happens if we play this game...
 </p>
 
@@ -343,8 +371,8 @@ But what happens if we play this game...
 <p id="iterated_intro_top">
 <b>The Blockchain: Infinite Rounds</b>
 <br>
-In a single game, cheating pays. But Bitcoin is eternal.
-Attack once, lose rewards forever. Cooperate, earn forever.
+In a single block, forking off pays. But Bitcoin is eternal.
+Fork once, lose rewards forever. Build consensus, earn forever.
 <br><b>The question: can you afford to break their trust?</b>
 </p>
 
@@ -423,34 +451,35 @@ So who were these different network participants you interacted with?
 </p>
 
 <p id="character_tft">
-<b>HONEST NODE (Tit-for-Tat):</b>
-I validate your transactions fairly. In the next block, I mirror what you did: if you cooperated, I cooperate. If you cheated, I respond proportionally.
-This is Bitcoin's backbone. I maintain reputation—don't damage it.
+<b>RESPONSIVE VALIDATOR:</b>
+Each interaction, I mirror your previous strategy. If you built on the consensus chain, I do the same. If you diverged, I diverge proportionally in return.
+This is reciprocal strategy matching: my payoff correlates with yours.
 </p>
 
 <p id="character_all_d">
-<b>51% ATTACKER:</b>
-I have enough hash power to ignore Bitcoin's consensus rules. I mine invalid blocks. I double-spend. I ignore what anyone else does.
-Short-term profit. Long-term: the rest of the network simply rejects me.
+<b>DIVERGENT MINER:</b>
+I have enough hash power to ignore the longest-chain rule and build my own fork. I pursue divergent paths regardless of what others do.
+Short-term: minority followers reward me. Long-term: as the consensus chain grows, my fork becomes orphaned.
 </p>
 
 <p id="character_all_c">
-<b>FULL NODE (Always-Cooperate):</b>
-I validate everything according to Bitcoin's rules, period. No matter what you do. No matter the incentives.
-Pure consensus enforcement. But this naivety? It gets exploited by attackers.
+<b>CONSENSUS FOLLOWER:</b>
+I validate everything according to Bitcoin's consensus rules, regardless of incentives or what others do.
+Pure rule-following. This means I never diverge—but I also never strategically adapt to different payoff structures.
 </p>
 
 <p id="character_grudge">
-<b>CHAIN VALIDATOR (Punisher):</b>
-I validate fairly, but I keep a permanent blacklist. Double-spend once? I reject every block from you forever.
-This is Bitcoin's immune system: nodes that remember attackers and permanently exile them.
+<b>PENALIZING VALIDATOR:</b>
+I validate according to consensus rules. When a peer sends me invalid blocks, I permanently reduce their reputation score.
+In Bitcoin: their blocks get de-prioritized, relayed slower, until eventually that peer is disconnected from my node.
+This reputation system drives invalid-block producers out of the network.
 </p>
 
 <p id="character_prober">
-<b>ADAPTIVE NODE (Tester):</b>
-First block: I validate honestly to test your response. Second block: I attempt a double-spend.
-If you reject it, I know you're serious about consensus—I cooperate forever.
-If you accept it, I know you're exploitable—I attack relentlessly.
+<b>ADAPTIVE VALIDATOR:</b>
+First interaction: I validate according to consensus rules to learn your strategy. Second interaction: I test whether you follow consensus even under pressure.
+If you remain consensus-aligned, I stay consensus-aligned forever.
+If you diverge, I diverge permanently.
 </p>
 
 <p id="characters_teaser">
@@ -500,11 +529,32 @@ next interaction &rarr;
 Bitcoin isn't a single transaction—it's an <i>infinitely repeated game.</i>
 </p>
 <p id="tournament_2">
-Nodes face the same consensus rules forever. Attack once, lose rewards forever.
-Cooperate, earn forever.
+Nodes face the same consensus rules forever. Fork once, lose rewards forever.
+Build consensus, earn forever.
 </p>
 <p id="tournament_3">
 The dominant strategy is...
+</p>
+<p id="tournament_4">
+Watch the payoffs: consensus-following strategies earn consistently. Minority strategies earn only when they gain followers.
+</p>
+<p id="tournament_5">
+The gap compounds. Strategies that align with the majority accumulate rewards faster than those that diverge.
+</p>
+<p id="tournament_6">
+Minority strategies face a payoff ceiling: they can't earn much without the consensus following them. The game structure punishes divergence.
+</p>
+<p id="tournament_7">
+This is Bitcoin's design at work: the longest-chain rule makes consensus-following more profitable than divergence.
+</p>
+<p id="tournament_8">
+The pattern is clear: when the game rewards majority alignment, majority-aligned strategies accumulate more.
+</p>
+<p id="tournament_9">
+Bitcoin's durability comes from this structure, not from assuming people are honest. The incentives point in one direction.
+</p>
+<p id="tournament_10">
+One final match: the outcome follows from the game design itself.
 </p>
 
 <p id="the_winner_is">
@@ -512,7 +562,7 @@ The dominant strategy is...
 </p>
 
 <p id="tournament_winner_1">
-<b class="tft">HONEST NODE!</b>
+<b class="tft">THE RESPONSIVE VALIDATOR ACCUMULATED THE HIGHEST PAYOFF.</b>
 </p>
 <p id="tournament_winner_2_yay">
 Congrats, your prediction was correct.
@@ -521,16 +571,15 @@ Congrats, your prediction was correct.
 (Sorry about your prediction: [CHAR].)
 </p>
 <p id="tournament_winner_3">
-The Honest Node goes by many names in Bitcoin: Tit-for-Tat, reciprocal validation, responsive consensus, or just... <b>the majority of nodes that keep Bitcoin alive.</b>
+This strategy goes by many names in Bitcoin: reciprocal response, tit-for-tat alignment, responsive coordination, or simply... <b>the payoff-maximizing strategy in Bitcoin's game structure.</b>
 <br><br>
-That's why Bitcoin works despite having no central authority:
-Every node follows the same cryptographic rules. Every node responds to violations.
-When someone attacks the network, honest nodes reject the attack. When someone cooperates, they're rewarded.
+That's why this strategy dominates Bitcoin's network:
+Every node operates under identical cryptographic rules. Every node's payoff depends on network coordination.
+When someone diverges from consensus, they earn less (minority followers, orphaned blocks). When someone aligns, they earn full rewards.
 <br><br>
-This isn't accidental. Bitcoin's design forces the honest node strategy to dominate.
-Miners who validate fairly earn block rewards <i>forever</i>. Attackers earn short-term profit, then face eternal rejection.
+Bitcoin's design ensures this mathematically. Miners who validate according to consensus rules earn block rewards that grow with the network. Miners who diverge earn diminishing returns as the consensus chain accelerates.
 <br><br>
-But if cooperation wins in repeated games, why have there been attacks & hard forks throughout Bitcoin's history?
+But if consensus-aligned strategies win in repeated games, why have there been divergent forks and network splits throughout Bitcoin's history?
 What if we simulate how node populations actually evolve over time?
 </p>
 <p id="tournament_teaser">
@@ -1252,14 +1301,14 @@ Let's make another bet! Which strategy do you think will dominate after the <i>f
 ...there's a problem: &rarr;
 </p>
 <p id="evo_10_followup">
-(Note: sometimes, a few <span class="grudge">Chain Validators</span> may persist in the network,
-because when all strategies except <span class="grudge">Chain Validator</span> &amp; <span class="tft">Honest Node</span>
-are eliminated, the two tie.)
+(Note: sometimes, a few <span class="grudge">Penalizing Validators</span> may persist in the network,
+because when all strategies except <span class="grudge">Penalizing Validator</span> &amp; <span class="tft">Responsive Validator</span>
+are eliminated, the two tie in payoff.)
 <br><br>
-So, it seems the math of game theory is telling us something:
-that <span class="tft">Honest Node's</span> philosophy,
-"validate what is valid, and respond proportionally to attacks", may be not just a
-<i>moral</i> truth, but also a <i>mathematical</i> truth for Bitcoin's survival.
+So, the mathematics of game theory is telling us something:
+that the <span class="tft">Responsive Validator's</span> strategy,
+"validate according to rules, and respond proportionally to divergence", emerges as inevitable given Bitcoin's payoff structure.
+It's a mathematical consequence of the game design, not a choice about what's right.
 However...
 </p>
 <p id="evo_11_btn">
@@ -1267,27 +1316,27 @@ However...
 </p>
 
 <p id="evolution_intro">
-Now, let's let our population of players <i>evolve over time</i>. It's a 3-step dance:
+Now, let's simulate how Bitcoin's validator population <i>evolves based on payoff</i>. It's a 3-step cycle:
 </p>
 <p id="evolution_intro_1">
-<b>1. PLAY A TOURNAMENT</b><br>
-Let them all play against each other, and tally up their scores.
+<b>1. PLAY A FULL TOURNAMENT</b><br>
+Let all strategies play against each other, and tally up their earnings.
 </p>
 <p id="evolution_intro_2">
-<b>2. ELIMINATE LOSERS</b><br>
-Get rid of the 5 worst players. (if there's a tie, pick randomly between them)
+<b>2. REMOVE LOWEST-EARNING STRATEGIES</b><br>
+Remove the 5 strategies that earned the least coins. (if there's a tie, pick randomly between them)
 </p>
 <p id="evolution_intro_3">
-<b>3. REPRODUCE WINNERS</b><br>
-Clone the 5 best players. (if there's a tie, pick randomly between them)
+<b>3. ADD COPIES OF HIGHEST-EARNING STRATEGIES</b><br>
+Increase the count of the 5 strategies that earned the most coins. (if there's a tie, pick randomly between them)
 </p>
 <p id="evolution_intro_button">
 ...let's see this in action. &rarr;
 </p>
 <p id="evolution_intro_footer">
 ...and REPEAT, for as long as you'd like.
-Note: you don't have to wait for nodes to literally disappear from the network for strategies to evolve --
-all that's needed is that unsuccessful node strategies fade away from the network, and successful ones spread through adoption and imitation.
+Note: you don't have to wait for nodes to literally disappear from the network for strategies to spread --
+all that's needed is that low-earning strategies fade away from adoption, and high-earning strategies spread through imitation and new node adoption.
 So now...
 </p>
 
@@ -1302,7 +1351,7 @@ build fork
 continue
 </p>
 <p id="label_cooperate">
-follow consensus
+consensus
 </p>
 <p id="label_reset">
 reset
@@ -1416,9 +1465,9 @@ Ready to understand how this works? →
 <p id="charms_intro">
 <b>What you just did was real on Bitcoin.</b>
 <br><br>
-Your game moves, reputation score, and governance votes were tracked using <b>Charms Protocol:</b> zero-knowledge proofs that let Bitcoin verify your behavior and count your governance votes—all without a central authority.
+Your game moves, alignment score, and governance votes were tracked using <b>Charms Protocol:</b> zero-knowledge proofs that let Bitcoin verify your strategy consistency and count your governance votes—all without a central authority.
 <br><br>
-Your cooperation was proven on-chain. Your votes shaped the actual rules of the next game round.
+Your strategic choices were proven on-chain. Your votes shaped the actual payoff structure of the next game round.
 </p>
 <p id="charms_what">
 <b>This changes what's possible:</b>

@@ -23,9 +23,9 @@ var NARRATIVE_MODE = "bitcoin";
   window.playerReputation = initGameReputation();
   console.log("[Bitcoin Mode] Reputation system initialized");
   
-  // Initialize governance system
-  window.gameGovernance = initGameGovernance();
-  console.log("[Bitcoin Mode] Governance system initialized");
+  // Initialize governance system (Charms disabled initially, enabled after game completion)
+  window.gameGovernance = initGameGovernance("trust_game_v1", false);
+  console.log("[Bitcoin Mode] Governance system initialized (Charms enabled on-demand)");
   
   // Initialize on-chain UI (wallet display, transaction history)
   if (typeof OnChainUI !== 'undefined') {

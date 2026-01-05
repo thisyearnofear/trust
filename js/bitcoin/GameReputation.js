@@ -113,37 +113,68 @@ GameReputation.prototype.calculateScore = function() {
  * Get reputation tier based on score
  * Used for UI display and governance calculations
  * 
- * Trusted:   75-100% cooperativeness
- * Neutral:   50-74%
- * Suspicious: <50%
+ * Well-Aligned: 75-100% consensus alignment
+ * Neutral:      50-74%
+ * Misaligned:   <50%
  * 
  * @returns {object} Tier info with label and CSS class
  */
-GameReputation.prototype.getReputationTier = function() {
-    const score = this.calculateScore();
-    
-    if (score >= 75) {
-        return {
-            label: 'Trusted',
-            cssClass: 'reputation-trusted',
-            score: score,
-            votingMultiplier: 1.5 // Trusted players get 1.5x voting weight
-        };
-    } else if (score >= 50) {
-        return {
-            label: 'Neutral',
-            cssClass: 'reputation-neutral',
-            score: score,
-            votingMultiplier: 1.0
-        };
-    } else {
-        return {
-            label: 'Suspicious',
-            cssClass: 'reputation-suspicious',
-            score: score,
-            votingMultiplier: 0.5 // Suspicious players get reduced voting weight
+ GameReputation.prototype.getReputationTier = function() {
+     const score = this.calculateScore();
+     
+     if (score >= 75) {
+         return {
+             label: 'WellAligned',
+             cssClass: 'reputation-aligned',
+             score: score,
+             votingMultiplier: 1.5, // Well-aligned players get 1.5x voting weight
+             canAccessValidator: true
+         };
+     } else if (score >= 50) {
+         return {
+             label: 'Neutral',
+             cssClass: 'reputation-neutral',
+             score: score,
+             votingMultiplier: 1.0,
+             canAccessValidator: false
+         };
+     } else {
+         return {
+             label: 'Misaligned',
+             cssClass: 'reputation-misaligned',
+             score: score,
+            votingMultiplier: 0.5, // Suspicious players get reduced voting weight
+            canAccessValidator: false
         };
     }
+};
+
+/**
+ * Check if player meets Validator Network access tier
+ * Validator Network requires Trusted tier (75%+)
+ * @returns {object} Access status with message and tier info
+ */
+GameReputation.prototype.getValidatorAccessStatus = function() {
+    const tier = this.getReputationTier();
+    const canAccess = tier.canAccessValidator;
+    
+    if (canAccess) {
+        return {
+            unlocked: true,
+            tier: tier,
+            message: "You are Trusted. Full Validator Network access granted.",
+            ctaText: "Enter Validator Network"
+        };
+    }
+    
+    const gap = 75 - tier.score;
+    return {
+        unlocked: false,
+        tier: tier,
+        message: "You are " + tier.label + " (" + Math.round(tier.score) + "%). " +
+                 "Need " + Math.round(gap) + " more reputation to unlock Validator Network.",
+        ctaText: "Play the Game"
+    };
 };
 
 /**
