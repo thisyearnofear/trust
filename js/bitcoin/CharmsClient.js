@@ -2,7 +2,7 @@
  * CHARMS PROTOCOL INTEGRATION: Client for on-chain game move validation
  * 
  * Follows official Charms spec:
- * - Uses `charms spell check` for local proof validation
+ * - Uses `charms spell prove` CLI for real ZK proof generation
  * - Creates proper 2-transaction pattern (commit + spell)
  * - Embeds reputation proof in witness data
  * - Real Bitcoin Signet transactions only (no mock mode)
@@ -17,7 +17,8 @@ class CharmsGameClient {
    * @param {string} appId - Charms app verification key (64 hex chars)
    * @param {string} bitcoinAddress - Player's Bitcoin address
    * @param {object} config - Configuration options
-   *   - charmsAppBin: Path to compiled app binary (required)
+   *   - charmsAppBin: Path to compiled app binary (required for real proofs)
+   *   - charmsProver: CharmsCLIProver instance (auto-initialized if not provided)
    *   - txBuilder: BitcoinTxBuilder instance (auto-initialized if not provided)
    */
   constructor(appId, bitcoinAddress, config = {}) {
@@ -25,6 +26,7 @@ class CharmsGameClient {
     this.bitcoinAddress = bitcoinAddress;
 
     this.charmsAppBin = config.charmsAppBin;
+    this.charmsProver = config.charmsProver || null;
     this.txBuilder = config.txBuilder || getBitcoinTxBuilder();
     this.gameHistory = [];
     this.transactionHistory = [];
@@ -40,66 +42,67 @@ class CharmsGameClient {
    * Submit game move as a Charms spell
    * 
    * Flow:
-   * 1. Generate zero-knowledge proof via Charms zkVM
-   * 2. Create spell with proof embedded
-   * 3. Build 2-tx pattern (commit + spell)
-   * 4. Return txids for wallet signing and broadcast
+   * 1. Generate zero-knowledge proof via Charms CLI (charms spell prove)
+   * 2. Returns both commit and spell transactions (signed unsigned pair)
+   * 3. Ready for wallet signing and submitpackage broadcast
    * 
-   * @param {string} move - "COOPERATE" or "DEFECT"
-   * @param {object} gameContext - Game state for proof
-   * @returns {Promise<object>} { commitTxid, spellTxid, proof }
+   * @param {object} gameData - Game history for proof
+   *   - player_address: Bitcoin address
+   *   - moves: Array of moves (0=COOPERATE, 1=DEFECT)
+   *   - opponent_moves: Opponent moves (optional)
+   *   - payoffs: [R, T, S, P] matrix (optional, defaults to PD)
+   * @param {object} utxoData - UTXO for funding the transaction
+   *   - txid: Previous transaction ID
+   *   - vout: Output index
+   *   - amount: Satoshis
+   * @param {string} changeAddress - Signet change address (tb1q...)
+   * @returns {Promise<object>} { commitTxHex, spellTxHex, commitTxid, spellTxid }
    */
-  async submitMove(move, gameContext = {}) {
+  async submitMove(gameData, utxoData, changeAddress) {
     try {
-      console.log("[CharmsClient] Submitting move:", move);
+      console.log("[CharmsClient] Submitting move with real ZK proof");
 
-      // Validate
-      if (!["COOPERATE", "DEFECT"].includes(move)) {
-        throw new Error("Invalid move");
+      // Validate inputs
+      if (!gameData.player_address || !gameData.moves) {
+        throw new Error("Invalid game data: requires player_address and moves array");
+      }
+      if (!utxoData || !utxoData.txid || utxoData.vout === undefined || !utxoData.amount) {
+        throw new Error("Invalid UTXO data");
+      }
+      if (!changeAddress || !changeAddress.startsWith('tb1')) {
+        throw new Error("Invalid Signet change address");
       }
 
-      // Generate proof via Charms RPC
-      const proof = await this._generateProofViaCharms({
-        type: "move",
-        move: move === "COOPERATE" ? 0 : 1,
-        appId: this.appId,
-        timestamp: Date.now()
-      });
+      // Generate real ZK proof via charms spell prove CLI
+      const proofResult = await this._generateProofViaCharms(gameData, utxoData, changeAddress);
 
-      // Create spell
-      const spell = {
-        appId: this.appId,
-        type: "move",
-        move: move === "COOPERATE" ? 0 : 1,
-        proof: proof,
-        player: this.bitcoinAddress,
-        timestamp: Date.now()
-      };
+      // Build 2-tx pattern from real transaction hex
+      const txPattern = this._build2TxPattern(proofResult.commitTxHex, proofResult.spellTxHex);
 
-      // Build 2-tx pattern
-      const { commitTx, spellTx } = this._build2TxPattern(spell);
-
-      // Track
+      // Track transaction
       this.gameHistory.push({
-        move: move === "COOPERATE" ? 0 : 1,
+        moves: gameData.moves,
         timestamp: Date.now()
       });
 
       this.transactionHistory.push({
         type: "move",
-        commitTx: commitTx,
-        spellTx: spellTx,
-        proof: proof,
+        commitTxHex: proofResult.commitTxHex,
+        spellTxHex: proofResult.spellTxHex,
+        commitTxid: txPattern.commitTxid,
+        spellTxid: txPattern.spellTxid,
+        proof: proofResult.proof,
         timestamp: Date.now()
       });
 
-      console.log("[CharmsClient] Move spell created (ready for broadcast)");
+      console.log("[CharmsClient] Move proof generated (ready for wallet signing)");
 
       return {
         type: "move",
-        commitTxid: commitTx.txid,
-        spellTxid: spellTx.txid,
-        proof: proof
+        commitTxHex: proofResult.commitTxHex,
+        spellTxHex: proofResult.spellTxHex,
+        commitTxid: txPattern.commitTxid,
+        spellTxid: txPattern.spellTxid
       };
     } catch (error) {
       console.error("[CharmsClient] Move submission failed:", error);
@@ -111,59 +114,64 @@ class CharmsGameClient {
    * Submit reputation to Bitcoin as a Charms spell
    * 
    * This anchors player reputation on-chain after a game completes.
-   * Uses real Bitcoin transactions on Signet.
+   * Uses real Bitcoin transactions on Signet with actual ZK proofs.
    * 
-   * @param {Array} gameHistory - Moves from the game
-   * @param {object} reputationData - Reputation calculation { score, tier, votingPower }
-   * @param {object} utxo - Available UTXO { txid, vout, amount } (required for real txs)
-   * @returns {Promise<object>} { commitTxid, spellTxid, commitTxHex, spellTxHex }
+   * @param {object} gameData - Game history for proof
+   *   - player_address: Bitcoin address
+   *   - moves: Array of moves (0=COOPERATE, 1=DEFECT)
+   *   - opponent_moves: Opponent moves (optional)
+   *   - payoffs: [R, T, S, P] matrix (optional)
+   * @param {object} utxoData - UTXO for funding the transaction
+   *   - txid: Previous transaction ID
+   *   - vout: Output index
+   *   - amount: Satoshis
+   * @param {string} changeAddress - Signet change address (tb1q...)
+   * @returns {Promise<object>} { commitTxHex, spellTxHex, commitTxid, spellTxid }
    */
-  async submitReputationOnChain(gameHistory, reputationData, utxo) {
+  async submitReputationOnChain(gameData, utxoData, changeAddress) {
     try {
-      console.log("[CharmsClient] Anchoring reputation to Bitcoin");
+      console.log("[CharmsClient] Anchoring reputation to Bitcoin with real ZK proof");
 
-      // Create spell data structure
-      const spell = {
-        appId: this.appId,
-        type: "reputation_anchor",
-        player: this.bitcoinAddress,
-        reputation_score: reputationData.score,
-        reputation_tier: reputationData.tier,
-        voting_power: reputationData.votingPower,
-        total_moves: gameHistory.length,
-        cooperative_moves: gameHistory.filter(m => m === 0).length,
-        timestamp: Date.now()
-      };
-
-      // Production mode: generate actual Signet transactions
-      if (!utxo || !utxo.txid) {
-        throw new Error("UTXO required for transaction generation. Wallet integration needed.");
+      // Validate inputs
+      if (!gameData.player_address || !gameData.moves) {
+        throw new Error("Invalid game data: requires player_address and moves array");
+      }
+      if (!utxoData || !utxoData.txid || utxoData.vout === undefined || !utxoData.amount) {
+        throw new Error("UTXO required for transaction generation");
+      }
+      if (!changeAddress || !changeAddress.startsWith('tb1')) {
+        throw new Error("Invalid Signet change address");
       }
 
-      const txResult = this.txBuilder.build2TxPattern(spell, this.bitcoinAddress, utxo);
-      
-      const result = {
-        type: "reputation",
-        commitTxid: txResult.commitTxid,
-        spellTxid: txResult.spellTxid,
-        commitTxHex: txResult.commitTxHex,
-        spellTxHex: txResult.spellTxHex
-      };
+      // Generate real ZK proof via charms spell prove CLI
+      const proofResult = await this._generateProofViaCharms(gameData, utxoData, changeAddress);
 
-      // Track
+      // Build 2-tx pattern from real transaction hex
+      const txPattern = this._build2TxPattern(proofResult.commitTxHex, proofResult.spellTxHex);
+
+      // Track transaction
       this.transactionHistory.push({
         type: "reputation",
-        spell: spell,
-        result: result,
+        commitTxHex: proofResult.commitTxHex,
+        spellTxHex: proofResult.spellTxHex,
+        commitTxid: txPattern.commitTxid,
+        spellTxid: txPattern.spellTxid,
+        proof: proofResult.proof,
         timestamp: Date.now()
       });
 
-      console.log("[CharmsClient] Reputation anchored:", {
-        commitTxid: result.commitTxid.substring(0, 16) + "...",
-        spellTxid: result.spellTxid.substring(0, 16) + "..."
+      console.log("[CharmsClient] Reputation anchored (ready for wallet signing):", {
+        commitTxid: txPattern.commitTxid.substring(0, 16) + "...",
+        spellTxid: txPattern.spellTxid.substring(0, 16) + "..."
       });
 
-      return result;
+      return {
+        type: "reputation",
+        commitTxHex: proofResult.commitTxHex,
+        spellTxHex: proofResult.spellTxHex,
+        commitTxid: txPattern.commitTxid,
+        spellTxid: txPattern.spellTxid
+      };
     } catch (error) {
       console.error("[CharmsClient] Reputation submission failed:", error);
       throw error;
@@ -177,79 +185,42 @@ class CharmsGameClient {
    * 1. Commit transaction: Creates output committing to spell + proof
    * 2. Spell transaction: Spends commit output, includes spell in witness
    * 
+   * Uses real txHex from charms spell prove CLI
    * @private
    */
-  _build2TxPattern(spell) {
-    const commitTxid = this._generateMockTxid("commit_" + JSON.stringify(spell));
-    const spellTxid = this._generateMockTxid("spell_" + JSON.stringify(spell));
+  _build2TxPattern(commitTxHex, spellTxHex) {
+    // Calculate txids from hex
+    const commitTxid = this._calculateTxid(commitTxHex);
+    const spellTxid = this._calculateTxid(spellTxHex);
 
     return {
-      commitTx: {
-        version: 2,
-        inputs: [
-          {
-            txid: "0000000000000000000000000000000000000000000000000000000000000000",
-            vout: 0
-          }
-        ],
-        outputs: [
-          {
-            address: this.bitcoinAddress,
-            script: this._encodeCommitScript(spell),
-            amount: 0
-          }
-        ],
-        txid: commitTxid,
-        note: "Commit transaction - commits to spell and proof"
-      },
-      spellTx: {
-        version: 2,
-        inputs: [
-          {
-            txid: commitTxid,
-            vout: 0,
-            witness: this._encodeSpellWitness(spell)
-          }
-        ],
-        outputs: [
-          {
-            address: this.bitcoinAddress,
-            amount: 0
-          }
-        ],
-        txid: spellTxid,
-        note: "Spell transaction - contains spell and proof in witness"
-      }
+      commitTxHex: commitTxHex,
+      spellTxHex: spellTxHex,
+      commitTxid: commitTxid,
+      spellTxid: spellTxid
     };
   }
 
   /**
-   * Encode commit script (OP_RETURN with commitment hash)
+   * Generate zero-knowledge proof via Charms CLI
+   * Calls actual charms spell prove to generate real ZK proofs
    * @private
    */
-  _encodeCommitScript(spell) {
-    const hash = this._sha256(JSON.stringify(spell)).substring(0, 16);
-    return "OP_RETURN " + hash;
-  }
+  async _generateProofViaCharms(gameData, utxoData, changeAddress) {
+    // Initialize prover if not already done
+    if (!this.charmsProver && this.charmsAppBin) {
+      const { initCharmsCLIProver } = require('./CharmsCLIProver.js');
+      this.charmsProver = initCharmsCLIProver({
+        charmsAppBin: this.charmsAppBin
+      });
+    }
 
-  /**
-   * Encode spell in witness format (OP_FALSE OP_IF ... OP_ENDIF)
-   * @private
-   */
-  _encodeSpellWitness(spell) {
-    const spellJson = JSON.stringify(spell);
-    const hex = Buffer.from(spellJson).toString("hex");
-    return ["", hex, ""]; // [OP_FALSE, spell_data, OP_ENDIF]
-  }
+    if (!this.charmsProver) {
+      throw new Error("Charms prover not initialized. Provide charmsAppBin in config.");
+    }
 
-  /**
-   * Generate zero-knowledge proof via Charms RPC
-   * Calls charms daemon for zkVM proof generation
-   * @private
-   */
-  async _generateProofViaCharms(proofData) {
-    const rpc = getCharmsRPC();
-    return await rpc.generateProof(this.appId, proofData);
+    // Call real charms spell prove
+    return await this.charmsProver.generateProof(gameData, utxoData, changeAddress);
   }
 
   /**
@@ -347,15 +318,30 @@ class CharmsGameClient {
 
   /**
    * Export for Bitcoin broadcasting
-   * Returns array of { commitTx, spellTx } ready to sign + broadcast
+   * Returns array of { commitTxHex, spellTxHex, commitTxid, spellTxid } ready for wallet signing + submitpackage
    */
   getReadyForBroadcast() {
     return this.transactionHistory.map(entry => ({
       type: entry.type,
-      commitTxHex: JSON.stringify(entry.commitTx),
-      spellTxHex: JSON.stringify(entry.spellTx),
-      note: "Sign both with bitcoin-cli, broadcast commit first, then spell"
+      commitTxHex: entry.commitTxHex,
+      spellTxHex: entry.spellTxHex,
+      commitTxid: entry.commitTxid,
+      spellTxid: entry.spellTxid,
+      note: "Sign both with wallet, broadcast via bitcoin submitpackage [commit_tx, spell_tx]"
     }));
+  }
+
+  /**
+   * Calculate Bitcoin transaction ID from hex
+   * Double SHA256 of serialized transaction
+   * @private
+   */
+  _calculateTxid(txHex) {
+    const crypto = require('crypto');
+    const buf = Buffer.from(txHex, 'hex');
+    const hash1 = crypto.createHash('sha256').update(buf).digest();
+    const hash2 = crypto.createHash('sha256').update(hash1).digest();
+    return hash2.reverse().toString('hex');
   }
 }
 

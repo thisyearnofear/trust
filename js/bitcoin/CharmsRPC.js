@@ -1,26 +1,27 @@
 /**
- * CHARMS RPC LAYER
+ * CHARMS RPC LAYER (LEGACY - For Governance Queries Only)
  * 
- * Unified RPC client for all Charms interactions.
- * Single source of truth for configuration and RPC calls.
+ * NOTE: Proof generation moved to CharmsCLIProver.js
+ * This layer now handles only governance/contract queries.
+ * 
+ * DO NOT use this for charm_prove or charm_submit_move - these don't exist in official Charms.
+ * Use CharmsCLIProver.generateProof() instead for real ZK proof generation.
  * 
  * Used by:
- * - CharmsClient (move validation & reputation anchoring)
  * - CharmsClientAPI (governance queries)
- * - GameGovernance (vote submission)
+ * - GameGovernance (vote submission - if needed)
  */
 
 class CharmsRPC {
   /**
-   * Initialize Charms RPC client
+   * Initialize Charms RPC client (governance queries only)
    * @param {object} config - Configuration options
+   * @deprecated Proof generation moved to CharmsCLIProver
    */
   constructor(config = {}) {
     this.config = {
       network: config.network || "signet",
       rpcUrl: config.rpcUrl || "http://localhost:18332", // Bitcoin RPC
-      charmsRpcUrl: config.charmsRpcUrl || "http://localhost:9000", // Charms daemon
-      charmsProverUrl: config.charmsProverUrl || "http://localhost:9001", // Charms prover
       timeout: config.timeout || 30000,
       verbose: config.verbose || false,
       ...config
@@ -30,9 +31,9 @@ class CharmsRPC {
     this.cache = new Map();
     this.cacheTTL = 5 * 60 * 1000; // 5 minutes
 
-    console.log("[CharmsRPC] Initialized (PRODUCTION MODE)", {
+    console.log("[CharmsRPC] Initialized (GOVERNANCE QUERIES ONLY)", {
       network: this.config.network,
-      charmsRpcUrl: this.config.charmsRpcUrl
+      note: "Proof generation moved to CharmsCLIProver.js"
     });
   }
 
@@ -126,114 +127,28 @@ class CharmsRPC {
   }
 
   /**
-   * Generate zero-knowledge proof for a statement
-   * Used for move validation and reputation anchoring
-   * @param {string} appId - Charms app ID
-   * @param {object} input - Proof input
-   * @returns {Promise<object>} Zero-knowledge proof
+   * DEPRECATED: Use CharmsCLIProver.generateProof() instead
+   * This endpoint (charm_prove) does not exist in official Charms spec.
+   * 
+   * Real proof generation is handled by:
+   * - CharmsCLIProver.generateProof() calls `charms spell prove` CLI
+   * - Returns actual [commit_tx, spell_tx] from zkVM execution
    */
   async generateProof(appId, input) {
-    this._log(`Generating proof for app ${appId}`);
-
-    return this.call("charm_prove", [
-      {
-        app_id: appId,
-        ...input
-      }
-    ], { useCache: false }); // Don't cache proofs
+    throw new Error(
+      "generateProof moved to CharmsCLIProver. Use initCharmsCLIProver() instead.\n" +
+      "CharmsCLIProver.generateProof() calls the official `charms spell prove` CLI."
+    );
   }
 
   /**
-   * Verify a zero-knowledge proof
-   * @param {object} proof - The proof to verify
-   * @returns {Promise<boolean>} Whether proof is valid
+   * DEPRECATED: charm_verify RPC does not exist in official Charms
    */
   async verifyProof(proof) {
-    this._log("Verifying proof");
-
-    return this.call("charm_verify", [proof]);
-  }
-
-  /**
-   * Call a smart contract method
-   * @param {string} contractId - Contract identifier
-   * @param {string} method - Contract method name
-   * @param {object} args - Method arguments
-   * @returns {Promise<any>} Contract method result
-   */
-  async callContract(contractId, method, args) {
-    this._log(`Contract call: ${contractId}.${method}()`);
-
-    return this.call(`contract_${method}`, [
-      {
-        contract_id: contractId,
-        ...args
-      }
-    ]);
-  }
-
-  /**
-   * Submit a move to the contract
-   * @param {string} appId - App ID
-   * @param {object} moveData - Move information
-   * @param {object} proof - Zero-knowledge proof of validity
-   * @returns {Promise<string>} Transaction ID
-   */
-  async submitMove(appId, moveData, proof) {
-    this._log(`Submitting move for app ${appId}`);
-
-    return this.call("charm_submit_move", [
-      {
-        app_id: appId,
-        move: moveData.move,
-        game_state: moveData.gameState,
-        proof: proof
-      }
-    ], { useCache: false });
-  }
-
-  /**
-   * Submit reputation data to contract
-   * @param {string} appId - App ID
-   * @param {object} reputationData - Reputation information
-   * @param {object} proof - Zero-knowledge proof of reputation
-   * @returns {Promise<string>} Transaction ID
-   */
-  async submitReputation(appId, reputationData, proof) {
-    this._log(`Submitting reputation for app ${appId}`);
-
-    return this.call("charm_submit_reputation", [
-      {
-        app_id: appId,
-        address: reputationData.address,
-        score: reputationData.score,
-        tier: reputationData.tier,
-        voting_power: reputationData.votingPower,
-        proof: proof
-      }
-    ], { useCache: false });
-  }
-
-  /**
-   * Submit a governance vote to contract
-   * @param {string} appId - App ID
-   * @param {object} voteData - Vote information
-   * @param {object} proof - Zero-knowledge proof (optional)
-   * @returns {Promise<string>} Transaction ID
-   */
-  async submitVote(appId, voteData, proof = null) {
-    this._log(`Submitting vote for app ${appId}, proposal ${voteData.proposalId}`);
-
-    return this.call("charm_submit_vote", [
-      {
-        app_id: appId,
-        proposal_id: voteData.proposalId,
-        voter: voteData.voter,
-        vote: voteData.vote,
-        voting_power: voteData.votingPower,
-        proof: proof
-      }
-    ], { useCache: false });
+    throw new Error(
+      "Proof verification handled by charms spell check (CLI).\n" +
+      "Use CharmsCLIProver for real proof generation."
+    );
   }
 
   /**
