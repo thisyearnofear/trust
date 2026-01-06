@@ -11,26 +11,30 @@ var SlideRegistry = {
     
     // Define all slides with their metadata
     slides: {
-        // INTRO
-        "intro_title": { file: "0_Slides_Intro.js", section: "intro" },
-        "what_is_trust": { file: "0_Slides_Intro.js", section: "intro" },
-        "intro_button": { file: "0_Slides_Intro.js", section: "intro" },
-        
-        // WHY BITCOIN
-        "why_this_works": { file: "0_Slides_Intro.js", section: "why_bitcoin" },
+        // INTRO & WHY BITCOIN
+        "intro": { file: "0_Slides_Intro.js", section: "intro" },
+        "why_this_works": { file: "0_Slides_Intro.js", section: "intro" },
         
         // ONE-OFF (single game)
-        "one_off": { file: "1_Slides_OneOff.js", section: "gameplay" },
-        "one_off_results": { file: "1_Slides_OneOff.js", section: "gameplay" },
+        "oneoff": { file: "1_Slides_OneOff.js", section: "gameplay" },
         
         // ITERATED (repeated games)
-        "iterated_1": { file: "2_Slides_Iterated.js", section: "gameplay" },
-        "iterated_2": { file: "2_Slides_Iterated.js", section: "gameplay" },
+        "iterated": { file: "2_Slides_Iterated.js", section: "gameplay" },
+        
+        // TOURNAMENT
+        "tournament": { file: "3_Slides_Tournament.js", section: "gameplay" },
+        
+        // EVOLUTION
+        "evolution": { file: "4_Slides_Evolution.js", section: "gameplay" },
+        
+        // DISTRUST
+        "distrust": { file: "5_Slides_Distrust.js", section: "gameplay" },
+        
+        // NOISE
+        "noise": { file: "6_Slides_Noise.js", section: "bonus" },
         
         // SANDBOX (full game with reputation)
-        "sandbox_intro": { file: "3_Slides_Sandbox.js", section: "gameplay" },
-        "sandbox_game": { file: "3_Slides_Sandbox.js", section: "gameplay" },
-        "sandbox_results": { file: "3_Slides_Sandbox.js", section: "gameplay" },
+        "sandbox": { file: "7_Slides_Sandbox.js", section: "gameplay" },
         
         // REPUTATION REVEAL
         "reputation_summary": { file: "B_Slides_ReputationReveal.js", section: "reputation" },
@@ -41,10 +45,8 @@ var SlideRegistry = {
         "governance_voting": { file: "A_Slides_Governance.js", section: "governance" },
         "governance_summary": { file: "A_Slides_Governance.js", section: "governance" },
         
-        // NOISE
-        "noise_intro": { file: "6_Slides_Noise.js", section: "bonus" },
-        "noise_1": { file: "6_Slides_Noise.js", section: "bonus" },
-        "noise_2": { file: "6_Slides_Noise.js", section: "bonus" }
+        // CREDITS
+        "credits": { file: "9_Slides_Credits.js", section: "end" }
     },
     
     // Navigation hooks - slideId → next slideId
