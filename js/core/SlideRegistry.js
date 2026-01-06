@@ -40,6 +40,7 @@ var SlideRegistry = {
         "reputation_summary": { file: "B_Slides_ReputationReveal.js", section: "reputation" },
         
         // GOVERNANCE FLOW
+        "governance_expectations": { file: "A_Slides_Governance.js", section: "governance" },
         "governance_intro": { file: "A_Slides_Governance.js", section: "governance" },
         "governance_connect": { file: "A_Slides_Governance.js", section: "governance" },
         "governance_voting": { file: "A_Slides_Governance.js", section: "governance" },
@@ -51,6 +52,7 @@ var SlideRegistry = {
     
     // Navigation hooks - slideId → next slideId
     navigationHooks: {
+        "governance_expectations": "governance_intro",
         "governance_intro": "governance_connect",
         "governance_connect": "governance_voting",
         "governance_voting": "governance_summary"

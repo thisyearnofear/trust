@@ -6,11 +6,86 @@
  * 
  * Flow:
  * Play game → Earn reputation (reputation_summary) → 
+ * Set expectations (governance_expectations) →
  * Governance intro (governance_intro) →
  * Connect wallet (governance_connect) → 
  * Vote on proposals (governance_voting) → 
  * See results (governance_summary)
  */
+
+// Set expectations: clarify what's mocked vs real
+SLIDES.push({
+	id: "governance_expectations",
+	onstart: function (self) {
+
+		var o = self.objects;
+
+		// Splash
+		self.add({ id: "splash", type: "Splash" });
+
+		// HEADER
+		self.add({
+			id: "header", type: "TextBox",
+			x: 200, y: 70, width: 400,
+			text: "<b>What Happens Next</b>",
+			size: 20, color: "#333", align: "center"
+		});
+
+		// Check wallet connection status
+		var walletConnected = window.OnChainUI && window.OnChainUI.enabled;
+
+		// Main explanation
+		var expectText = "";
+		if (walletConnected) {
+			expectText = "<b>Your Bitcoin wallet is connected.</b><br><br>";
+			expectText += "Your governance votes will be <b>recorded on-chain</b> via Charms smart contracts.<br><br>";
+			expectText += "This proves your participation in Bitcoin's game-theoretic governance and anchors your reputation to the blockchain.";
+		} else {
+			expectText = "<b>You're in simulation mode.</b><br><br>";
+			expectText += "Your votes will be recorded locally in this game session but <b>not on-chain</b>.<br><br>";
+			expectText += "You can still participate and explore how governance works. Connect a Bitcoin wallet anytime to anchor your votes to the blockchain.";
+		}
+
+		self.add({
+			id: "explanation", type: "TextBox",
+			x: 80, y: 180, width: 800, height: 180,
+			text: expectText,
+			size: 13, align: "center"
+		});
+
+		// Mode indicator box
+		var modeColor = walletConnected ? "#4CAF50" : "#FFC107";
+		var modeLabel = walletConnected ? "🔗 ON-CHAIN MODE" : "📋 SIMULATION MODE";
+		var modeBg = walletConnected ? "rgba(76, 175, 80, 0.1)" : "rgba(255, 193, 7, 0.1)";
+
+		self.add({
+			id: "mode_indicator", type: "TextBox",
+			x: 200, y: 380, width: 400,
+			text: `<span style="color: ${modeColor}; font-weight: bold; font-size: 15px;">${modeLabel}</span>`,
+			size: 12, color: modeColor, align: "center"
+		});
+
+		// Set background for mode indicator
+		if (o.mode_indicator && o.mode_indicator.dom) {
+			o.mode_indicator.dom.style.background = modeBg;
+			o.mode_indicator.dom.style.padding = "12px";
+			o.mode_indicator.dom.style.borderRadius = "6px";
+			o.mode_indicator.dom.style.border = `2px solid ${modeColor}`;
+			o.mode_indicator.dom.style.marginTop = "10px";
+		}
+
+		// Continue button
+		self.add({
+			id: "button", type: "Button", x: 400, y: 450,
+			text_id: "button_continue",
+			message: "slideshow/next"
+		});
+
+	},
+	onend: function (self) {
+		self.clear();
+	}
+});
 
 // Governance intro: explain voting before wallet connection
 SLIDES.push({
@@ -180,37 +255,40 @@ SLIDES.push({
 
 // Vote on first proposal
 SLIDES.push({
-    id: "governance_voting",
-    onstart: function (self) {
+	id: "governance_voting",
+	onstart: function (self) {
 
-        var o = self.objects;
-        var governance = getGameGovernance();
-        var reputation = getGameReputation();
-        var tier = reputation.getReputationTier();
-        var proposals = governance.getActiveProposals().filter(p => p.is_voting_open);
+		var o = self.objects;
+		var governance = getGameGovernance();
+		var reputation = getGameReputation();
+		var tier = reputation.getReputationTier();
+		var proposals = governance.getActiveProposals().filter(p => p.is_voting_open);
 
-        // If no proposals, skip to results
-        if (proposals.length === 0) {
-            publish("slideshow/next");
-            return;
-        }
+		// If no proposals, skip to results
+		if (proposals.length === 0) {
+			publish("slideshow/next");
+			return;
+		}
 
-        // Get first unvoted proposal
-        var proposal = proposals[0];
-        window._currentProposalIndex = 0;
+		// Get first unvoted proposal
+		var proposal = proposals[0];
+		window._currentProposalIndex = 0;
 
-        // NO Iterated component - just clean centered text with border animation
-        self.add({
-            id: "header", type: "TextBox",
-            x: 200, y: 120, width: 400,
-            text_id: "governance_header",
-            size: 16, color: "#333", align: "center"
-        });
-        
-        // Add animated border effect via CSS class
-        if (o.header && o.header.dom) {
-            o.header.dom.classList.add("governance-voting-title");
-        }
+		// Splash
+		self.add({ id: "splash", type: "Splash" });
+
+		// NO Iterated component - just clean centered text with border animation
+		self.add({
+			id: "header", type: "TextBox",
+			x: 200, y: 120, width: 400,
+			text_id: "governance_header",
+			size: 16, color: "#333", align: "center"
+		});
+		
+		// Add animated border effect via CSS class
+		if (o.header && o.header.dom) {
+			o.header.dom.classList.add("governance-voting-title");
+		}
 
 
 
@@ -307,23 +385,26 @@ SLIDES.push({
 
 // Governance voting summary
 SLIDES.push({
-    id: "governance_summary",
-    onstart: function (self) {
+	id: "governance_summary",
+	onstart: function (self) {
 
-        var o = self.objects;
+		var o = self.objects;
 
-        // HEADER with pulsing animation
-        self.add({
-            id: "header", type: "TextBox",
-            x: 200, y: 50, width: 400,
-            text: "<b>Governance Results</b>",
-            size: 20, color: "#333", align: "center"
-        });
-        
-        // Add animated border effect via CSS class
-        if (o.header && o.header.dom) {
-            o.header.dom.classList.add("governance-voting-title");
-        }
+		// Splash
+		self.add({ id: "splash", type: "Splash" });
+
+		// HEADER with pulsing animation
+		self.add({
+			id: "header", type: "TextBox",
+			x: 200, y: 50, width: 400,
+			text: "<b>Governance Results</b>",
+			size: 20, color: "#333", align: "center"
+		});
+		
+		// Add animated border effect via CSS class
+		if (o.header && o.header.dom) {
+			o.header.dom.classList.add("governance-voting-title");
+		}
 
         // Get governance results
         var governance = getGameGovernance();
