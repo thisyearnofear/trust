@@ -19,10 +19,6 @@ SLIDES.push({
 
         var o = self.objects;
 
-        // Use Iterated component for central framing animation
-        self.add({id:"iterated", type:"Iterated", x:130, y:133});
-        o.iterated.dehighlightPayoff();
-
         // Add Splash character in background
         self.add({ id: "splash", type: "Splash", x: 0, y: 50 });
 
@@ -177,16 +173,18 @@ SLIDES.push({
         var proposal = proposals[0];
         window._currentProposalIndex = 0;
 
-        // Add Iterated component for central framing animation
-        self.add({id:"iterated", type:"Iterated", x:130, y:133});
-        o.iterated.dehighlightPayoff();
-
+        // NO Iterated component - just clean centered text with border animation
         self.add({
             id: "header", type: "TextBox",
-            x: 200, y: 150, width: 400,
+            x: 200, y: 120, width: 400,
             text_id: "governance_header",
-            size: 14, color: "#333", align: "center"
+            size: 16, color: "#333", align: "center"
         });
+        
+        // Add animated border effect via CSS class
+        if (o.header && o.header.dom) {
+            o.header.dom.classList.add("governance-voting-title");
+        }
 
 
 
@@ -275,10 +273,6 @@ SLIDES.push({
     onstart: function (self) {
 
         var o = self.objects;
-
-        // Use Iterated component for central framing animation
-        self.add({id:"iterated", type:"Iterated", x:130, y:133});
-        o.iterated.dehighlightPayoff();
 
         // Get governance results
         var governance = getGameGovernance();
