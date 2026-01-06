@@ -60,9 +60,9 @@ SLIDES.push({
 
 		// Continue button
 		self.add({
-			id: "button", type: "Button", x: 615, y: 450,
-			text_id: "reputation_summary_btn",
-			message: "slideshow/next"
+		        id: "button", type: "Button", x: 615, y: 450,
+		        text_id: "button_continue_to_governance",
+		        message: "slideshow/next"
 		});
 
 	},

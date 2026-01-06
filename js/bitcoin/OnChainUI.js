@@ -69,7 +69,7 @@ var OnChainUI = {
 
       // Also show before governance voting
       subscribe("slideshow/slideChange", (slideId) => {
-        if (slideId === "governance_connect") {
+        if (slideId === "governance_intro") {
           this.show();
         }
       });
