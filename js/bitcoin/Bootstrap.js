@@ -399,12 +399,15 @@ function initOnChainReputation() {
     // Listen for sandbox completion
     subscribe("slideshow/slideChange", function(slideId) {
       // After sandbox slide completes, jump to governance
-      if (slideId === "governance_intro") {
-        // Prepare governance for voting
-        if (window.GovernanceIntegration) {
-          window.GovernanceIntegration.prepareGovernancePhase();
+      var GOVERNANCE_INTRO_SLIDE = "governance_intro";
+      if (SlideValidator && SlideValidator.assertSlideExists(GOVERNANCE_INTRO_SLIDE, "Bootstrap.js")) {
+        if (slideId === GOVERNANCE_INTRO_SLIDE) {
+          // Prepare governance for voting
+          if (window.GovernanceIntegration) {
+            window.GovernanceIntegration.prepareGovernancePhase();
+          }
+          console.log("[Bitcoin Mode] Governance voting phase starting...");
         }
-        console.log("[Bitcoin Mode] Governance voting phase starting...");
       }
     });
   }
