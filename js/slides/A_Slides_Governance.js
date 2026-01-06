@@ -1,16 +1,21 @@
 /**
- * GOVERNANCE SLIDE - Integrated into game flow
+ * GOVERNANCE SLIDES - Integrated into game flow
  * 
- * Appears AFTER tournament results, using player's reputation to vote on
+ * Appears AFTER sandbox completes, using player's reputation to vote on
  * changes that affect the NEXT game run.
  * 
- * This creates the feedback loop:
- * Play game → Earn reputation → Connect wallet → Vote on rules → Next game uses new rules
+ * Flow:
+ * Play game → Earn reputation (reputation_summary) → 
+ * Connect wallet & see voting power (governance_connect) → 
+ * Vote on proposals (governance_voting) → 
+ * See results (governance_summary) → 
+ * Learn about Charms (charms_intro, charms_what)
  */
 
-// Wallet connection (required for voting)
+// Wallet connection + Governance intro combined
+// Connect wallet → Show reputation + voting power → Go to voting
 SLIDES.push({
-    id: "wallet_connect",
+    id: "governance_connect",
     onstart: function (self) {
 
         var o = self.objects;
@@ -18,20 +23,41 @@ SLIDES.push({
         // Splash
         self.add({ id: "splash", type: "Splash" });
 
-        // Wallet connection prompt
-        var walletText = "<b>Connect Your Bitcoin Wallet</b><br><br>";
-        walletText += "Your governance votes will be recorded on-chain using zero-knowledge proofs.<br><br>";
-        walletText += "Connect your Bitcoin wallet (Unisat or Leather) to participate in voting.";
+        // Get player reputation data
+        const reputation = getGameReputation();
+        const tier = reputation.getReputationTier();
+        const votingPower = reputation.getVotingPower();
 
+        // Title
         self.add({
-            id: "wallet_text", type: "TextBox",
-            x: 100, y: 60, width: 760, height: 250,
-            text: walletText,
+            id: "title", type: "TextBox",
+            x: 100, y: 60, width: 760, height: 80,
+            text: "<b>Shape Bitcoin's Future</b><br>Your votes now influence governance",
             align: "center",
-            size: 14
+            size: 16
         });
 
-        // Wallet status display
+        // Reputation tier + voting power
+        var tierColor = tier.cssClass === 'reputation-aligned' ? '#4CAF50' :
+                        tier.cssClass === 'reputation-neutral' ? '#FFC107' : '#FF5E5E';
+
+        self.add({
+            id: "tier_badge", type: "TextBox",
+            x: 200, y: 150, width: 400, height: 60,
+            align: "center",
+            text: `<span style="color: ${tierColor};"><b>[${tier.label.toUpperCase()}]</b></span>`,
+            size: 20, color: "#333"
+        });
+
+        self.add({
+            id: "power_display", type: "TextBox",
+            x: 200, y: 210, width: 400,
+            align: "center",
+            text: `Your Voting Power: <b>${votingPower} votes</b>`,
+            size: 12, color: "#666"
+        });
+
+        // Wallet connection section
         var statusText = "Wallet: Disconnected";
         if (window.OnChainUI && window.OnChainUI.getSlideStatus) {
             var status = OnChainUI.getSlideStatus();
@@ -41,114 +67,48 @@ SLIDES.push({
         }
 
         self.add({
-            id: "wallet_status_display", type: "TextBox",
-            x: 100, y: 320, width: 760,
+            id: "wallet_status", type: "TextBox",
+            x: 100, y: 270, width: 760, height: 40,
             text: statusText,
-            size: 12, color: "#666",
+            size: 11, color: "#666",
             align: "center"
         });
 
         // Connect wallet button
         var handleConnectWallet = function () {
             if (window.OnChainUI) {
-                // Show connecting status
-                o.wallet_status_display.setText("Wallet: Connecting...");
+                o.wallet_status.setText("Wallet: Connecting...");
 
-                // Attempt connection
                 OnChainUI.connectWallet();
 
-                // Check status after a moment
                 setTimeout(function () {
                     var status = OnChainUI.getSlideStatus();
                     if (status.connected) {
-                        o.wallet_status_display.setText(`Wallet: Connected ✓<br><span style="font-size:11px;">${status.address.substring(0, 16)}...${status.address.substring(status.address.length - 6)}</span>`);
-                        o.button_continue.setText("Continue to Voting");
+                        o.wallet_status.setText(`Wallet: Connected ✓<br><span style="font-size:11px;">${status.address.substring(0, 16)}...${status.address.substring(status.address.length - 6)}</span>`);
+                        o.button_vote.setText("Begin Voting");
                     } else {
-                        o.wallet_status_display.setText("Wallet: Connection failed. Try installing Unisat or Leather.");
+                        o.wallet_status.setText("Wallet: Connection failed. Try installing Unisat or Leather.");
                     }
                 }, 1500);
             }
         };
 
         self.add({
-            id: "button_connect", type: "Button", x: 225, y: 370, size: "short",
+            id: "button_connect", type: "Button", x: 250, y: 330, size: "short",
             text_id: "button_connect_wallet",
             onclick: handleConnectWallet
         });
 
-        // Continue button (enabled only after connection)
+        // Proceed to voting button
         self.add({
-            id: "button_continue", type: "Button", x: 605, y: 370, size: "short",
-            text_id: "button_continue_voting",
+            id: "button_vote", type: "Button", x: 550, y: 330, size: "short",
+            text_id: "button_vote_now",
             message: "slideshow/next"
         });
 
     },
     onend: function (self) {
         self.clear();
-    }
-});
-
-// Governance intro: "Your votes shape Bitcoin"
-SLIDES.push({
-    id: "governance_intro",
-    onstart: function (self) {
-
-        var o = self.objects;
-
-        // Use Iterated component for central framing animation
-        self.add({id:"iterated", type:"Iterated", x:130, y:133});
-        o.iterated.dehighlightPayoff();
-        
-        // Add Splash character in background
-        self.add({ id: "splash", type: "Splash", x: 0, y: 50 });
-
-        // Get player reputation data
-        const reputation = getGameReputation();
-        const tier = reputation.getReputationTier();
-        const votingPower = reputation.getVotingPower();
-        const cooperativeRate = reputation.calculateScore();
-
-        self.add({
-            id: "tier_display", type: "TextBox",
-            x: 200, y: 150, width: 400,
-            align: "center",
-            text: `Your Reputation: <span class="${tier.cssClass}">${tier.label}</span>`,
-            size: 16, color: "#333"
-        });
-
-        // Intro text with dynamic substitution
-        var governanceText = Words.get("governance_intro_text");
-
-        // Replace placeholders with actual player data
-        governanceText = governanceText.replace("[COOPERATION_RATE]", Math.round(cooperativeRate));
-        governanceText = governanceText.replace("[TOTAL_MOVES]", reputation.totalMoves);
-        governanceText = governanceText.replace("[TIER_CLASS]", tier.cssClass);
-        governanceText = governanceText.replace("[TIER_LABEL]", tier.label);
-        governanceText = governanceText.replace("[VOTING_POWER]", votingPower);
-
-        self.add({
-            id: "text", type: "TextBox",
-            x: 200, y: 180, width: 400, height: 200,
-            text: governanceText,
-            align: "center",
-            size: 11
-        });
-
-        // Continue button
-        self.add({
-            id: "button", type: "Button",
-            x: 350, y: 400, size: "short",
-            text_id: "governance_intro_btn",
-            message: "slideshow/next"
-        });
-
-    },
-    onend: function (self) {
-        self.remove("splash");
-        self.remove("tier_display");
-        self.remove("text");
-        self.remove("button");
     }
 });
 

@@ -20,7 +20,7 @@ var OnChainUI = {
    * Now hidden by default - only shown at relevant game moments
    * (after game completion, before governance voting)
    */
-  init: function() {
+  init: function () {
     if (!window.BITCOIN_MODE) {
       console.log("[OnChainUI] Bitcoin mode not enabled, skipping on-chain UI");
       return;
@@ -69,7 +69,7 @@ var OnChainUI = {
 
       // Also show before governance voting
       subscribe("slideshow/slideChange", (slideId) => {
-        if (slideId === "governance_intro") {
+        if (slideId === "governance_connect") {
           this.show();
         }
       });
@@ -81,7 +81,7 @@ var OnChainUI = {
   /**
    * Add CSS styles for on-chain UI
    */
-  addStyles: function() {
+  addStyles: function () {
     const style = document.createElement("style");
     style.textContent = `
       .onchain-ui-container {
@@ -201,7 +201,7 @@ var OnChainUI = {
   /**
    * Create wallet connection section
    */
-  createWalletSection: function() {
+  createWalletSection: function () {
     const section = document.createElement("div");
     section.className = "onchain-section";
     section.innerHTML = `
@@ -230,7 +230,7 @@ var OnChainUI = {
   /**
    * Create transaction history section
    */
-  createTransactionSection: function() {
+  createTransactionSection: function () {
     const section = document.createElement("div");
     section.className = "onchain-section";
     section.innerHTML = `
@@ -253,7 +253,7 @@ var OnChainUI = {
   /**
    * Create settings section
    */
-  createSettingsSection: function() {
+  createSettingsSection: function () {
     const section = document.createElement("div");
     section.className = "onchain-section";
     section.innerHTML = `
@@ -274,7 +274,7 @@ var OnChainUI = {
   /**
    * Connect to Bitcoin wallet using consolidated manager
    */
-  connectWallet: async function() {
+  connectWallet: async function () {
     console.log("[OnChainUI] Attempting to connect wallet...");
 
     try {
@@ -292,12 +292,12 @@ var OnChainUI = {
     * Handle successful wallet connection
     * @param {object} walletResult - Result from Unisat wallet (null = demo mode)
     */
-  onWalletConnected: function(walletResult) {
+  onWalletConnected: function (walletResult) {
     console.log("[OnChainUI] Wallet connected:", this.playerAddress);
 
     this.enabled = true;
     this.wallet = getUnisatWallet();
-    
+
     // Cache wallet data for transaction building
     this.walletData = {
       address: this.playerAddress,
@@ -311,7 +311,9 @@ var OnChainUI = {
       this.playerAddress,
       {
         mockMode: false, // Always use real transactions
-        txBuilder: getBitcoinTxBuilder()
+        txBuilder: getBitcoinTxBuilder(),
+        serverUrl: "http://localhost:3000",
+        charmsAppBin: "/Users/udingethe/Dev/covenant/charm-apps/trust-game/target/release/trust-game"
       }
     );
 
@@ -322,7 +324,7 @@ var OnChainUI = {
     const walletAddressContainer = document.getElementById("wallet-address-container");
     const connectWallet = document.getElementById("connect-wallet");
     const disconnectWallet = document.getElementById("disconnect-wallet");
-    
+
     if (walletStatus) walletStatus.className = "onchain-status active";
     if (walletStatusText) walletStatusText.textContent = "Connected";
     if (walletAddress) walletAddress.textContent = this.playerAddress;
@@ -338,38 +340,38 @@ var OnChainUI = {
       balance: walletResult?.balance?.total || "unknown"
     });
   },
-  
+
   /**
    * Get UTXO from wallet (cached)
    * @returns {Promise<object>} UTXO { txid, vout, amount }
    */
-  _getWalletUtxo: function() {
+  _getWalletUtxo: function () {
     const self = this;
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
       // Return cached UTXO if available
       if (self.walletData && self.walletData.utxo) {
         resolve(self.walletData.utxo);
         return;
       }
-      
+
       // For demo/fallback: use mock UTXO
       const mockUtxo = {
         txid: "0000000000000000000000000000000000000000000000000000000000000000",
         vout: 0,
         amount: 10000
       };
-      
+
       // TODO: Fetch real UTXO from wallet in production
       // const wallet = getUnisatWallet();
       // if (wallet && wallet.balance) {
       //   const utxos = await wallet.getUtxos(); // Would need to implement
       //   return utxos[0];
       // }
-      
+
       if (self.walletData) {
         self.walletData.utxo = mockUtxo;
       }
-      
+
       resolve(mockUtxo);
     });
   },
@@ -377,7 +379,7 @@ var OnChainUI = {
   /**
    * Disconnect wallet
    */
-  disconnectWallet: function() {
+  disconnectWallet: function () {
     console.log("[OnChainUI] Wallet disconnected");
 
     this.enabled = false;
@@ -399,7 +401,7 @@ var OnChainUI = {
   /**
    * Handle game round end event
    */
-  onGameRoundEnd: function(payoffs) {
+  onGameRoundEnd: function (payoffs) {
     if (!this.enabled || !this.charmsClient) {
       return;
     }
@@ -422,7 +424,7 @@ var OnChainUI = {
    * 2. Sign both transactions
    * 3. Broadcast atomically
    */
-  submitMove: async function(gameData, utxoData, changeAddress) {
+  submitMove: async function (gameData, utxoData, changeAddress) {
     if (!this.enabled || !this.charmsClient || !this.wallet) {
       this.showError("Wallet not connected");
       return;
@@ -442,7 +444,7 @@ var OnChainUI = {
 
       // Track transaction
       this.addTransaction(result);
-      
+
       // Show success
       if (result.status === "broadcast") {
         this.showSuccess(
@@ -472,7 +474,7 @@ var OnChainUI = {
    * Submit game move (legacy - simple mode)
    * For basic move submission without full Charms flow
    */
-  submitSimpleMove: function(move) {
+  submitSimpleMove: function (move) {
     if (!this.enabled || !this.charmsClient) {
       this.showError("Wallet not connected");
       return;
@@ -501,7 +503,7 @@ var OnChainUI = {
   /**
    * Add transaction to history display
    */
-  addTransaction: function(result) {
+  addTransaction: function (result) {
     this.recentTransactions.unshift({
       type: result.type || "move",
       commitTxid: result.commitTxid,
@@ -522,7 +524,7 @@ var OnChainUI = {
   /**
    * Update transaction list display
    */
-  updateTransactionDisplay: function() {
+  updateTransactionDisplay: function () {
     const listEl = document.getElementById("transaction-list");
     if (!listEl) return;
 
@@ -559,7 +561,7 @@ var OnChainUI = {
   /**
    * Clear transaction history
    */
-  clearHistory: function() {
+  clearHistory: function () {
     this.recentTransactions = [];
     if (this.charmsClient) {
       this.charmsClient.clearHistory();
@@ -571,7 +573,7 @@ var OnChainUI = {
   /**
    * Export transaction history as JSON
    */
-  exportHistory: function() {
+  exportHistory: function () {
     const data = {
       address: this.playerAddress,
       transactions: this.recentTransactions,
@@ -592,7 +594,7 @@ var OnChainUI = {
   /**
    * Show success message
    */
-  showSuccess: function(message) {
+  showSuccess: function (message) {
     console.log("[OnChainUI] ✓", message);
     this.showMessage(message, "success");
   },
@@ -600,7 +602,7 @@ var OnChainUI = {
   /**
    * Show error message
    */
-  showError: function(message) {
+  showError: function (message) {
     console.error("[OnChainUI] ✗", message);
     this.showMessage(message, "error");
   },
@@ -608,7 +610,7 @@ var OnChainUI = {
   /**
    * Show status/progress message
    */
-  showStatus: function(message) {
+  showStatus: function (message) {
     console.log("[OnChainUI] ⏳", message);
     this.showMessage(message, "status");
   },
@@ -616,7 +618,7 @@ var OnChainUI = {
   /**
    * Show temporary message
    */
-  showMessage: function(message, type = "info") {
+  showMessage: function (message, type = "info") {
     // Create toast-like message
     const toast = document.createElement("div");
     const bgColor = type === "error" ? "#ff6b6b" : type === "status" ? "#ffa500" : "#16c784";
@@ -663,7 +665,7 @@ var OnChainUI = {
    * Show governance voting panel
    * Triggered after game completion when player has voting power
    */
-  showGovernancePanel: function() {
+  showGovernancePanel: function () {
     if (!window.GOVERNANCE_UI) {
       console.warn("[OnChainUI] GovernanceUI not initialized");
       return;
@@ -747,7 +749,7 @@ var OnChainUI = {
     // Attach vote handlers
     const voteButtons = panel.querySelectorAll(".gov-vote-btn");
     voteButtons.forEach(btn => {
-      btn.addEventListener("click", function() {
+      btn.addEventListener("click", function () {
         const proposalId = parseInt(this.getAttribute("data-proposal"));
         const vote = this.getAttribute("data-vote");
 
@@ -765,7 +767,7 @@ var OnChainUI = {
 
     // Attach close handler
     const closeBtn = panel.querySelector("#close-governance-btn");
-    closeBtn.addEventListener("click", function() {
+    closeBtn.addEventListener("click", function () {
       overlay.remove();
     });
 
@@ -779,7 +781,7 @@ var OnChainUI = {
    * Slide-friendly: Get connection status for inline display
    * Returns object { connected, address, balance, tier, votingPower }
    */
-  getSlideStatus: function() {
+  getSlideStatus: function () {
     if (!this.enabled) {
       return {
         connected: false,
@@ -807,7 +809,7 @@ var OnChainUI = {
    * @param {object} voteData - { proposalId, vote: 'yes'|'no'|'abstain' }
    * @returns {Promise<string>} spellTxid on success
    */
-  submitGovernanceVote: function(voteData) {
+  submitGovernanceVote: function (voteData) {
     return new Promise((resolve, reject) => {
       if (!this.enabled || !this.charmsClient) {
         reject(new Error("Wallet not connected. Click 'Connect Wallet' first."));
@@ -867,45 +869,83 @@ var OnChainUI = {
    * Real wallet submission - Sign and broadcast with Unisat
    * @private
    */
-  _submitVoteWithWallet: function(votePayload, reputation) {
+  _submitVoteWithWallet: function (votePayload, reputation) {
     const self = this;
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const wallet = getUnisatWallet();
       if (!wallet || !wallet.connected) {
         reject(new Error("Wallet not connected. Please connect your Bitcoin wallet."));
         return;
       }
 
-      console.log("[OnChainUI] Submitting vote with Unisat wallet signing...");
+      console.log("[OnChainUI] Submitting vote sequence with Unisat...");
 
-      // Get UTXO for transaction building (async)
-      this._getWalletUtxo()
-        .then(function(utxo) {
-          // Submit vote to CharmsClient with wallet integration
-          return self.charmsClient.submitVote(votePayload, {
-            wallet: wallet,
-            address: wallet.address,
-            utxo: utxo
-          });
-        })
-        .then(result => {
-          console.log("[OnChainUI] Vote submitted to Charms:", result.mode, result.spellTxid.substring(0, 16) + "...");
-          
-          // Publish event for slide listeners
-          this._publishGovernanceSubmitted({
-            spellTxid: result.spellTxid,
-            commitTxid: result.commitTxid || null,
-            proposalId: result.proposalId,
-            vote: result.vote,
-            mode: result.mode
-          });
-          
-          resolve(result);
-        })
-        .catch(err => {
-          console.error("[OnChainUI] Vote submission to Charms failed:", err);
-          reject(err);
+      try {
+        // STEP 1: Anchor Reputation (if history exists)
+        let proofTxid = null;
+        if (reputation && reputation.totalMoves > 0) {
+          self.showStatus("Generating ZK Reputation Proof...");
+
+          // Get first UTXO
+          const utxo1 = await self._getWalletUtxo();
+
+          // Clear cache to force fresh UTXO for next step
+          if (self.walletData) self.walletData.utxo = null;
+
+          const gameData = {
+            player_address: self.playerAddress,
+            moves: reputation.getMoveHistory(),
+            payoffs: getGameGovernance().getPayoffMatrix()
+          };
+
+          const repResult = await self.charmsClient.submitReputationOnChain(
+            gameData,
+            utxo1,
+            self.playerAddress, // change address
+            wallet
+          );
+
+          proofTxid = repResult.spellTxid;
+          console.log("[OnChainUI] Reputation proved:", proofTxid);
+
+          // Add to transaction history
+          self.addTransaction(repResult);
+
+          self.showStatus("Reputation proved! Submitting vote...");
+        }
+
+        // STEP 2: Submit Vote (referencing proof)
+        if (proofTxid) {
+          votePayload.reputationProof = proofTxid;
+        }
+
+        // Get second UTXO (must be different/fresh)
+        // In demo mode, _getWalletUtxo might need to return a new mock
+        if (self.walletData) self.walletData.utxo = null;
+        const utxo2 = await self._getWalletUtxo();
+
+        const result = await self.charmsClient.submitVote(votePayload, {
+          wallet: wallet,
+          address: wallet.address,
+          utxo: utxo2
         });
+
+        console.log("[OnChainUI] Vote submitted to Charms:", result.spellTxid.substring(0, 16) + "...");
+
+        this._publishGovernanceSubmitted({
+          spellTxid: result.spellTxid,
+          commitTxid: result.commitTxid || null,
+          proposalId: result.proposalId,
+          vote: result.vote,
+          mode: result.mode || "broadcast"
+        });
+
+        resolve(result);
+
+      } catch (err) {
+        console.error("[OnChainUI] Vote sequence failed:", err);
+        reject(err);
+      }
     });
   },
 
@@ -913,7 +953,7 @@ var OnChainUI = {
    * Publish governance submission event for slide listeners
    * @private
    */
-  _publishGovernanceSubmitted: function(data) {
+  _publishGovernanceSubmitted: function (data) {
     if (window.publish) {
       publish("governance/submitted", [data]);
     }
@@ -923,7 +963,7 @@ var OnChainUI = {
    * Generate mock txid (for testing)
    * @private
    */
-  _generateMockTxid: function(data) {
+  _generateMockTxid: function (data) {
     const chars = "0123456789abcdef";
     let txid = "";
     let hash = 0;
@@ -940,7 +980,7 @@ var OnChainUI = {
   /**
     * Show the wallet UI (append to DOM if not already)
     */
-  show: function() {
+  show: function () {
     if (this.container) {
       // Only append if not already in DOM
       if (!this.container.parentNode) {
@@ -954,13 +994,13 @@ var OnChainUI = {
   /**
     * Hide the wallet UI (remove from DOM)
     */
-  hide: function() {
+  hide: function () {
     if (this.container && this.container.parentNode) {
       this.container.parentNode.removeChild(this.container);
       console.log("[OnChainUI] Wallet UI hidden");
     }
   }
-  };
+};
 
 // Initialize when Bitcoin mode is enabled
 if (window.BITCOIN_MODE) {

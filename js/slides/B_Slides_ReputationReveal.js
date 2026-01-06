@@ -1,107 +1,73 @@
 /**
- * REPUTATION REVEAL SLIDE
+ * REPUTATION SUMMARY SLIDE
  * 
- * Appears after the game completes and tier celebration.
- * Shows the player what their reputation means in Bitcoin context.
- * Bridges game mechanics to governance voting power.
+ * Merged from reputation_reveal + reputation_meaning
+ * Appears after the game completes.
+ * Shows: move breakdown + tier explanation + voting power.
+ * Bridges game mechanics to governance voting.
  */
 
-// Reputation breakdown: what did you do?
 SLIDES.push({
-    id: "reputation_reveal",
-    onstart: function (self) {
+	id: "reputation_summary",
+	onstart: function (self) {
 
-        var o = self.objects;
-        const reputation = getGameReputation();
-        const tier = reputation.getReputationTier();
+		var o = self.objects;
+		const reputation = getGameReputation();
+		const tier = reputation.getReputationTier();
 
-        // Splash
-        self.add({
-            id: "splash",
-            type: "Splash",
-            blush: (tier.label === 'WellAligned')
-        });
+		// Splash
+		self.add({
+			id: "splash",
+			type: "Splash",
+			blush: (tier.label === 'WellAligned')
+		});
 
-        // Get dynamic text
-        var revealText = Words.get("reputation_reveal");
+		// PART 1: Breakdown of what you did
+		var summaryText = "<b>Your Game Record</b><br>";
+		
+		if (reputation.totalMoves === 0) {
+			summaryText = Words.get("reputation_reveal_no_games");
+		} else {
+			const defections = reputation.totalMoves - reputation.cooperativeMoves;
+			const cooperationRate = Math.round(reputation.calculateScore());
+			
+			summaryText += `You cooperated <b>${reputation.cooperativeMoves} times</b>, defected <b>${defections} times</b>.<br>`;
+			summaryText += `That's a <b>${cooperationRate}% cooperation rate</b>.<br><br>`;
+			
+			// PART 2: What your tier means
+			summaryText += `<span style="color: ${tier.cssClass === 'reputation-aligned' ? '#4CAF50' : (tier.cssClass === 'reputation-neutral' ? '#FFC107' : '#FF5E5E')};">`;
+			summaryText += `<b>[${tier.label.toUpperCase()}]</b></span><br>`;
+			
+			if (tier.label === 'WellAligned') {
+				summaryText += "<b>YOU are a Well-Aligned validator.</b> Your governance votes shape Bitcoin's game design.<br>";
+			} else if (tier.label === 'Neutral') {
+				summaryText += "<b>YOU are a Neutral participant.</b> Your votes influence Bitcoin's consensus rules.<br>";
+			} else {
+				summaryText += "<b>YOU are a Learning validator.</b> Your participation in game design shapes Bitcoin's future.<br>";
+			}
+			
+			// PART 3: Voting power
+			summaryText += `<br><i>Your voting power: <b>${reputation.getVotingPower()} votes</b></i>`;
+		}
 
-        // Handle edge case: no games played
-        if (reputation.totalMoves === 0) {
-            revealText = Words.get("reputation_reveal_no_games");
-        } else {
-            // Substitute player data
-            revealText = revealText.replace("[COOPERATION_COUNT]", reputation.cooperativeMoves);
-            revealText = revealText.replace("[DEFECTION_COUNT]", reputation.totalMoves - reputation.cooperativeMoves);
-            revealText = revealText.replace("[COOPERATION_RATE]", Math.round(reputation.calculateScore()));
-            revealText = revealText.replace("[TIER_CLASS]", tier.cssClass);
-            revealText = revealText.replace(/\[TIER_LABEL\]/g, tier.label); // Replace all instances
-            revealText = revealText.replace("[TIER_DESCRIPTION]", tier.description);
-            revealText = revealText.replace("[VOTING_POWER]", reputation.getVotingPower());
-        }
+		self.add({
+			id: "summary_text", type: "TextBox",
+			x: 100, y: 80, width: 760, height: 350,
+			text: summaryText,
+			size: 13,
+			align: "center"
+		});
 
-        self.add({
-            id: "reveal_text", type: "TextBox",
-            x: 100, y: 120, width: 760, height: 300,
-            text: revealText,
-            size: 14,
-            align: "center"
-        });
+		// Continue button
+		self.add({
+			id: "button", type: "Button", x: 615, y: 450,
+			text_id: "reputation_summary_btn",
+			message: "slideshow/next"
+		});
 
-        // Continue button
-        self.add({
-            id: "button", type: "Button", x: 615, y: 450,
-            text_id: "reputation_reveal_btn",
-            message: "slideshow/next"
-        });
-
-    },
-    onend: function (self) {
-        self.clear();
-    }
-});
-
-// What your tier means in Bitcoin
-SLIDES.push({
-    id: "reputation_meaning",
-    onstart: function (self) {
-
-        var o = self.objects;
-        const reputation = getGameReputation();
-        const tier = reputation.getReputationTier();
-
-        // Splash
-        self.add({ id: "splash", type: "Splash" });
-
-        // Get tier-specific explanation
-        var meaningText = Words.get("reputation_what_it_means");
-        meaningText = meaningText.replace("[TIER_LABEL]", tier.label);
-
-        // Add tier-specific content
-        if (tier.label === 'WellAligned') {
-            meaningText += "<br><br><b>YOU are a Well-Aligned validator.</b> Your governance votes shape Bitcoin's game design.";
-        } else if (tier.label === 'Neutral') {
-            meaningText += "<br><br><b>YOU are a Neutral participant.</b> Your votes influence Bitcoin's consensus rules.";
-        } else {
-            meaningText += "<br><br><b>YOU are a Learning validator.</b> Your participation in game design shapes Bitcoin's future.";
-        }
-
-        self.add({
-            id: "meaning_text", type: "TextBox",
-            x: 100, y: 120, width: 760, height: 300,
-            text: meaningText,
-            size: 13,
-            align: "center"
-        });
-
-        self.add({
-            id: "button", type: "Button", x: 615, y: 450,
-            text_id: "button_understand_vote",
-            message: "slideshow/next"
-        });
-
-    },
-    onend: function (self) {
-        self.clear();
-    }
+	},
+	onend: function (self) {
+		self.clear();
+	}
 });
 

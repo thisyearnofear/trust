@@ -2,6 +2,8 @@
 
 A game-theory simulator that teaches **Bitcoin's consensus model through interactive gameplay** and zero-knowledge proof verification on-chain.
 
+> 🏆 **Judges:** Please see [docs/HACKATHON_JUDGES.md](docs/HACKATHON_JUDGES.md) for a verification guide and technical deep-dive.
+
 ## What This Is
 
 This is an adaptation of Nicky Case's *["The Evolution of Trust"](http://ncase.me/trust/)* that maps Prisoner's Dilemma concepts to Bitcoin's consensus incentives:

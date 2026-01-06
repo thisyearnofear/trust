@@ -274,7 +274,7 @@ class CharmsGameClient {
     // Mode 2: Local CLI (Node.js only, not browser)
     if (this.charmsAppBin) {
       console.log("[CharmsClient] Using local CLI mode");
-      
+
       if (!this.charmsProver) {
         const { initCharmsCLIProver } = require('./CharmsCLIProver.js');
         this.charmsProver = initCharmsCLIProver({
@@ -350,6 +350,7 @@ class CharmsGameClient {
         proposal_id: voteData.proposalId,
         vote: voteData.vote,
         voting_power: voteData.votingPower,
+        reputation_proof: voteData.reputationProof || null,
         timestamp: Date.now()
       };
 
@@ -362,18 +363,18 @@ class CharmsGameClient {
       }
 
       console.log("[CharmsClient] Building 2-tx vote pattern...");
-      
+
       // Build 2-tx pattern with BitcoinTxBuilder
       const txPattern = this.txBuilder.build2TxPattern(spell, address, utxo);
-      
+
       console.log("[CharmsClient] Sending unsigned txs to wallet for signing...");
-      
+
       // Sign and broadcast via wallet
       const broadcastResult = await wallet.signAndBroadcast2TxPattern({
         commitTxHex: txPattern.commitTxHex,
         spellTxHex: txPattern.spellTxHex
       });
-      
+
       const result = {
         type: "vote",
         commitTxid: broadcastResult.commitTxid,
@@ -382,7 +383,7 @@ class CharmsGameClient {
         vote: voteData.vote,
         spell: spell
       };
-      
+
       this.transactionHistory.push({
         type: "vote",
         spell: spell,
@@ -394,7 +395,7 @@ class CharmsGameClient {
         commitTxid: result.commitTxid.substring(0, 16) + "...",
         spellTxid: result.spellTxid.substring(0, 16) + "..."
       });
-      
+
       return result;
     } catch (error) {
       console.error("[CharmsClient] Vote submission failed:", error);

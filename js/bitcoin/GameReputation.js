@@ -66,6 +66,10 @@ GameReputation.prototype.saveToStorage = function() {
  * Record a single move in game history
  * @param {boolean} isCooperative - true if player cooperated, false if defected
  */
+GameReputation.prototype.getMoveHistory = function() {
+    return this.history.map(m => m.cooperative ? 0 : 1);
+};
+
 GameReputation.prototype.recordMove = function(isCooperative) {
     const oldScore = this.calculateScore();
     

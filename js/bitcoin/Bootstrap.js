@@ -399,7 +399,7 @@ function initOnChainReputation() {
     // Listen for sandbox completion
     subscribe("slideshow/slideChange", function(slideId) {
       // After sandbox slide completes, jump to governance
-      if (slideId === "governance_intro") {
+      if (slideId === "governance_connect") {
         // Prepare governance for voting
         if (window.GovernanceIntegration) {
           window.GovernanceIntegration.prepareGovernancePhase();
