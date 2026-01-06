@@ -22,6 +22,19 @@ SLIDES.push({
         // Add Splash character in background
         self.add({ id: "splash", type: "Splash", x: 0, y: 50 });
 
+        // HEADER with pulsing animation
+        self.add({
+            id: "header", type: "TextBox",
+            x: 200, y: 100, width: 400,
+            text_id: "chapter_governance_voting", // "Your Vote Matters"
+            size: 24, color: "#333", align: "center"
+        });
+
+        // Add animated border effect via CSS class
+        if (o.header && o.header.dom) {
+            o.header.dom.classList.add("governance-voting-title");
+        }
+
         // Get player reputation data
         const reputation = getGameReputation();
         const tier = reputation.getReputationTier();
@@ -30,7 +43,7 @@ SLIDES.push({
 
         self.add({
             id: "tier_display", type: "TextBox",
-            x: 200, y: 150, width: 400,
+            x: 200, y: 200, width: 400,
             align: "center",
             text: `Your Reputation: <span class="${tier.cssClass}">${tier.label}</span>`,
             size: 16, color: "#333"
@@ -48,7 +61,7 @@ SLIDES.push({
 
         self.add({
             id: "text", type: "TextBox",
-            x: 200, y: 180, width: 400, height: 200,
+            x: 200, y: 230, width: 400, height: 200,
             text: governanceText,
             align: "center",
             size: 11
@@ -57,7 +70,7 @@ SLIDES.push({
         // Continue button
         self.add({
             id: "button", type: "Button",
-            x: 350, y: 400, size: "short",
+            x: 350, y: 440, size: "short",
             text_id: "governance_intro_btn",
             message: "slideshow/next"
         });
@@ -65,6 +78,7 @@ SLIDES.push({
     },
     onend: function (self) {
         self.remove("splash");
+        self.remove("header");
         self.remove("tier_display");
         self.remove("text");
         self.remove("button");
@@ -75,20 +89,32 @@ SLIDES.push({
 SLIDES.push({
     id: "governance_connect",
     onstart: function (self) {
-
+        
         var o = self.objects;
 
         // Splash
         self.add({ id: "splash", type: "Splash" });
 
+        // HEADER with pulsing animation
+        self.add({
+            id: "header", type: "TextBox",
+            x: 100, y: 40, width: 760,
+            text: "<b>Connect Your Bitcoin Wallet</b>",
+            size: 20, color: "#333", align: "center"
+        });
+        
+        // Add animated border effect via CSS class
+        if (o.header && o.header.dom) {
+            o.header.dom.classList.add("governance-voting-title");
+        }
+
         // Wallet connection prompt
-        var walletText = "<b>Connect Your Bitcoin Wallet</b><br><br>";
-        walletText += "Your governance votes will be recorded on-chain using zero-knowledge proofs.<br><br>";
+        var walletText = "Your governance votes will be recorded on-chain using zero-knowledge proofs.<br><br>";
         walletText += "Connect your Bitcoin wallet (Unisat or Leather) to participate in voting.";
 
         self.add({
             id: "wallet_text", type: "TextBox",
-            x: 100, y: 60, width: 760, height: 250,
+            x: 100, y: 140, width: 760, height: 150,
             text: walletText,
             align: "center",
             size: 14
@@ -286,33 +312,56 @@ SLIDES.push({
 
         var o = self.objects;
 
+        // HEADER with pulsing animation
+        self.add({
+            id: "header", type: "TextBox",
+            x: 200, y: 50, width: 400,
+            text: "<b>Governance Results</b>",
+            size: 20, color: "#333", align: "center"
+        });
+        
+        // Add animated border effect via CSS class
+        if (o.header && o.header.dom) {
+            o.header.dom.classList.add("governance-voting-title");
+        }
+
         // Get governance results
         var governance = getGameGovernance();
         var results = governance.getSummary();
 
-        var summaryText = "<b>Governance Results</b><br><br>";
-        summaryText += "Your votes have been recorded and will influence the next round of Bitcoin's game design!<br><br>";
+        var summaryText = "Your votes have been recorded on-chain. You've helped shape the next round of Bitcoin's game design!<br><br>";
 
         // Add proposal results
         summaryText += "<b>Proposal Outcomes:</b><br>";
+        var hasVoted = false;
         governance.proposals.forEach((p) => {
             if (p.has_voted) {
+                hasVoted = true;
                 const passedText = p.has_passed ? "✓ PASSED" : "✗ FAILED";
-                summaryText += `• Proposal #${p.id}: ${passedText}<br>`;
+                const myVote = p.my_vote ? `(You voted: ${p.my_vote.toUpperCase()})` : "";
+                summaryText += `• Proposal #${p.id}: ${passedText} ${myVote}<br>`;
             }
         });
+        
+        if (!hasVoted) {
+            summaryText += "No votes cast (Anonymous/Abstained).<br>";
+        }
+        
+        summaryText += "<br><b>What's Next?</b><br>";
+        summaryText += "In Bitcoin, the game never ends. Rules evolve, but the core principle remains: " +
+                      "honesty dominates when the protocol enforces it.";
 
         self.add({
             id: "text", type: "TextBox",
-            x: 100, y: 200, width: 760, height: 200,
+            x: 100, y: 160, width: 760, height: 250,
             text: summaryText,
-            size: 12, align: "center"
+            size: 13, align: "center"
         });
 
         // Continue button
         self.add({
-            id: "button", type: "Button", x: 400, y: 420,
-            text_id: "governance_summary_btn",
+            id: "button", type: "Button", x: 400, y: 440,
+            text: "View Credits", // Explicit action
             message: "slideshow/next"
         });
 
