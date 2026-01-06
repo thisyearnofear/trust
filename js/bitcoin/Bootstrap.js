@@ -304,6 +304,8 @@ function initOnChainReputation() {
     return;
   }
   
+  console.log("[Bitcoin Mode] Charms CLI/Client available for on-chain proof generation");
+
   // Create global function to submit reputation
   window.submitGameReputationOnChain = function(bitcoinAddress, appId) {
     if (!window.walletManager) {

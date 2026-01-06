@@ -97,6 +97,10 @@ function Button(config) {
 		button.setAttribute("deactivated", "yes");
 		button.removeAttribute("hover");
 	};
+	self.setEnabled = function(enabled) {
+		if(enabled) self.activate();
+		else self.deactivate();
+	};
 	if (config.active === undefined) config.active = true;
 	if (!config.active) self.deactivate();
 

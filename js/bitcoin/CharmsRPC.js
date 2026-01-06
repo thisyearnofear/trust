@@ -220,6 +220,23 @@ class CharmsRPC {
   }
 
   /**
+   * Submit vote (RPC wrapper)
+   * @param {string} appId - App ID
+   * @param {object} payload - Vote payload
+   * @returns {Promise<string>} TXID or status
+   */
+  async submitVote(appId, payload) {
+    this._log("Submitting vote via RPC");
+    
+    return this.call("governance_submit_vote", [
+      {
+        app_id: appId,
+        payload: payload
+      }
+    ]);
+  }
+
+  /**
    * Get community governance statistics
    * @param {string} appId - App ID
    * @returns {Promise<object>} Community stats
