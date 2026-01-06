@@ -265,31 +265,48 @@ class CharmsGameClient {
    * @private
    */
   async _generateProofViaCharms(gameData, utxoData, changeAddress) {
-    // Mode 1: Call backend server API
-    if (this.serverUrl) {
-      console.log("[CharmsClient] Using server mode:", this.serverUrl);
-      return await this._callServerAPI(gameData, utxoData, changeAddress);
+    // Show loading state
+    if (window.UXFeedback) {
+      UXFeedback.showLoading("Generating ZK Proof", "This may take a few minutes...");
     }
 
-    // Mode 2: Local CLI (Node.js only, not browser)
-    if (this.charmsAppBin) {
-      console.log("[CharmsClient] Using local CLI mode");
-
-      if (!this.charmsProver) {
-        const { initCharmsCLIProver } = require('./CharmsCLIProver.js');
-        this.charmsProver = initCharmsCLIProver({
-          charmsAppBin: this.charmsAppBin
-        });
+    try {
+      // Mode 1: Call backend server API
+      if (this.serverUrl) {
+        console.log("[CharmsClient] Using server mode:", this.serverUrl);
+        if (window.UXFeedback) {
+          UXFeedback.updateLoadingStatus("Contacting proof server...");
+        }
+        return await this._callServerAPI(gameData, utxoData, changeAddress);
       }
 
-      return await this.charmsProver.generateProof(gameData, utxoData, changeAddress);
-    }
+      // Mode 2: Local CLI (Node.js only, not browser)
+      if (this.charmsAppBin) {
+        console.log("[CharmsClient] Using local CLI mode");
+        if (window.UXFeedback) {
+          UXFeedback.updateLoadingStatus("Running Charms CLI...");
+        }
 
-    throw new Error(
-      "No proof generation configured. Provide either:\n" +
-      "  - serverUrl: 'http://localhost:3000' (for browser)\n" +
-      "  - charmsAppBin: '/path/to/trust-game' (for Node.js)"
-    );
+        if (!this.charmsProver) {
+          const { initCharmsCLIProver } = require('./CharmsCLIProver.js');
+          this.charmsProver = initCharmsCLIProver({
+            charmsAppBin: this.charmsAppBin
+          });
+        }
+
+        return await this.charmsProver.generateProof(gameData, utxoData, changeAddress);
+      }
+
+      throw new Error(
+        "No proof generation configured. Provide either:\n" +
+        "  - serverUrl: 'http://localhost:3000' (for browser)\n" +
+        "  - charmsAppBin: '/path/to/trust-game' (for Node.js)"
+      );
+    } finally {
+      if (window.UXFeedback) {
+        UXFeedback.hideLoading();
+      }
+    }
   }
 
   /**

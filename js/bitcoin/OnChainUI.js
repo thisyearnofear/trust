@@ -279,6 +279,11 @@ var OnChainUI = {
    */
   connectWallet: async function () {
     console.log("[OnChainUI] Attempting to connect wallet...");
+    
+    // Show loading state
+    if (window.UXFeedback) {
+      UXFeedback.showLoading("Connecting Wallet", "Please approve in your wallet extension...");
+    }
 
     try {
       const result = await window.walletManager.connect();
@@ -286,7 +291,10 @@ var OnChainUI = {
       this.onWalletConnected(result);
     } catch (error) {
       console.error("[OnChainUI] Wallet connection failed:", error);
-      alert(error.message);
+      if (window.UXFeedback) {
+        UXFeedback.hideLoading();
+        UXFeedback.showError("Wallet connection failed: " + error.message);
+      }
       throw error;
     }
   },
@@ -297,6 +305,12 @@ var OnChainUI = {
     */
   onWalletConnected: function (walletResult) {
     console.log("[OnChainUI] Wallet connected:", this.playerAddress);
+    
+    // Hide loading and show success
+    if (window.UXFeedback) {
+      UXFeedback.hideLoading();
+      UXFeedback.walletConnected(this.playerAddress);
+    }
 
     this.enabled = true;
     this.wallet = getUnisatWallet();

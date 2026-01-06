@@ -212,8 +212,20 @@ SLIDES.push({
         var handleVote = function (vote) {
             governance.castVote(proposal.id, reputation.address || "anonymous", vote, votingPower);
             
-            // Update UI
-            o.voted_status.setText(`You voted <b>${vote.toUpperCase()}</b> on Proposal #${proposal.id}`);
+            // Play feedback sound and show success
+            if (window.UXFeedback) {
+                UXFeedback.voteSubmitted(vote);
+            }
+            
+            // Update UI with colored checkmark
+            var voteEmoji = vote === "yes" ? "✓" : (vote === "no" ? "✗" : "∘");
+            var voteText = vote === "yes" ? "YES (APPROVED)" : (vote === "no" ? "NO (REJECTED)" : "ABSTAIN");
+            o.voted_status.setText(`${voteEmoji} You voted <b>${voteText}</b>`);
+            
+            // Disable buttons with visual feedback
+            o.button_yes.dom.classList.add("disabled");
+            o.button_no.dom.classList.add("disabled");
+            o.button_abstain.dom.classList.add("disabled");
             o.button_yes.setEnabled(false);
             o.button_no.setEnabled(false);
             o.button_abstain.setEnabled(false);
@@ -229,7 +241,7 @@ SLIDES.push({
                     governance.closeVotingRound();
                     publish("slideshow/next");
                 }
-            }, 800);
+            }, 1200);
         };
 
         self.add({

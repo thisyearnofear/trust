@@ -1,0 +1,392 @@
+/**
+ * UX POLISH
+ * 
+ * Smooth transitions, visual feedback, and polished interactions.
+ * Improves feel from "works" to "delightful".
+ */
+
+/* ========== SLIDE TRANSITIONS ========== */
+
+/* Fade in/out slides smoothly */
+.slideshow-fade-in {
+    animation: slideshow-fade-in 0.4s ease-out forwards;
+}
+
+.slideshow-fade-out {
+    animation: slideshow-fade-out 0.3s ease-in forwards;
+}
+
+@keyframes slideshow-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideshow-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* ========== BUTTON POLISH ========== */
+
+/* Enhanced button states */
+.button {
+    transition: transform 0.08s ease-out, filter 0.1s ease-out;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.button:hover {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+    transform: translateY(-2px);
+}
+
+.button:active {
+    transform: translateY(0);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.button:disabled,
+.button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.button:disabled:hover,
+.button.disabled:hover {
+    transform: none;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+/* Button click animation */
+.button.click-feedback {
+    animation: button-click 0.3s ease-out;
+}
+
+@keyframes button-click {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ========== TEXT & CONTENT REVEAL ========== */
+
+/* Stagger text lines for readability */
+.text-reveal {
+    animation: text-reveal 0.5s ease-out forwards;
+}
+
+.text-reveal-delay-1 { animation-delay: 0.1s; }
+.text-reveal-delay-2 { animation-delay: 0.2s; }
+.text-reveal-delay-3 { animation-delay: 0.3s; }
+.text-reveal-delay-4 { animation-delay: 0.4s; }
+
+@keyframes text-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== LOADING & PROGRESS ========== */
+
+/* Loading spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(64, 137, 221, 0.2);
+    border-top-color: #4089DD;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading state overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fade-in 0.2s ease-out;
+}
+
+.loading-content {
+    text-align: center;
+    font-family: monospace;
+    color: #333;
+}
+
+.loading-content h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: #4089DD;
+}
+
+.loading-content p {
+    margin: 8px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+/* Progress bar */
+.progress-bar-container {
+    width: 200px;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4089DD, #2E68B8);
+    width: 0%;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ========== SUCCESS & ERROR FEEDBACK ========== */
+
+/* Success message */
+.success-message {
+    padding: 12px 16px;
+    background: #E8F5E9;
+    border-left: 4px solid #4CAF50;
+    border-radius: 4px;
+    color: #2E7D32;
+    font-size: 13px;
+    animation: slide-in-up 0.3s ease-out;
+}
+
+/* Error message */
+.error-message {
+    padding: 12px 16px;
+    background: #FFEBEE;
+    border-left: 4px solid #f44336;
+    border-radius: 4px;
+    color: #C62828;
+    font-size: 13px;
+    animation: slide-in-up 0.3s ease-out;
+}
+
+/* Status message */
+.status-message {
+    padding: 12px 16px;
+    background: #E3F2FD;
+    border-left: 4px solid #2196F3;
+    border-radius: 4px;
+    color: #1565C0;
+    font-size: 13px;
+    animation: slide-in-up 0.3s ease-out;
+}
+
+@keyframes slide-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== VOTING FEEDBACK ========== */
+
+/* Vote button states */
+.vote-btn {
+    transition: all 0.15s ease-out;
+    position: relative;
+}
+
+.vote-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.vote-btn:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}
+
+.vote-btn.voted {
+    animation: vote-success 0.4s ease-out;
+}
+
+@keyframes vote-success {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Vote confirmation checkmark */
+.vote-checkmark {
+    display: inline-block;
+    margin-left: 8px;
+    animation: checkmark-appear 0.3s ease-out;
+}
+
+@keyframes checkmark-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.5) rotate(-45deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* ========== REPUTATION TIER ANIMATION ========== */
+
+/* Tier badge pulse */
+.tier-badge-pulse {
+    animation: tier-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tier-pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 2px 4px rgba(64, 137, 221, 0.2));
+    }
+    50% {
+        transform: scale(1.02);
+        filter: drop-shadow(0 4px 8px rgba(64, 137, 221, 0.4));
+    }
+}
+
+/* ========== SMOOTH SCROLLING & FOCUS ========== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Better focus states for accessibility */
+:focus-visible {
+    outline: 2px solid #4089DD;
+    outline-offset: 2px;
+}
+
+/* ========== TOUCH TARGETS ========== */
+
+/* Ensure minimum touch target size (44x44px) */
+.button,
+.vote-btn,
+button {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* ========== MICRO-INTERACTIONS ========== */
+
+/* Wallet connection success */
+.wallet-connected-pulse {
+    animation: wallet-pulse 0.5s ease-out;
+}
+
+@keyframes wallet-pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Game move feedback */
+.move-feedback {
+    animation: move-feedback 0.4s ease-out;
+}
+
+@keyframes move-feedback {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+}
+
+/* ========== REDUCED MOTION ========== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ========== RESPONSIVE ========== */
+
+@media (max-width: 768px) {
+    .button,
+    .vote-btn,
+    button {
+        min-height: 48px;
+        min-width: 48px;
+        font-size: 14px;
+    }
+    
+    .loading-overlay {
+        background: rgba(255, 255, 255, 0.95);
+    }
+}
