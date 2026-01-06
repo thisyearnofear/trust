@@ -6,86 +6,11 @@
  * 
  * Flow:
  * Play game → Earn reputation (reputation_summary) → 
- * Set expectations (governance_expectations) →
  * Governance intro (governance_intro) →
  * Connect wallet (governance_connect) → 
  * Vote on proposals (governance_voting) → 
  * See results (governance_summary)
  */
-
-// Set expectations: clarify what's mocked vs real
-SLIDES.push({
-	id: "governance_expectations",
-	onstart: function (self) {
-
-		var o = self.objects;
-
-		// Splash
-		self.add({ id: "splash", type: "Splash" });
-
-		// HEADER
-		self.add({
-			id: "header", type: "TextBox",
-			x: 200, y: 70, width: 400,
-			text: "<b>What Happens Next</b>",
-			size: 20, color: "#333", align: "center"
-		});
-
-		// Check wallet connection status
-		var walletConnected = window.OnChainUI && window.OnChainUI.enabled;
-
-		// Main explanation
-		var expectText = "";
-		if (walletConnected) {
-			expectText = "<b>Your Bitcoin wallet is connected.</b><br><br>";
-			expectText += "Your governance votes will be <b>recorded on-chain</b> via Charms smart contracts.<br><br>";
-			expectText += "This proves your participation in Bitcoin's game-theoretic governance and anchors your reputation to the blockchain.";
-		} else {
-			expectText = "<b>You're in simulation mode.</b><br><br>";
-			expectText += "Your votes will be recorded locally in this game session but <b>not on-chain</b>.<br><br>";
-			expectText += "You can still participate and explore how governance works. Connect a Bitcoin wallet anytime to anchor your votes to the blockchain.";
-		}
-
-		self.add({
-			id: "explanation", type: "TextBox",
-			x: 80, y: 180, width: 800, height: 180,
-			text: expectText,
-			size: 13, align: "center"
-		});
-
-		// Mode indicator box
-		var modeColor = walletConnected ? "#4CAF50" : "#FFC107";
-		var modeLabel = walletConnected ? "🔗 ON-CHAIN MODE" : "📋 SIMULATION MODE";
-		var modeBg = walletConnected ? "rgba(76, 175, 80, 0.1)" : "rgba(255, 193, 7, 0.1)";
-
-		self.add({
-			id: "mode_indicator", type: "TextBox",
-			x: 200, y: 380, width: 400,
-			text: `<span style="color: ${modeColor}; font-weight: bold; font-size: 15px;">${modeLabel}</span>`,
-			size: 12, color: modeColor, align: "center"
-		});
-
-		// Set background for mode indicator
-		if (o.mode_indicator && o.mode_indicator.dom) {
-			o.mode_indicator.dom.style.background = modeBg;
-			o.mode_indicator.dom.style.padding = "12px";
-			o.mode_indicator.dom.style.borderRadius = "6px";
-			o.mode_indicator.dom.style.border = `2px solid ${modeColor}`;
-			o.mode_indicator.dom.style.marginTop = "10px";
-		}
-
-		// Continue button
-		self.add({
-			id: "button", type: "Button", x: 400, y: 450,
-			text_id: "button_continue",
-			message: "slideshow/next"
-		});
-
-	},
-	onend: function (self) {
-		self.clear();
-	}
-});
 
 // Governance intro: explain voting before wallet connection
 SLIDES.push({
@@ -173,7 +98,7 @@ SLIDES.push({
         // HEADER with pulsing animation
         self.add({
             id: "header", type: "TextBox",
-            x: 100, y: 40, width: 760,
+            x: 100, y: 30, width: 760,
             text: "<b>Connect Your Bitcoin Wallet</b>",
             size: 20, color: "#333", align: "center"
         });
@@ -183,13 +108,34 @@ SLIDES.push({
             o.header.dom.classList.add("governance-voting-title");
         }
 
+        // Check wallet connection status for mode indicator
+        var walletConnected = window.OnChainUI && window.OnChainUI.enabled;
+        var modeColor = walletConnected ? "#4CAF50" : "#FFC107";
+        var modeLabel = walletConnected ? "🔗 ON-CHAIN MODE" : "📋 SIMULATION MODE";
+        var modeBg = walletConnected ? "rgba(76, 175, 80, 0.1)" : "rgba(255, 193, 7, 0.1)";
+
+        // Mode indicator badge
+        self.add({
+            id: "mode_indicator", type: "TextBox",
+            x: 200, y: 75, width: 400,
+            text: `<span style="color: ${modeColor}; font-weight: bold;">${modeLabel}</span>`,
+            size: 11, color: modeColor, align: "center"
+        });
+
+        if (o.mode_indicator && o.mode_indicator.dom) {
+            o.mode_indicator.dom.style.background = modeBg;
+            o.mode_indicator.dom.style.padding = "8px";
+            o.mode_indicator.dom.style.borderRadius = "4px";
+            o.mode_indicator.dom.style.border = `1px solid ${modeColor}`;
+        }
+
         // Wallet connection prompt
         var walletText = "Your governance votes will be recorded on-chain using zero-knowledge proofs.<br><br>";
         walletText += "Connect your Bitcoin wallet (Unisat or Leather) to participate in voting.";
 
         self.add({
             id: "wallet_text", type: "TextBox",
-            x: 100, y: 140, width: 760, height: 150,
+            x: 100, y: 130, width: 760, height: 120,
             text: walletText,
             align: "center",
             size: 14

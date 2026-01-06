@@ -62,9 +62,7 @@ SLIDES.push({
 		self.add({
 		        id: "button", type: "Button", x: 615, y: 450,
 		        text_id: "button_continue_to_governance",
-		        onclick: function() {
-		        	publish("slideshow/goto", ["governance_expectations"]);
-		        }
+		        message: "slideshow/next"
 		});
 
 	},
